@@ -16,3 +16,13 @@ The project includes a minimal PHPUnit test suite for the API endpoints. To run 
    ```
 
 The tests use a stub database connection and do not require a real database.
+
+## Configuration
+
+Set the following environment variables so `db.php` can establish the database connection:
+
+- `DB_HOST` - database host, defaults to `localhost` if unset
+- `DB_USER` - database user
+- `DB_PASS` - user password
+- `DB_NAME` - name of the database
+
