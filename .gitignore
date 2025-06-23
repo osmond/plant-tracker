@@ -1,0 +1,21 @@
+# Ignore macOS system files
+.DS_Store
+
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Build output
+/dist/
+
+# Test coverage
+/coverage/
+
+# IDE/editor directories
+.idea/
+.vscode/
