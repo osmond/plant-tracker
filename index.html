@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plant Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>🌿 My Plant Tracker</h1>
+<div id="summary" class="summary-banner">
+  <!-- counts will go here -->
+</div>
+
+    <!-- Search Input UI -->
+    <div class="search-container">
+        <label for="search-input" class="visually-hidden">Search Plants</label>
+        <input type="text" id="search-input" placeholder="🔎 Search by name or species" />
+    </div>
+
+    <form id="plant-form">
+        <label for="name">Plant Name</label>
+        <input type="text" name="name" id="name" placeholder="Plant Name" />
+        <div class="error" id="name-error"></div>
+
+        <label for="species">Species</label>
+        <input type="text" name="species" id="species" placeholder="Species" />
+        <div class="error" id="species-error"></div>
+
+        <label for="watering_frequency">Watering Frequency (days)</label>
+        <input type="number" name="watering_frequency" id="watering_frequency" />
+        <div class="error" id="watering_frequency-error"></div>
+
+        <label for="fertilizing_frequency">Fertilizing Frequency (days)</label>
+        <input type="number" name="fertilizing_frequency" id="fertilizing_frequency" />
+
+        <label for="room">Room</label>
+        <input type="text" name="room" id="room" placeholder="Room" />
+
+        <label for="last_watered">Last Watered</label>
+        <input type="date" name="last_watered" id="last_watered" />
+
+        <label for="last_fertilized">Last Fertilized</label>
+        <input type="date" name="last_fertilized" id="last_fertilized" />
+
+        <button type="submit">Add Plant</button>
+        <button type="button" id="cancel-edit" style="display:none;">Cancel Edit</button>
+    </form>
+
+    <div style="margin-top: 1rem;">
+        <select id="room-filter">
+            <option value="all">All Rooms</option>
+        </select>
+        <select id="sort-toggle">
+            <option value="name">Sort by: Name</option>
+            <option value="due">Sort by: Due Date</option>
+        </select>
+    </div>
+<!-- Undo delete snackbar -->
+<div id="undo-banner" style="display:none;
+                             position:fixed;
+                             bottom:10px;
+                             left:50%;
+                             transform:translateX(-50%);
+                             background:#333;
+                             color:#fff;
+                             padding:10px;
+                             border-radius:5px;
+                             z-index:1000;">
+  Plant deleted. <button id="undo-btn">Undo</button>
+</div>
+
+    <div id="plant-list"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

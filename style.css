@@ -1,0 +1,69 @@
+body {
+    font-family: sans-serif;
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+}
+form {
+    margin-bottom: 20px;
+}
+input, button {
+    padding: 8px;
+    margin: 4px;
+}
+#plant-list {
+    margin-top: 20px;
+}
+.error {
+    color: red;
+    font-size: 0.85em;
+    margin-top: 2px;
+}
+.due-task {
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.water-due {
+    background-color: #e0f7ff;
+    color: #0277bd;
+}
+
+.fert-due {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.plant-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+}
+.just-updated {
+  animation: highlight-fade 2s ease-in-out;
+  background-color: #ffffcc; /* light yellow background */
+}
+
+@keyframes highlight-fade {
+  0%   { background-color: #ffffcc; }
+  100% { background-color: transparent; }
+}
+#undo-banner {
+  animation: fadeInOut 5s forwards;
+}
+@keyframes fadeInOut {
+  0%   { opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+.summary-banner {
+  background: #f0f8ff;
+  padding: 8px;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
