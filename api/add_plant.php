@@ -1,11 +1,19 @@
 <?php
-include '../db.php';
+$dbConfig = getenv('DB_CONFIG');
+if ($dbConfig && file_exists($dbConfig)) {
+    include $dbConfig;
+} else {
+    include '../db.php';
+}
 
 // Basic validation
 if (!isset($_POST['name']) || trim($_POST['name']) === '') {
-    http_response_code(400);
+    @http_response_code(400);
     echo json_encode(['error' => 'Plant name is required']);
-    exit;
+    if (!getenv('TESTING')) {
+        exit;
+    }
+    return;
 }
 
 // Clean and trim inputs
