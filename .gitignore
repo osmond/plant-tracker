@@ -19,3 +19,12 @@ node_modules/
 # IDE/editor directories
 .idea/
 .vscode/
+
+# PHP unit cache
+.phpunit.result.cache
+
+# Editor swap files and other temp files
+*~
+*.swp
+*.swo
+*.tmp
