@@ -1,7 +1,12 @@
 <?php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-include '../db.php';
+$dbConfig = getenv('DB_CONFIG');
+if ($dbConfig && file_exists($dbConfig)) {
+    include $dbConfig;
+} else {
+    include '../db.php';
+}
 
 header('Content-Type: application/json');
 

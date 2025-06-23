@@ -1,5 +1,10 @@
 <?php
-include '../db.php';
+$dbConfig = getenv('DB_CONFIG');
+if ($dbConfig && file_exists($dbConfig)) {
+    include $dbConfig;
+} else {
+    include '../db.php';
+}
 
 // Collect and sanitize
 $id                      = intval($_POST['id'] ?? 0);
