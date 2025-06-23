@@ -41,12 +41,20 @@ function getSoonestDueDate(plant) {
 // --- mark watered/fertilized / snooze ---
 async function markAction(id, type, days = 0) {
   window.lastUpdatedPlantId = id;
-  await fetch(`api/mark_${type}.php`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `id=${id}&snooze_days=${days}`
-  });
-  loadPlants();
+  try {
+    const resp = await fetch(`api/mark_${type}.php`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `id=${id}&snooze_days=${days}`
+    });
+    if (!resp.ok) {
+      throw new Error(`Request failed with status ${resp.status}`);
+    }
+    loadPlants();
+  } catch (err) {
+    console.error('Failed to mark action:', err);
+    alert('Failed to update plant. Please try again.');
+  }
 }
 
 // --- undo-delete snackbar ---
