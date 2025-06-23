@@ -19,3 +19,6 @@ node_modules/
 # IDE/editor directories
 .idea/
 .vscode/
+
+# PHPUnit result cache
+.phpunit.result.cache
