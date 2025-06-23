@@ -1,7 +1,12 @@
 <?php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-include '../db.php';
+$dbConfig = getenv('DB_CONFIG');
+if ($dbConfig && file_exists($dbConfig)) {
+    include $dbConfig;
+} else {
+    include '../db.php';
+}
 
 $id = intval($_POST['id']);
 $snooze = isset($_POST['snooze_days']) ? intval($_POST['snooze_days']) : 0;
