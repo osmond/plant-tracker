@@ -14,17 +14,14 @@ const ICONS = {
 };
 
 function showToast(msg, isError = false) {
-  const toast = document.getElementById("toast");
+  const toast = document.getElementById('toast');
   if (!toast) return;
   toast.textContent = msg;
-  toast.classList.toggle("bg-red-600", isError);
-  toast.classList.toggle("bg-text", !isError);
-  toast.classList.remove("hidden", "opacity-0");
-  toast.classList.add("opacity-100");
+  toast.classList.toggle('error', isError);
+  toast.classList.add('show');
   clearTimeout(toast.hideTimeout);
   toast.hideTimeout = setTimeout(() => {
-    toast.classList.add("hidden", "opacity-0");
-    toast.classList.remove("opacity-100");
+    toast.classList.remove('show');
   }, 3000);
 }
 
@@ -132,9 +129,9 @@ async function loadCalendar() {
   for (let i=0;i<daysToShow;i++) {
     const d = addDays(start,i);
     const dayEl = document.createElement('div');
-    dayEl.className = 'flex-1 border rounded p-2 mr-2 last:mr-0';
+    dayEl.classList.add('cal-day');
     dayEl.dataset.date = d.toISOString().split('T')[0];
-    dayEl.innerHTML = `<div class="font-bold mb-1">${d.toLocaleDateString(undefined,{weekday:'short',month:'numeric',day:'numeric'})}</div>`;
+    dayEl.innerHTML = `<div class="cal-day-header">${d.toLocaleDateString(undefined,{weekday:'short',month:'numeric',day:'numeric'})}</div>`;
     dayEl.addEventListener('dragover',e=>e.preventDefault());
     dayEl.addEventListener('drop',e=>handleDrop(e, dayEl.dataset.date, plants));
     container.appendChild(dayEl);
@@ -143,10 +140,10 @@ async function loadCalendar() {
 
   function addEvent(plant,type,date) {
     const dateStr = date.toISOString().split('T')[0];
-    const dayEl = container.querySelector(`[data-date="${dateStr}"]`);
+    const dayEl = container.querySelector(`.cal-day[data-date="${dateStr}"]`);
     if (!dayEl) return;
     const ev = document.createElement('div');
-    ev.className = (type==='water' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent') + ' mb-1 p-1 rounded cursor-move';
+    ev.classList.add('cal-event', type==='water' ? 'water-due' : 'fert-due');
     ev.textContent = `${plant.name} (${type==='water'? 'Water':'Fert'})`;
     ev.draggable = true;
     ev.dataset.id = plant.id;
@@ -209,7 +206,7 @@ async function markAction(id, type, days = 0) {
 function showUndoBanner(plant) {
   lastDeletedPlant = plant;
   const banner = document.getElementById('undo-banner');
-  banner.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+  banner.classList.add('show');
   clearTimeout(deleteTimer);
   deleteTimer = setTimeout(async () => {
     await fetch('api/delete_plant.php', {
@@ -217,7 +214,7 @@ function showUndoBanner(plant) {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `id=${plant.id}`
     });
-    banner.classList.add('hidden', 'opacity-0', 'pointer-events-none');
+    banner.classList.remove('show');
     lastDeletedPlant = null;
     loadPlants();
     loadCalendar();
@@ -333,6 +330,7 @@ async function loadPlants() {
   const summaryEl = document.getElementById('summary');
   summaryEl.textContent =
     `🌱 ${totalPlants} plants • 🔔 ${wateringDue} need watering • ${fertilizingDue} need fertilizing`;
+  summaryEl.classList.add('show');
 
   list.innerHTML = '';
   const filtered = plants.filter(plant => {
@@ -357,31 +355,31 @@ async function loadPlants() {
 
   filtered.forEach(plant => {
     const card = document.createElement('div');
-    card.className = 'bg-card rounded-xl shadow p-4 flex flex-col hover:shadow-lg transition';
+    card.classList.add('plant-card');
     if (plant.id === window.lastUpdatedPlantId) {
       card.classList.add('just-updated');
       setTimeout(() => card.classList.remove('just-updated'), 2000);
     }
     const soonest = getSoonestDueDate(plant);
     if (soonest < startOfToday) {
-      card.classList.add('bg-red-50','border-l-4','border-red-500');
+      card.classList.add('due-overdue');
     } else if (soonest < startOfTomorrow) {
-      card.classList.add('bg-yellow-50','border-l-4','border-yellow-500');
+      card.classList.add('due-today');
     } else {
-      card.classList.add('bg-green-50','border-l-4','border-green-500');
+      card.classList.add('due-future');
     }
 
     if (plant.photo_url) {
       const img = document.createElement('img');
       img.src = plant.photo_url;
       img.alt = plant.name;
-      img.className = 'w-full h-40 object-cover rounded-lg mb-4';
+      img.classList.add('plant-photo');
       card.appendChild(img);
     }
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
-    fileInput.className = 'hidden';
+    fileInput.style.display = 'none';
     fileInput.onchange = () => {
       if (fileInput.files[0]) {
         updatePlantPhoto(plant, fileInput.files[0]);
@@ -390,45 +388,40 @@ async function loadPlants() {
     const changeBtn = document.createElement('button');
     changeBtn.textContent = 'Change Photo';
     changeBtn.type = 'button';
-    changeBtn.className = 'mb-2 text-sm underline text-primary';
     changeBtn.onclick = () => fileInput.click();
     card.appendChild(changeBtn);
     card.appendChild(fileInput);
 
     const nameInput = document.createElement('input');
     nameInput.value = plant.name;
-    nameInput.className = 'border rounded p-1 mb-1';
     nameInput.onblur = () => updatePlantInline(plant, 'name', nameInput.value);
     card.appendChild(nameInput);
 
     const specInput = document.createElement('input');
     specInput.value = plant.species;
-    specInput.className = 'border rounded p-1 mb-1';
     specInput.onblur = () => updatePlantInline(plant, 'species', specInput.value);
     card.appendChild(specInput);
 
     const roomInput = document.createElement('input');
     roomInput.value = plant.room;
-    roomInput.className = 'border rounded p-1 mb-1';
     roomInput.onblur = () => updatePlantInline(plant, 'room', roomInput.value);
     card.appendChild(roomInput);
 
     const freqDiv = document.createElement('div');
-    freqDiv.className = 'text-sm text-gray-600';
     freqDiv.textContent = `water every ${plant.watering_frequency} days` +
       (plant.fertilizing_frequency ? `, fertilize every ${plant.fertilizing_frequency} days` : ``);
     card.appendChild(freqDiv);
 
     const actionsDiv = document.createElement('div');
-    actionsDiv.className = 'mt-4 flex gap-2 flex-wrap';
+    actionsDiv.classList.add('actions');
 
     const waterDue = needsWatering(plant, today);
     const fertDue = needsFertilizing(plant, today);
 
     if (waterDue) {
       const btn = document.createElement('button');
-      btn.className = 'inline-flex items-center justify-center gap-1 px-2 py-1 text-sm border rounded text-primary bg-primary/10 hover:bg-primary/20';
-      btn.innerHTML = ICONS.water + '<span class="sr-only">Water</span>';
+      btn.classList.add('action-btn', 'due-task', 'water-due');
+      btn.innerHTML = ICONS.water + '<span class="visually-hidden">Water</span>';
       btn.title = 'Mark watered';
       btn.onclick = () => markAction(plant.id, 'watered');
       actionsDiv.appendChild(btn);
@@ -436,16 +429,16 @@ async function loadPlants() {
 
     if (fertDue) {
       const btn = document.createElement('button');
-      btn.className = 'inline-flex items-center justify-center gap-1 px-2 py-1 text-sm border rounded text-accent bg-accent/10 hover:bg-accent/20';
-      btn.innerHTML = ICONS.fert + '<span class="sr-only">Fertilize</span>';
+      btn.classList.add('action-btn', 'due-task', 'fert-due');
+      btn.innerHTML = ICONS.fert + '<span class="visually-hidden">Fertilize</span>';
       btn.title = 'Mark fertilized';
       btn.onclick = () => markAction(plant.id, 'fertilized');
       actionsDiv.appendChild(btn);
     }
 
     const editBtn = document.createElement('button');
-    editBtn.className = 'inline-flex items-center gap-1 px-2 py-1 border rounded hover:bg-card';
-    editBtn.innerHTML = ICONS.edit + '<span class="sr-only">Edit</span>';
+    editBtn.classList.add('action-btn');
+    editBtn.innerHTML = ICONS.edit + '<span class="visually-hidden">Edit</span>';
     editBtn.type = 'button';
     editBtn.onclick = () => {
       populateForm(plant);
@@ -456,8 +449,8 @@ async function loadPlants() {
     actionsDiv.appendChild(editBtn);
 
     const delBtn = document.createElement('button');
-    delBtn.className = 'inline-flex items-center gap-1 px-2 py-1 border rounded text-red-600 hover:bg-red-100';
-    delBtn.innerHTML = ICONS.trash + '<span class="sr-only">Delete</span>';
+    delBtn.classList.add('action-btn');
+    delBtn.innerHTML = ICONS.trash + '<span class="visually-hidden">Delete</span>';
     delBtn.onclick = () => showUndoBanner(plant);
     actionsDiv.appendChild(delBtn);
     card.appendChild(actionsDiv);
@@ -487,15 +480,19 @@ document.addEventListener('DOMContentLoaded',()=>{
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
 
   if (showBtn) {
+    showBtn.classList.add('action-btn');
     showBtn.innerHTML = ICONS.plus + ' Add a Plant';
   }
   if (cancelBtn) {
+    cancelBtn.classList.add('action-btn');
     cancelBtn.innerHTML = ICONS.cancel + ' Cancel';
   }
   if (undoBtn) {
+    undoBtn.classList.add('action-btn');
     undoBtn.innerHTML = ICONS.undo + ' Undo';
   }
   if (submitBtn) {
+    submitBtn.classList.add('action-btn');
     submitBtn.innerHTML = ICONS.plus + ' Add Plant';
   }
   if (showBtn && form) {
@@ -508,9 +505,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   document.getElementById('undo-btn').addEventListener('click',()=>{
     clearTimeout(deleteTimer);
-    document.getElementById('undo-banner').classList.add('hidden','opacity-0','pointer-events-none');
+    document.getElementById('undo-banner').classList.remove('show');
     lastDeletedPlant=null;
-  });
   });
 
   document.getElementById('search-input').addEventListener('input',loadPlants);
