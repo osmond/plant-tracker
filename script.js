@@ -2,6 +2,18 @@ let editingPlantId = null;
 let lastDeletedPlant = null;
 let deleteTimer = null;
 
+function showToast(msg, isError = false) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.toggle('error', isError);
+  toast.classList.add('show');
+  clearTimeout(toast.hideTimeout);
+  toast.hideTimeout = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+}
+
 // --- validation, date math, due-date helpers ---
 function validateForm(form) {
   let valid = true;
@@ -55,7 +67,7 @@ async function markAction(id, type, days = 0) {
     loadPlants();
   } catch (err) {
     console.error('Failed to mark action:', err);
-    alert('Failed to update plant. Please try again.');
+    showToast('Failed to update plant. Please try again.', true);
   }
 }
 
@@ -97,7 +109,7 @@ async function updatePlantInline(plant, field, newValue) {
     body: data
   });
   if (!resp.ok) {
-    alert('Failed to save change');
+    showToast('Failed to save change', true);
   } else {
     loadPlants();
   }
@@ -267,10 +279,10 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(editingPlantId){ data.append('id', editingPlantId); resp=await fetch('api/update_plant.php',{method:'POST',body:data}); }
       else{ resp=await fetch('api/add_plant.php',{method:'POST',body:data}); }
       if(!resp.ok) throw new Error();
-      alert(editingPlantId?'Plant updated!':'Plant added!');
+      showToast(editingPlantId?'Plant updated!':'Plant added!');
       resetForm(); loadPlants();
     }catch{
-      alert('An error occurred. Please try again.');
+      showToast('An error occurred. Please try again.', true);
     }finally{
       btn.disabled=false;
       btn.textContent=editingPlantId? 'Update Plant':'Add Plant';
