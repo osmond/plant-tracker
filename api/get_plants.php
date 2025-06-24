@@ -12,7 +12,8 @@ header('Content-Type: application/json');
 
 $plants = [];
 $result = $conn->query("
-    SELECT id, name, species, watering_frequency, fertilizing_frequency, room, last_watered, last_fertilized 
+    SELECT id, name, species, watering_frequency, fertilizing_frequency, room,
+           last_watered, last_fertilized, notes, photo_path
     FROM plants 
     ORDER BY id DESC
 ");

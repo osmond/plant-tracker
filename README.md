@@ -48,3 +48,15 @@ CREATE TABLE plant_events (
 
 The endpoint `api/get_history.php` returns aggregated counts of events per plant.
 
+## Notes and Photos
+
+Plants can optionally store text notes and a photo. Update your database table to include these columns:
+
+```sql
+ALTER TABLE plants
+  ADD COLUMN notes TEXT,
+  ADD COLUMN photo_path VARCHAR(255);
+```
+
+Uploaded images are saved in the `uploads/` directory.
+

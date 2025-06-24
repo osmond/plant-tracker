@@ -114,6 +114,8 @@ async function updatePlantInline(plant, field, newValue) {
   data.append('room', plant.room);
   data.append('last_watered', plant.last_watered || '');
   data.append('last_fertilized', plant.last_fertilized || '');
+  data.append('notes', plant.notes || '');
+  data.append('photo_path', plant.photo_path || '');
 
   data.set(field, newValue);
 
@@ -138,6 +140,8 @@ function populateForm(plant) {
   form.room.value = plant.room;
   form.last_watered.value = plant.last_watered;
   form.last_fertilized.value = plant.last_fertilized;
+  form.notes.value = plant.notes || '';
+  document.getElementById('photo_path_hidden').value = plant.photo_path || '';
   editingPlantId = plant.id;
 
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -148,6 +152,7 @@ function populateForm(plant) {
 function resetForm() {
   const form = document.getElementById('plant-form');
   form.reset();
+  document.getElementById('photo_path_hidden').value = '';
   editingPlantId = null;
   form.querySelector('button[type="submit"]').textContent = 'Add Plant';
   document.getElementById('cancel-edit').style.display = 'none';
@@ -183,6 +188,7 @@ async function loadPlants() {
   });
   document.getElementById('summary').textContent =
     `🔔 ${wateringDue} need watering • ${fertilizingDue} need fertilizing`;
+
 
 }
 list.innerHTML = '';
@@ -276,6 +282,146 @@ list.appendChild(table);
     if(!existing.includes(p.room)){
       const opt=document.createElement("option");
       opt.value=p.room; opt.textContent=p.room;
+
+  // group + filter
+  list.innerHTML = '';
+  const roomsMap = new Map();
+  plants.forEach(plant => {
+    if (selectedRoom !== 'all' && plant.room !== selectedRoom) return;
+    const haystack = (plant.name + ' ' + plant.species).toLowerCase();
+    if (searchQuery && !haystack.includes(searchQuery)) return;
+
+    const waterDue = needsWatering(plant, today);
+    const fertDue = needsFertilizing(plant, today);
+    if (dueFilter === 'water' && !waterDue) return;
+    if (dueFilter === 'fert' && !fertDue) return;
+    if (dueFilter === 'any' && !(waterDue || fertDue)) return;
+
+    if (!roomsMap.has(plant.room)) roomsMap.set(plant.room, []);
+    roomsMap.get(plant.room).push(plant);
+  });
+
+  const sortBy = document.getElementById('sort-toggle').value || 'name';
+  [...roomsMap.entries()].forEach(([room, roomPlants]) => {
+    roomPlants.sort((a,b) => sortBy==='due'
+      ? getSoonestDueDate(a)-getSoonestDueDate(b)
+      : a.name.localeCompare(b.name)
+    );
+
+    const header = document.createElement('h3');
+    header.textContent = room || 'No Room';
+    list.appendChild(header);
+
+    const table = document.createElement('table');
+    table.classList.add('plant-table');
+    const thead = document.createElement('thead');
+    thead.innerHTML = '<tr><th>Name</th><th>Species</th><th>Frequencies</th><th>Notes</th><th>Photo</th><th>Actions</th></tr>';
+    table.appendChild(thead);
+    const tbody = document.createElement('tbody');
+
+    roomPlants.forEach(plant => {
+      const row = document.createElement('tr');
+      if (plant.id===window.lastUpdatedPlantId) {
+        row.classList.add('just-updated');
+        setTimeout(()=>row.classList.remove('just-updated'),2000);
+      }
+
+      // inline editable Name
+      const nameTd = document.createElement('td');
+      const nameInput = document.createElement('input');
+      nameInput.value = plant.name;
+      nameInput.onblur = () => updatePlantInline(plant,'name',nameInput.value);
+      nameTd.appendChild(nameInput);
+      row.appendChild(nameTd);
+
+      // inline editable Species
+      const specTd = document.createElement('td');
+      const specInput = document.createElement('input');
+      specInput.value = plant.species;
+      specInput.onblur = () => updatePlantInline(plant,'species',specInput.value);
+      specTd.appendChild(specInput);
+      row.appendChild(specTd);
+
+      // static frequencies and editable room
+      const freqTd = document.createElement('td');
+      freqTd.textContent = `water every ${plant.watering_frequency} days` +
+                           (plant.fertilizing_frequency?`, fertilize every ${plant.fertilizing_frequency} days`:``);
+      const roomInput = document.createElement('input');
+      roomInput.value = plant.room;
+      roomInput.onblur = () => updatePlantInline(plant,'room',roomInput.value);
+      freqTd.appendChild(document.createElement('br'));
+      freqTd.appendChild(roomInput);
+      row.appendChild(freqTd);
+
+      const notesTd = document.createElement('td');
+      const notesInput = document.createElement('textarea');
+      notesInput.rows = 1;
+      notesInput.value = plant.notes || '';
+      notesInput.onblur = () => updatePlantInline(plant,'notes',notesInput.value);
+      notesTd.appendChild(notesInput);
+      row.appendChild(notesTd);
+
+      const photoTd = document.createElement('td');
+      if (plant.photo_path) {
+        const img = document.createElement('img');
+        img.src = plant.photo_path;
+        img.alt = '';
+        img.style.maxWidth = '50px';
+        photoTd.appendChild(img);
+      }
+      row.appendChild(photoTd);
+
+      const actionsTd = document.createElement('td');
+
+      // due badges
+      const waterDue = needsWatering(plant, today);
+      const fertDue = needsFertilizing(plant, today);
+
+      if (waterDue) {
+        const badge = document.createElement('span');
+        badge.textContent = 'Water';
+        badge.classList.add('due-task', 'water-due');
+        actionsTd.appendChild(badge);
+        const btn = document.createElement('button');
+        btn.textContent = '✓';
+        btn.title = 'Mark watered';
+        btn.onclick = () => markAction(plant.id, 'watered');
+        actionsTd.appendChild(btn);
+      }
+
+      if (fertDue) {
+        const badge = document.createElement('span');
+        badge.textContent = 'Fertilize';
+        badge.classList.add('due-task', 'fert-due');
+        actionsTd.appendChild(badge);
+        const btn = document.createElement('button');
+        btn.textContent = '✓';
+        btn.title = 'Mark fertilized';
+        btn.onclick = () => markAction(plant.id, 'fertilized');
+        actionsTd.appendChild(btn);
+      }
+
+      // delete with undo
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '🗑️';
+      delBtn.onclick = () => showUndoBanner(plant);
+      actionsTd.appendChild(delBtn);
+      row.appendChild(actionsTd);
+
+      tbody.appendChild(row);
+    });
+    table.appendChild(tbody);
+    list.appendChild(table);
+  });
+
+  // refresh room filter
+  const filter = document.getElementById('room-filter');
+  Array.from(filter.options).map(o=>o.value);
+  roomsMap.forEach((_arr,room)=>{
+    if (!Array.from(filter.options).map(o=>o.value).includes(room)) {
+      const opt = document.createElement('option');
+      opt.value=room; opt.textContent=room;
+
       filter.appendChild(opt);
     }
   });
