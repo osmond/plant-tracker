@@ -252,15 +252,12 @@ button:focus {
 .plant-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
   margin-bottom: calc(var(--spacing) * 2);
 }
 .plant-table th,
 .plant-table td {
   border: 1px solid var(--color-border);
   padding: var(--spacing);
-  vertical-align: top;
-  text-align: left;
 
 }
 
