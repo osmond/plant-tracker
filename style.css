@@ -332,3 +332,47 @@ button:focus {
   border-radius: var(--radius);
   cursor: move;
 }
+
+/* card layout */
+#plant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: calc(var(--spacing) * 2);
+}
+
+.plant-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: calc(var(--spacing) * 2);
+  display: flex;
+  flex-direction: column;
+}
+
+.plant-card .actions {
+  margin-top: calc(var(--spacing) * 1.5);
+  display: flex;
+  gap: calc(var(--spacing) / 2);
+  flex-wrap: wrap;
+}
+
+.plant-card .plant-photo {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: calc(var(--spacing) * 1.5);
+}
+
+.plant-card.due-overdue {
+  background-color: var(--color-error-bg);
+  box-shadow: inset 4px 0 0 var(--color-error), 0 2px 6px rgba(0,0,0,0.1);
+}
+.plant-card.due-today {
+  background-color: var(--color-warning-bg);
+  box-shadow: inset 4px 0 0 var(--color-warning), 0 2px 6px rgba(0,0,0,0.1);
+}
+.plant-card.due-future {
+  background-color: var(--color-success-bg);
+  box-shadow: inset 4px 0 0 var(--color-success), 0 2px 6px rgba(0,0,0,0.1);
+}

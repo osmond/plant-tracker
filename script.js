@@ -332,170 +332,140 @@ async function loadPlants() {
     `🌱 ${totalPlants} plants • 🔔 ${wateringDue} need watering • ${fertilizingDue} need fertilizing`;
   summaryEl.classList.add('show');
 
-  // group + filter
   list.innerHTML = '';
-  const roomsMap = new Map();
-  plants.forEach(plant => {
-    if (selectedRoom !== 'all' && plant.room !== selectedRoom) return;
+  const filtered = plants.filter(plant => {
+    if (selectedRoom !== 'all' && plant.room !== selectedRoom) return false;
     const haystack = (plant.name + ' ' + plant.species).toLowerCase();
-    if (searchQuery && !haystack.includes(searchQuery)) return;
+    if (searchQuery && !haystack.includes(searchQuery)) return false;
 
     const waterDue = needsWatering(plant, today);
     const fertDue = needsFertilizing(plant, today);
-    if (dueFilter === 'water' && !waterDue) return;
-    if (dueFilter === 'fert' && !fertDue) return;
-    if (dueFilter === 'any' && !(waterDue || fertDue)) return;
-
-    if (!roomsMap.has(plant.room)) roomsMap.set(plant.room, []);
-    roomsMap.get(plant.room).push(plant);
+    if (dueFilter === 'water' && !waterDue) return false;
+    if (dueFilter === 'fert' && !fertDue) return false;
+    if (dueFilter === 'any' && !(waterDue || fertDue)) return false;
+    return true;
   });
 
   const sortBy = document.getElementById('sort-toggle').value || 'name';
-  [...roomsMap.entries()].forEach(([room, roomPlants]) => {
-    roomPlants.sort((a,b) => sortBy==='due'
-      ? getSoonestDueDate(a)-getSoonestDueDate(b)
+  filtered.sort((a, b) =>
+    sortBy === 'due'
+      ? getSoonestDueDate(a) - getSoonestDueDate(b)
       : a.name.localeCompare(b.name)
-    );
+  );
 
-    const header = document.createElement('h3');
-    header.textContent = room || 'No Room';
-    list.appendChild(header);
+  filtered.forEach(plant => {
+    const card = document.createElement('div');
+    card.classList.add('plant-card');
+    if (plant.id === window.lastUpdatedPlantId) {
+      card.classList.add('just-updated');
+      setTimeout(() => card.classList.remove('just-updated'), 2000);
+    }
+    const soonest = getSoonestDueDate(plant);
+    if (soonest < startOfToday) {
+      card.classList.add('due-overdue');
+    } else if (soonest < startOfTomorrow) {
+      card.classList.add('due-today');
+    } else {
+      card.classList.add('due-future');
+    }
 
-    const table = document.createElement('table');
-    table.classList.add('plant-table');
-    const thead = document.createElement('thead');
-    thead.innerHTML = '<tr><th>Photo</th><th>Name</th><th>Species</th><th>Room</th><th>Frequencies</th><th>Actions</th></tr>';
-    table.appendChild(thead);
-    const tbody = document.createElement('tbody');
-
-    roomPlants.forEach(plant => {
-      const row = document.createElement('tr');
-      if (plant.id===window.lastUpdatedPlantId) {
-        row.classList.add('just-updated');
-        setTimeout(()=>row.classList.remove('just-updated'),2000);
+    if (plant.photo_url) {
+      const img = document.createElement('img');
+      img.src = plant.photo_url;
+      img.alt = plant.name;
+      img.classList.add('plant-photo');
+      card.appendChild(img);
+    }
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.style.display = 'none';
+    fileInput.onchange = () => {
+      if (fileInput.files[0]) {
+        updatePlantPhoto(plant, fileInput.files[0]);
       }
-      const soonest = getSoonestDueDate(plant);
-      if (soonest < startOfToday) {
-        row.classList.add('due-overdue');
-      } else if (soonest < startOfTomorrow) {
-        row.classList.add('due-today');
-      } else {
-        row.classList.add('due-future');
-      }
+    };
+    const changeBtn = document.createElement('button');
+    changeBtn.textContent = 'Change Photo';
+    changeBtn.type = 'button';
+    changeBtn.onclick = () => fileInput.click();
+    card.appendChild(changeBtn);
+    card.appendChild(fileInput);
 
-      const photoTd = document.createElement('td');
-      if (plant.photo_url) {
-        const img = document.createElement('img');
-        img.src = plant.photo_url;
-        img.alt = plant.name;
-        img.classList.add('plant-photo');
-        photoTd.appendChild(img);
-      }
-      const fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = 'image/*';
-      fileInput.style.display = 'none';
-      fileInput.onchange = () => {
-        if (fileInput.files[0]) {
-          updatePlantPhoto(plant, fileInput.files[0]);
-        }
-      };
-      const changeBtn = document.createElement('button');
-      changeBtn.textContent = 'Change Photo';
-      changeBtn.type = 'button';
-      changeBtn.onclick = () => fileInput.click();
-      photoTd.appendChild(document.createElement('br'));
-      photoTd.appendChild(changeBtn);
-      photoTd.appendChild(fileInput);
-      row.appendChild(photoTd);
+    const nameInput = document.createElement('input');
+    nameInput.value = plant.name;
+    nameInput.onblur = () => updatePlantInline(plant, 'name', nameInput.value);
+    card.appendChild(nameInput);
 
-      // inline editable Name
-      const nameTd = document.createElement('td');
-      const nameInput = document.createElement('input');
-      nameInput.value = plant.name;
-      nameInput.onblur = () => updatePlantInline(plant,'name',nameInput.value);
-      nameTd.appendChild(nameInput);
-      row.appendChild(nameTd);
+    const specInput = document.createElement('input');
+    specInput.value = plant.species;
+    specInput.onblur = () => updatePlantInline(plant, 'species', specInput.value);
+    card.appendChild(specInput);
 
-      // inline editable Species
-      const specTd = document.createElement('td');
-      const specInput = document.createElement('input');
-      specInput.value = plant.species;
-      specInput.onblur = () => updatePlantInline(plant,'species',specInput.value);
-      specTd.appendChild(specInput);
-      row.appendChild(specTd);
+    const roomInput = document.createElement('input');
+    roomInput.value = plant.room;
+    roomInput.onblur = () => updatePlantInline(plant, 'room', roomInput.value);
+    card.appendChild(roomInput);
 
-      // inline editable Room
-      const roomTd = document.createElement('td');
-      const roomInput = document.createElement('input');
-      roomInput.value = plant.room;
-      roomInput.onblur = () => updatePlantInline(plant,'room',roomInput.value);
-      roomTd.appendChild(roomInput);
-      row.appendChild(roomTd);
+    const freqDiv = document.createElement('div');
+    freqDiv.textContent = `water every ${plant.watering_frequency} days` +
+      (plant.fertilizing_frequency ? `, fertilize every ${plant.fertilizing_frequency} days` : ``);
+    card.appendChild(freqDiv);
 
-      // static frequencies
-      const freqTd = document.createElement('td');
-      freqTd.textContent = `water every ${plant.watering_frequency} days` +
-                           (plant.fertilizing_frequency?`, fertilize every ${plant.fertilizing_frequency} days`:``);
-      row.appendChild(freqTd);
+    const actionsDiv = document.createElement('div');
+    actionsDiv.classList.add('actions');
 
-      const actionsTd = document.createElement('td');
+    const waterDue = needsWatering(plant, today);
+    const fertDue = needsFertilizing(plant, today);
 
-      // due badges
-      const waterDue = needsWatering(plant, today);
-      const fertDue = needsFertilizing(plant, today);
+    if (waterDue) {
+      const btn = document.createElement('button');
+      btn.classList.add('action-btn', 'due-task', 'water-due');
+      btn.innerHTML = ICONS.water + '<span class="visually-hidden">Water</span>';
+      btn.title = 'Mark watered';
+      btn.onclick = () => markAction(plant.id, 'watered');
+      actionsDiv.appendChild(btn);
+    }
 
-      if (waterDue) {
-        const btn = document.createElement('button');
-        btn.classList.add('action-btn', 'due-task', 'water-due');
-        btn.innerHTML = ICONS.water + '<span class="visually-hidden">Water</span>';
-        btn.title = 'Mark watered';
-        btn.onclick = () => markAction(plant.id, 'watered');
-        actionsTd.appendChild(btn);
-      }
+    if (fertDue) {
+      const btn = document.createElement('button');
+      btn.classList.add('action-btn', 'due-task', 'fert-due');
+      btn.innerHTML = ICONS.fert + '<span class="visually-hidden">Fertilize</span>';
+      btn.title = 'Mark fertilized';
+      btn.onclick = () => markAction(plant.id, 'fertilized');
+      actionsDiv.appendChild(btn);
+    }
 
-      if (fertDue) {
-        const btn = document.createElement('button');
-        btn.classList.add('action-btn', 'due-task', 'fert-due');
-        btn.innerHTML = ICONS.fert + '<span class="visually-hidden">Fertilize</span>';
-        btn.title = 'Mark fertilized';
-        btn.onclick = () => markAction(plant.id, 'fertilized');
-        actionsTd.appendChild(btn);
-      }
+    const editBtn = document.createElement('button');
+    editBtn.classList.add('action-btn');
+    editBtn.innerHTML = ICONS.edit + '<span class="visually-hidden">Edit</span>';
+    editBtn.type = 'button';
+    editBtn.onclick = () => {
+      populateForm(plant);
+      document.getElementById('plant-form').style.display = 'block';
+      const showBtn = document.getElementById('show-add-form');
+      if (showBtn) showBtn.style.display = 'none';
+    };
+    actionsDiv.appendChild(editBtn);
 
-      const editBtn = document.createElement('button');
-      editBtn.classList.add('action-btn');
-      editBtn.innerHTML = ICONS.edit + '<span class="visually-hidden">Edit</span>';
-      editBtn.type = 'button';
-      editBtn.onclick = () => {
-        populateForm(plant);
-        document.getElementById('plant-form').style.display = 'block';
-        const showBtn = document.getElementById('show-add-form');
-        if (showBtn) showBtn.style.display = 'none';
-      };
-      actionsTd.appendChild(editBtn);
+    const delBtn = document.createElement('button');
+    delBtn.classList.add('action-btn');
+    delBtn.innerHTML = ICONS.trash + '<span class="visually-hidden">Delete</span>';
+    delBtn.onclick = () => showUndoBanner(plant);
+    actionsDiv.appendChild(delBtn);
+    card.appendChild(actionsDiv);
 
-      // delete with undo
-      const delBtn = document.createElement('button');
-      delBtn.classList.add('action-btn');
-      delBtn.innerHTML = ICONS.trash + '<span class="visually-hidden">Delete</span>';
-      delBtn.onclick = () => showUndoBanner(plant);
-      actionsTd.appendChild(delBtn);
-      row.appendChild(actionsTd);
-
-      tbody.appendChild(row);
-    });
-    table.appendChild(tbody);
-    list.appendChild(table);
+    list.appendChild(card);
   });
 
   // refresh room filter
   const filter = document.getElementById('room-filter');
-  Array.from(filter.options).map(o=>o.value);
-  roomsMap.forEach((_arr,room)=>{
-    if (!Array.from(filter.options).map(o=>o.value).includes(room)) {
+  Array.from(filter.options).map(o => o.value);
+  plants.forEach(p => {
+    if (!Array.from(filter.options).map(o => o.value).includes(p.room)) {
       const opt = document.createElement('option');
-      opt.value=room; opt.textContent=room;
+      opt.value = p.room;
+      opt.textContent = p.room;
       filter.appendChild(opt);
     }
   });
