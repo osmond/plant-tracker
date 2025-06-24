@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
     <script>
       tailwind.config = {
         theme: {
@@ -24,7 +23,10 @@
         }
       }
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .just-updated{animation:highlight-fade 2s ease-in-out;background-color:#ffffcc;}
+  @keyframes highlight-fade{0%{background-color:#ffffcc;}100%{background-color:transparent;}}
+</style>
 </head>
 <body class="bg-bg text-text min-h-screen">
     <h1 class="text-2xl font-bold p-4">🌿 My Plant Tracker</h1>
@@ -46,17 +48,17 @@
         <div>
             <label for="name" class="block mb-1">Plant Name</label>
             <input type="text" name="name" id="name" placeholder="Plant Name" class="w-full border rounded-md p-2" />
-            <div class="error" id="name-error"></div>
+            <div class="error text-red-600 text-sm mt-1" id="name-error"></div>
         </div>
         <div>
             <label for="species" class="block mb-1">Species</label>
             <input type="text" name="species" id="species" placeholder="Species" class="w-full border rounded-md p-2" />
-            <div class="error" id="species-error"></div>
+            <div class="error text-red-600 text-sm mt-1" id="species-error"></div>
         </div>
         <div>
             <label for="watering_frequency" class="block mb-1">Watering Frequency (days)</label>
             <input type="number" name="watering_frequency" id="watering_frequency" class="w-full border rounded-md p-2" />
-            <div class="error" id="watering_frequency-error"></div>
+            <div class="error text-red-600 text-sm mt-1" id="watering_frequency-error"></div>
         </div>
         <div>
             <label for="fertilizing_frequency" class="block mb-1">Fertilizing Frequency (days)</label>
@@ -69,7 +71,7 @@
         <div>
             <label for="room" class="block mb-1">Room</label>
             <input type="text" name="room" id="room" placeholder="Room" class="w-full border rounded-md p-2" />
-            <div class="error" id="room-error"></div>
+            <div class="error text-red-600 text-sm mt-1" id="room-error"></div>
         </div>
         <div>
             <label for="last_watered" class="block mb-1">Last Watered</label>
@@ -102,11 +104,11 @@
     </div>
 
     <!-- Undo delete snackbar -->
-    <div id="undo-banner" class="mb-4">
+    <div id="undo-banner" class="fixed bottom-4 left-1/2 -translate-x-1/2 bg-text text-bg px-4 py-2 rounded pointer-events-none opacity-0 transition">
         Plant deleted. <button id="undo-btn">Undo</button>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-text text-bg px-4 py-2 rounded z-50 opacity-0 transition"></div>
 
     <div id="plant-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4"></div>
 
