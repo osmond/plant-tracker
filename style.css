@@ -28,6 +28,22 @@ input, button {
     padding: var(--spacing);
     margin: calc(var(--spacing) / 2);
 }
+
+button {
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+}
+
+button.accent {
+    background: var(--color-accent);
+}
+
+button:hover {
+    filter: brightness(0.9);
+    cursor: pointer;
+}
 .visually-hidden {
     position: absolute !important;
     width: 1px;
@@ -41,6 +57,19 @@ input, button {
 }
 #plant-list {
     margin-top: calc(var(--spacing) * 2.5);
+}
+
+#plant-form,
+#cancel-edit {
+    display: none;
+}
+
+#controls {
+    margin-top: 1rem;
+}
+
+#due-filter {
+    margin-left: calc(var(--spacing) / 2);
 }
 .error {
     color: var(--color-accent);
@@ -87,6 +116,16 @@ input, button {
   100% { background-color: transparent; }
 }
 #undo-banner {
+  display: none;
+  position: fixed;
+  bottom: calc(var(--spacing) * 1.25);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-text);
+  color: var(--color-bg);
+  padding: calc(var(--spacing) * 1.25);
+  border-radius: var(--radius);
+  z-index: 1000;
   animation: fadeInOut 5s forwards;
 }
 @keyframes fadeInOut {

@@ -310,6 +310,7 @@ async function loadPlants() {
       // delete with undo
       const delBtn = document.createElement('button');
       delBtn.textContent = '🗑️';
+      delBtn.classList.add('accent');
       delBtn.onclick = () => showUndoBanner(plant);
       actionsTd.appendChild(delBtn);
       row.appendChild(actionsTd);
