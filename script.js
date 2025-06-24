@@ -303,7 +303,7 @@ function resetForm() {
 async function loadPlants() {
   const res = await fetch('api/get_plants.php');
   const plants = await res.json();
-  const list = document.getElementById('plant-list');
+  const list = document.getElementById('plant-grid');
   const selectedRoom = document.getElementById('room-filter').value;
   const dueFilter = document.getElementById('due-filter')
     ? document.getElementById('due-filter').value

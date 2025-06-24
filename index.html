@@ -4,99 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Plant Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <h1>🌿 My Plant Tracker</h1>
-<div id="summary" class="summary-banner">
-  <!-- counts will go here -->
-</div>
-
-    <!-- Search Input UI -->
-    <div class="search-container">
-        <label for="search-input" class="visually-hidden">Search Plants</label>
-        <input type="text" id="search-input" placeholder="🔎 Search by name or species" />
+<body class="bg-bg text-text min-h-screen">
+    <h1 class="text-2xl font-bold p-4">🌿 My Plant Tracker</h1>
+    <div id="summary" class="p-4 bg-card rounded-lg shadow mb-4">
+        <!-- counts will go here -->
     </div>
 
-    <button id="show-add-form">Add a Plant</button>
+    <div class="mb-4">
+        <label for="search-input" class="sr-only">Search Plants</label>
+        <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2">🔎</span>
+            <input type="text" id="search-input" placeholder="Search by name or species" class="w-full pl-8 p-2 border rounded-md" />
+        </div>
+    </div>
 
-    <form id="plant-form" class="form-grid" style="display:none;" enctype="multipart/form-data">
-        <div class="form-control">
-            <label for="name">Plant Name</label>
-            <input type="text" name="name" id="name" placeholder="Plant Name" />
+    <button id="show-add-form" class="bg-primary text-white rounded-md px-4 py-2 mb-4">Add a Plant</button>
+
+    <form id="plant-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-card rounded-lg shadow hidden" enctype="multipart/form-data">
+        <div>
+            <label for="name" class="block mb-1">Plant Name</label>
+            <input type="text" name="name" id="name" placeholder="Plant Name" class="w-full border rounded-md p-2" />
             <div class="error" id="name-error"></div>
         </div>
-
-        <div class="form-control">
-            <label for="species">Species</label>
-            <input type="text" name="species" id="species" placeholder="Species" />
+        <div>
+            <label for="species" class="block mb-1">Species</label>
+            <input type="text" name="species" id="species" placeholder="Species" class="w-full border rounded-md p-2" />
             <div class="error" id="species-error"></div>
         </div>
-
-        <div class="form-control">
-            <label for="watering_frequency">Watering Frequency (days)</label>
-            <input type="number" name="watering_frequency" id="watering_frequency" />
+        <div>
+            <label for="watering_frequency" class="block mb-1">Watering Frequency (days)</label>
+            <input type="number" name="watering_frequency" id="watering_frequency" class="w-full border rounded-md p-2" />
             <div class="error" id="watering_frequency-error"></div>
         </div>
-
-        <div class="form-control">
-            <label for="fertilizing_frequency">Fertilizing Frequency (days)</label>
-            <input type="number" name="fertilizing_frequency" id="fertilizing_frequency" />
+        <div>
+            <label for="fertilizing_frequency" class="block mb-1">Fertilizing Frequency (days)</label>
+            <input type="number" name="fertilizing_frequency" id="fertilizing_frequency" class="w-full border rounded-md p-2" />
         </div>
-
-        <div class="form-control">
-            <label for="photo">Upload Photo</label>
-            <input type="file" id="photo" name="photo" accept="image/*" />
+        <div>
+            <label for="photo" class="block mb-1">Upload Photo</label>
+            <input type="file" id="photo" name="photo" accept="image/*" class="w-full" />
         </div>
-
-        <div class="form-control">
-            <label for="room">Room</label>
-            <input type="text" name="room" id="room" placeholder="Room" />
+        <div>
+            <label for="room" class="block mb-1">Room</label>
+            <input type="text" name="room" id="room" placeholder="Room" class="w-full border rounded-md p-2" />
             <div class="error" id="room-error"></div>
         </div>
-
-        <div class="form-control">
-            <label for="last_watered">Last Watered</label>
-            <input type="date" name="last_watered" id="last_watered" />
+        <div>
+            <label for="last_watered" class="block mb-1">Last Watered</label>
+            <input type="date" name="last_watered" id="last_watered" class="w-full border rounded-md p-2" />
         </div>
-
-        <div class="form-control">
-            <label for="last_fertilized">Last Fertilized</label>
-            <input type="date" name="last_fertilized" id="last_fertilized" />
+        <div>
+            <label for="last_fertilized" class="block mb-1">Last Fertilized</label>
+            <input type="date" name="last_fertilized" id="last_fertilized" class="w-full border rounded-md p-2" />
         </div>
-
-        <div class="form-control full-span">
-            <button type="submit">Add Plant</button>
-            <button type="button" id="cancel-edit" style="display:none;">Cancel</button>
+        <div class="sm:col-span-2 flex gap-2 justify-end">
+            <button type="button" id="cancel-edit" class="bg-gray-200 rounded-md px-4 py-2 hidden">Cancel</button>
+            <button type="submit" class="bg-primary text-white rounded-md px-4 py-2">Add Plant</button>
         </div>
     </form>
 
-    <div style="margin-top: calc(var(--spacing) * 2);">
-        <select id="room-filter">
+    <div class="my-4 flex flex-wrap gap-2">
+        <select id="room-filter" class="border p-2 rounded-md">
             <option value="all">All Rooms</option>
         </select>
-        <select id="sort-toggle">
+        <select id="sort-toggle" class="border p-2 rounded-md">
             <option value="name">Sort by: Name</option>
             <option value="due">Sort by: Due Date</option>
         </select>
-        <select id="due-filter" style="margin-left:calc(var(--spacing)/2);">
+        <select id="due-filter" class="border p-2 rounded-md">
             <option value="all">Show: All</option>
             <option value="water">Needs Watering</option>
             <option value="fert">Needs Fertilizing</option>
             <option value="any">Needs Care</option>
         </select>
-      </div>
-<!-- Undo delete snackbar -->
-<div id="undo-banner">
-  Plant deleted. <button id="undo-btn">Undo</button>
-</div>
+    </div>
 
-<div id="toast" class="toast"></div>
+    <!-- Undo delete snackbar -->
+    <div id="undo-banner" class="mb-4">
+        Plant deleted. <button id="undo-btn">Undo</button>
+    </div>
 
-    <div id="plant-list"></div>
+    <div id="toast" class="toast"></div>
 
-    <h3>Upcoming Tasks</h3>
-    <div id="calendar"></div>
+    <div id="plant-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4"></div>
+
+    <h3 class="text-xl font-semibold p-4">Upcoming Tasks</h3>
+    <div id="calendar" class="p-4"></div>
 
     <script src="script.js"></script>
 </body>
