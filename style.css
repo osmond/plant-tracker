@@ -1,10 +1,11 @@
 :root {
-  --color-primary: #0277bd;
-  --color-accent: #2e7d32;
-  --color-bg: #fff;
-  --color-surface: #f0f8ff;
-  --color-border: #ddd;
-  --color-text: #333;
+  /* Soft, nature-inspired palette */
+  --color-primary: #81B29A; /* sage green */
+  --color-accent: #F2CC8F; /* soft gold */
+  --color-bg: #F5F7F5;     /* off-white */
+  --color-surface: #FFFFFF; /* white */
+  --color-border: #CCCCCC;
+  --color-text: #2E3532;   /* charcoal */
   --radius: 5px;
   --spacing: 8px;
   --color-error: #b00020;
