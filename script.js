@@ -206,7 +206,7 @@ async function markAction(id, type, days = 0) {
 function showUndoBanner(plant) {
   lastDeletedPlant = plant;
   const banner = document.getElementById('undo-banner');
-  banner.style.display = 'block';
+  banner.classList.add('show');
   clearTimeout(deleteTimer);
   deleteTimer = setTimeout(async () => {
     await fetch('api/delete_plant.php', {
@@ -214,7 +214,7 @@ function showUndoBanner(plant) {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `id=${plant.id}`
     });
-    banner.style.display = 'none';
+    banner.classList.remove('show');
     lastDeletedPlant = null;
     loadPlants();
     loadCalendar();
@@ -327,8 +327,10 @@ async function loadPlants() {
       if (nxt <= today) fertilizingDue++;
     }
   });
-  document.getElementById('summary').textContent =
+  const summaryEl = document.getElementById('summary');
+  summaryEl.textContent =
     `🌱 ${totalPlants} plants • 🔔 ${wateringDue} need watering • ${fertilizingDue} need fertilizing`;
+  summaryEl.classList.add('show');
 
   // group + filter
   list.innerHTML = '';
@@ -533,7 +535,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   document.getElementById('undo-btn').addEventListener('click',()=>{
     clearTimeout(deleteTimer);
-    document.getElementById('undo-banner').style.display='none';
+    document.getElementById('undo-banner').classList.remove('show');
     lastDeletedPlant=null;
   });
 

@@ -185,20 +185,41 @@ button:focus {
   100% { background-color: transparent; }
 }
 #undo-banner {
-  animation: fadeInOut 5s forwards;
+  position: fixed;
+  bottom: calc(var(--spacing) * 1.25);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-text);
+  color: var(--color-bg);
+  padding: calc(var(--spacing) * 1.25) calc(var(--spacing) * 2);
+  border-radius: var(--radius);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
 }
-@keyframes fadeInOut {
-  0%   { opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { opacity: 0; }
+
+#undo-banner.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
 }
+
 .summary-banner {
-  background: var(--color-surface);
-  padding: var(--spacing);
+  background: var(--color-accent);
+  color: var(--color-bg);
+  padding: calc(var(--spacing) * 1.25);
   border-radius: var(--radius);
   margin-bottom: calc(var(--spacing) * 2);
   font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.summary-banner.show {
+  opacity: 1;
 }
 
 /* toast notification */
