@@ -300,8 +300,9 @@ async function loadPlants() {
   const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
   const today = new Date();
 
-  // summary of due counts
+  // summary of due counts and totals
   let wateringDue = 0, fertilizingDue = 0;
+  const totalPlants = plants.length;
   plants.forEach(p => {
     if (p.last_watered) {
       const nxt = addDays(new Date(p.last_watered), p.watering_frequency);
@@ -313,7 +314,7 @@ async function loadPlants() {
     }
   });
   document.getElementById('summary').textContent =
-    `🔔 ${wateringDue} need watering • ${fertilizingDue} need fertilizing`;
+    `🌱 ${totalPlants} plants • 🔔 ${wateringDue} need watering • ${fertilizingDue} need fertilizing`;
 
   // group + filter
   list.innerHTML = '';
