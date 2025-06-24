@@ -238,6 +238,27 @@ async function updatePlantInline(plant, field, newValue) {
   }
 }
 
+async function updatePlantPhoto(plant, file) {
+  const data = new FormData();
+  data.append('id', plant.id);
+  data.append('name', plant.name);
+  data.append('species', plant.species);
+  data.append('watering_frequency', plant.watering_frequency);
+  data.append('fertilizing_frequency', plant.fertilizing_frequency);
+  data.append('room', plant.room);
+  data.append('last_watered', plant.last_watered || '');
+  data.append('last_fertilized', plant.last_fertilized || '');
+  data.append('photo', file);
+
+  const resp = await fetch('api/update_plant.php', { method: 'POST', body: data });
+  if (!resp.ok) {
+    showToast('Failed to update photo', true);
+  } else {
+    window.lastUpdatedPlantId = plant.id;
+    loadPlants();
+  }
+}
+
 // --- full-form populate & reset for edit ---
 function populateForm(plant) {
   const form = document.getElementById('plant-form');
@@ -345,6 +366,22 @@ async function loadPlants() {
         img.classList.add('plant-photo');
         photoTd.appendChild(img);
       }
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.style.display = 'none';
+      fileInput.onchange = () => {
+        if (fileInput.files[0]) {
+          updatePlantPhoto(plant, fileInput.files[0]);
+        }
+      };
+      const changeBtn = document.createElement('button');
+      changeBtn.textContent = 'Change Photo';
+      changeBtn.type = 'button';
+      changeBtn.onclick = () => fileInput.click();
+      photoTd.appendChild(document.createElement('br'));
+      photoTd.appendChild(changeBtn);
+      photoTd.appendChild(fileInput);
       row.appendChild(photoTd);
 
       // inline editable Name
@@ -406,6 +443,17 @@ async function loadPlants() {
         btn.onclick = () => markAction(plant.id, 'fertilized');
         actionsTd.appendChild(btn);
       }
+
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'Edit';
+      editBtn.type = 'button';
+      editBtn.onclick = () => {
+        populateForm(plant);
+        document.getElementById('plant-form').style.display = 'block';
+        const showBtn = document.getElementById('show-add-form');
+        if (showBtn) showBtn.style.display = 'none';
+      };
+      actionsTd.appendChild(editBtn);
 
       // delete with undo
       const delBtn = document.createElement('button');
