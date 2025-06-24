@@ -383,3 +383,33 @@ button:focus {
   background-color: var(--color-success-bg);
   box-shadow: inset 4px 0 0 var(--color-success), 0 2px 6px rgba(0,0,0,0.1);
 }
+
+.plant-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: calc(var(--spacing) / 2);
+}
+
+.plant-species {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: calc(var(--spacing));
+}
+
+.plant-summary {
+  display: flex;
+  gap: calc(var(--spacing));
+  flex-wrap: wrap;
+  margin-bottom: calc(var(--spacing));
+}
+
+.plant-summary .summary-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.plant-summary .icon {
+  width: 1em;
+  height: 1em;
+}

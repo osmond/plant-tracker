@@ -11,6 +11,7 @@ const ICONS = {
   cancel: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
   undo: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
   check: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+  ,sun: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
 };
 
 function showToast(msg, isError = false) {
@@ -376,41 +377,37 @@ async function loadPlants() {
       img.classList.add('plant-photo');
       card.appendChild(img);
     }
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.style.display = 'none';
-    fileInput.onchange = () => {
-      if (fileInput.files[0]) {
-        updatePlantPhoto(plant, fileInput.files[0]);
-      }
-    };
-    const changeBtn = document.createElement('button');
-    changeBtn.textContent = 'Change Photo';
-    changeBtn.type = 'button';
-    changeBtn.onclick = () => fileInput.click();
-    card.appendChild(changeBtn);
-    card.appendChild(fileInput);
+    const titleEl = document.createElement('h3');
+    titleEl.classList.add('plant-title');
+    titleEl.textContent = plant.name;
+    card.appendChild(titleEl);
 
-    const nameInput = document.createElement('input');
-    nameInput.value = plant.name;
-    nameInput.onblur = () => updatePlantInline(plant, 'name', nameInput.value);
-    card.appendChild(nameInput);
+    const speciesEl = document.createElement('div');
+    speciesEl.classList.add('plant-species');
+    speciesEl.textContent = plant.species;
+    card.appendChild(speciesEl);
 
-    const specInput = document.createElement('input');
-    specInput.value = plant.species;
-    specInput.onblur = () => updatePlantInline(plant, 'species', specInput.value);
-    card.appendChild(specInput);
+    const summary = document.createElement('div');
+    summary.classList.add('plant-summary');
 
-    const roomInput = document.createElement('input');
-    roomInput.value = plant.room;
-    roomInput.onblur = () => updatePlantInline(plant, 'room', roomInput.value);
-    card.appendChild(roomInput);
+    const waterSpan = document.createElement('span');
+    waterSpan.classList.add('summary-item');
+    waterSpan.innerHTML = ICONS.water + ` ${plant.watering_frequency}d`;
+    summary.appendChild(waterSpan);
 
-    const freqDiv = document.createElement('div');
-    freqDiv.textContent = `water every ${plant.watering_frequency} days` +
-      (plant.fertilizing_frequency ? `, fertilize every ${plant.fertilizing_frequency} days` : ``);
-    card.appendChild(freqDiv);
+    const sunSpan = document.createElement('span');
+    sunSpan.classList.add('summary-item');
+    sunSpan.innerHTML = ICONS.sun + ` ${plant.room}`;
+    summary.appendChild(sunSpan);
+
+    if (plant.fertilizing_frequency) {
+      const fertSpan = document.createElement('span');
+      fertSpan.classList.add('summary-item');
+      fertSpan.innerHTML = ICONS.fert + ` ${plant.fertilizing_frequency}d`;
+      summary.appendChild(fertSpan);
+    }
+
+    card.appendChild(summary);
 
     const actionsDiv = document.createElement('div');
     actionsDiv.classList.add('actions');
@@ -453,6 +450,23 @@ async function loadPlants() {
     delBtn.innerHTML = ICONS.trash + '<span class="visually-hidden">Delete</span>';
     delBtn.onclick = () => showUndoBanner(plant);
     actionsDiv.appendChild(delBtn);
+
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.style.display = 'none';
+    fileInput.onchange = () => {
+      if (fileInput.files[0]) {
+        updatePlantPhoto(plant, fileInput.files[0]);
+      }
+    };
+    const changeBtn = document.createElement('button');
+    changeBtn.classList.add('action-btn');
+    changeBtn.textContent = 'Change Photo';
+    changeBtn.type = 'button';
+    changeBtn.onclick = () => fileInput.click();
+    actionsDiv.appendChild(changeBtn);
+    actionsDiv.appendChild(fileInput);
     card.appendChild(actionsDiv);
 
     list.appendChild(card);
