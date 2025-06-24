@@ -12,6 +12,8 @@
   --color-water-bg: #e0f7ff;
   --color-fert-bg: #e8f5e9;
   --color-highlight: #ffffcc;
+  --color-warning: #fb8c00;
+  --color-success: #388e3c;
 }
 
 body {
@@ -188,6 +190,19 @@ button:focus {
   border: 1px solid var(--color-border);
   padding: var(--spacing);
 
+}
+
+/* urgency indicators */
+.plant-table tr.due-overdue > td {
+  border-color: var(--color-error);
+}
+
+.plant-table tr.due-today > td {
+  border-color: var(--color-warning);
+}
+
+.plant-table tr.due-future > td {
+  border-color: var(--color-success);
 }
 
 /* inline edit fields look like plain text */

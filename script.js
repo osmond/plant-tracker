@@ -305,6 +305,9 @@ async function loadPlants() {
     : 'all';
   const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
   const today = new Date();
+  const startOfToday = new Date(today);
+  startOfToday.setHours(0,0,0,0);
+  const startOfTomorrow = addDays(startOfToday,1);
 
   // summary of due counts and totals
   let wateringDue = 0, fertilizingDue = 0;
@@ -363,6 +366,14 @@ async function loadPlants() {
       if (plant.id===window.lastUpdatedPlantId) {
         row.classList.add('just-updated');
         setTimeout(()=>row.classList.remove('just-updated'),2000);
+      }
+      const soonest = getSoonestDueDate(plant);
+      if (soonest < startOfToday) {
+        row.classList.add('due-overdue');
+      } else if (soonest < startOfTomorrow) {
+        row.classList.add('due-today');
+      } else {
+        row.classList.add('due-future');
       }
 
       const photoTd = document.createElement('td');
