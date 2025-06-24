@@ -25,6 +25,8 @@ body {
     padding: calc(var(--spacing) * 2.5);
     margin: auto;
     max-width: 100%;
+    /* soft mint-green gradient background */
+    background: linear-gradient(135deg, #d9f7ea 0%, #b7e9d3 100%);
 }
 
 h1, h2, h3 {
