@@ -9,6 +9,8 @@
   --spacing: 8px;
   --color-error: #b00020;
   --color-error-bg: #ffe6e6;
+  --color-warning-bg: #fff3e0;
+  --color-success-bg: #e8f5e9;
   --color-water-bg: #e0f7ff;
   --color-fert-bg: #e8f5e9;
   --color-highlight: #ffffcc;
@@ -262,16 +264,19 @@ button:focus {
 }
 
 /* urgency indicators */
-.plant-table tr.due-overdue > td {
-  border-color: var(--color-error);
+.plant-table tbody tr.due-overdue {
+  background-color: var(--color-error-bg);
+  box-shadow: inset 4px 0 0 var(--color-error);
 }
 
-.plant-table tr.due-today > td {
-  border-color: var(--color-warning);
+.plant-table tbody tr.due-today {
+  background-color: var(--color-warning-bg);
+  box-shadow: inset 4px 0 0 var(--color-warning);
 }
 
-.plant-table tr.due-future > td {
-  border-color: var(--color-success);
+.plant-table tbody tr.due-future {
+  background-color: var(--color-success-bg);
+  box-shadow: inset 4px 0 0 var(--color-success);
 }
 
 /* inline edit fields look like plain text */
