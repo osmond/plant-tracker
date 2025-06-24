@@ -97,6 +97,12 @@ textarea {
     color: var(--color-accent);
 }
 
+.plant-item {
+    border: 1px solid var(--color-border);
+    padding: calc(var(--spacing) * 1.25);
+    margin-bottom: var(--spacing);
+    border-radius: calc(var(--radius) + 1px);
+}
 .just-updated {
   animation: highlight-fade 2s ease-in-out;
   background-color: var(--color-highlight); /* light yellow background */
@@ -154,20 +160,12 @@ textarea {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: calc(var(--spacing) * 2);
-  table-layout: fixed;
 }
 .plant-table th,
 .plant-table td {
   border: 1px solid var(--color-border);
   padding: var(--spacing);
-  text-align: left;
-  vertical-align: top;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-.plant-table th:first-child,
-.plant-table td:first-child {
-  width: 80px;
+
 }
 
 /* inline edit fields look like plain text */
@@ -190,13 +188,6 @@ textarea {
   height: 60px;
   object-fit: cover;
   border-radius: var(--radius);
-}
-
-@media (max-width: 600px) {
-  .plant-table th,
-  .plant-table td {
-    font-size: 0.9rem;
-  }
 }
 
 /* simple calendar styles */
