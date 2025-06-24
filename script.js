@@ -509,16 +509,16 @@ document.addEventListener('DOMContentLoaded',()=>{
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
 
   if (showBtn) {
-    showBtn.innerHTML = ICONS.plus + ' Add a Plant';
+    showBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add a Plant</span>';
   }
   if (cancelBtn) {
-    cancelBtn.innerHTML = ICONS.cancel + ' Cancel';
+    cancelBtn.innerHTML = ICONS.cancel + '<span class="visually-hidden">Cancel</span>';
   }
   if (undoBtn) {
     undoBtn.innerHTML = ICONS.undo + ' Undo';
   }
   if (submitBtn) {
-    submitBtn.innerHTML = ICONS.plus + ' Add Plant';
+    submitBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
   }
   if (showBtn && form) {
     showBtn.addEventListener('click', () => {
@@ -558,8 +558,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     }finally{
       btn.disabled=false;
       btn.innerHTML=editingPlantId
-        ? ICONS.check + ' Update Plant'
-        : ICONS.plus + ' Add Plant';
+        ? ICONS.check + '<span class="visually-hidden">Update Plant</span>'
+        : ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
     }
   });
 
