@@ -44,6 +44,35 @@ h3 {
 form {
     margin-bottom: calc(var(--spacing) * 2.5);
 }
+
+/* grid layout for plant form */
+#plant-form.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: calc(var(--spacing) * 1.5) var(--spacing);
+}
+
+@media (min-width: 700px) {
+    #plant-form.form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.form-control {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-control.full-span {
+    grid-column: span 2;
+}
+
+.helper {
+    font-size: 0.85em;
+    color: var(--color-text);
+    opacity: 0.8;
+    margin-top: calc(var(--spacing) / 4);
+}
 input,
 button,
 select,
