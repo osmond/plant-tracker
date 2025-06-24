@@ -13,54 +13,29 @@ const ICONS = {
   check: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
 };
 
-const TW = {
-  actionBtn: 'inline-flex items-center justify-center gap-1 min-w-[2.25rem] h-9 px-2 border border-border rounded bg-bg text-text hover:bg-card transition',
-  dueTask: 'px-2 py-1 rounded font-bold ml-5',
-  waterDue: 'bg-water-bg text-primary',
-  fertDue: 'bg-fert-bg text-accent',
-  plantCard: 'bg-card rounded-xl shadow p-4 flex flex-col',
-  actions: 'mt-3 flex gap-1 flex-wrap',
-  plantPhoto: 'w-full h-[150px] object-cover rounded-xl mb-3',
-  dueOverdue: 'bg-error-bg border-l-4 border-error',
-  dueToday: 'bg-warning-bg border-l-4 border-warning',
-  dueFuture: 'bg-success-bg border-l-4 border-success',
-  justUpdated: 'bg-highlight',
-  calDay: 'flex-1 border border-border mr-1 p-2 rounded min-h-[120px]',
-  calEvent: 'bg-card mb-1 p-1 rounded cursor-move text-sm',
-  calDayHeader: 'font-bold mb-1',
-  undoBanner: 'fixed bottom-4 left-1/2 -translate-x-1/2 bg-text text-bg px-4 py-2 rounded z-50 opacity-0 pointer-events-none transition',
-  undoBannerShow: 'opacity-100 pointer-events-auto',
-  toast: 'fixed bottom-10 left-1/2 -translate-x-1/2 bg-text text-bg px-5 py-3 rounded z-50 hidden'
-};
-
 function showToast(msg, isError = false) {
   const toast = document.getElementById('toast');
   if (!toast) return;
   toast.textContent = msg;
-  toast.className = `${TW.toast} ${isError ? 'bg-error' : 'bg-text'} block`;
+  toast.classList.toggle('error', isError);
+  toast.classList.add('show');
   clearTimeout(toast.hideTimeout);
   toast.hideTimeout = setTimeout(() => {
-    toast.classList.add('hidden');
+    toast.classList.remove('show');
   }, 3000);
 }
 
 // --- validation, date math, due-date helpers ---
 function validateForm(form) {
   let valid = true;
-  document.querySelectorAll('[id$="-error"]').forEach(el => {
-    el.textContent = '';
-    el.classList.add('hidden');
-  });
+  document.querySelectorAll('.error').forEach(el => el.textContent = '');
 
   const requiredFields = ['name', 'species', 'watering_frequency'];
   requiredFields.forEach(field => {
     const input = form.querySelector(`[name="${field}"]`);
     if (!input.value.trim()) {
       const errorDiv = document.getElementById(`${field}-error`);
-      if (errorDiv) {
-        errorDiv.textContent = 'This field is required.';
-        errorDiv.classList.remove('hidden');
-      }
+      if (errorDiv) errorDiv.textContent = 'This field is required.';
       valid = false;
     }
   });
@@ -69,18 +44,16 @@ function validateForm(form) {
   const species = form.querySelector('[name="species"]');
   if (species && species.value.trim() &&
       !/^[A-Za-z0-9\s-]{1,100}$/.test(species.value.trim())) {
-    const err = document.getElementById('species-error');
-    err.textContent = 'Invalid characters or too long.';
-    err.classList.remove('hidden');
+    document.getElementById('species-error').textContent =
+      'Invalid characters or too long.';
     valid = false;
   }
 
   const room = form.querySelector('[name="room"]');
   if (room && room.value.trim() &&
       !/^[A-Za-z0-9\s-]{1,50}$/.test(room.value.trim())) {
-    const err = document.getElementById('room-error');
-    err.textContent = 'Invalid characters or too long.';
-    err.classList.remove('hidden');
+    document.getElementById('room-error').textContent =
+      'Invalid characters or too long.';
     valid = false;
   }
 
@@ -88,9 +61,8 @@ function validateForm(form) {
   if (waterFreq) {
     const n = parseInt(waterFreq.value, 10);
     if (isNaN(n) || n < 1 || n > 365) {
-      const err = document.getElementById('watering_frequency-error');
-      err.textContent = 'Enter a value between 1 and 365.';
-      err.classList.remove('hidden');
+      document.getElementById('watering_frequency-error').textContent =
+        'Enter a value between 1 and 365.';
       valid = false;
     }
   }
@@ -157,9 +129,9 @@ async function loadCalendar() {
   for (let i=0;i<daysToShow;i++) {
     const d = addDays(start,i);
     const dayEl = document.createElement('div');
-    dayEl.className = TW.calDay;
+    dayEl.classList.add('cal-day');
     dayEl.dataset.date = d.toISOString().split('T')[0];
-    dayEl.innerHTML = `<div class="${TW.calDayHeader}">${d.toLocaleDateString(undefined,{weekday:'short',month:'numeric',day:'numeric'})}</div>`;
+    dayEl.innerHTML = `<div class="cal-day-header">${d.toLocaleDateString(undefined,{weekday:'short',month:'numeric',day:'numeric'})}</div>`;
     dayEl.addEventListener('dragover',e=>e.preventDefault());
     dayEl.addEventListener('drop',e=>handleDrop(e, dayEl.dataset.date, plants));
     container.appendChild(dayEl);
@@ -168,10 +140,10 @@ async function loadCalendar() {
 
   function addEvent(plant,type,date) {
     const dateStr = date.toISOString().split('T')[0];
-    const dayEl = container.querySelector(`[data-date="${dateStr}"]`);
+    const dayEl = container.querySelector(`.cal-day[data-date="${dateStr}"]`);
     if (!dayEl) return;
     const ev = document.createElement('div');
-    ev.className = `${TW.calEvent} ${type==='water' ? TW.waterDue : TW.fertDue}`;
+    ev.classList.add('cal-event', type==='water' ? 'water-due' : 'fert-due');
     ev.textContent = `${plant.name} (${type==='water'? 'Water':'Fert'})`;
     ev.draggable = true;
     ev.dataset.id = plant.id;
@@ -234,7 +206,7 @@ async function markAction(id, type, days = 0) {
 function showUndoBanner(plant) {
   lastDeletedPlant = plant;
   const banner = document.getElementById('undo-banner');
-  banner.classList.add(...TW.undoBannerShow.split(' '));
+  banner.classList.add('show');
   clearTimeout(deleteTimer);
   deleteTimer = setTimeout(async () => {
     await fetch('api/delete_plant.php', {
@@ -242,7 +214,7 @@ function showUndoBanner(plant) {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `id=${plant.id}`
     });
-    banner.classList.remove(...TW.undoBannerShow.split(' '));
+    banner.classList.remove('show');
     lastDeletedPlant = null;
     loadPlants();
     loadCalendar();
@@ -358,6 +330,7 @@ async function loadPlants() {
   const summaryEl = document.getElementById('summary');
   summaryEl.textContent =
     `🌱 ${totalPlants} plants • 🔔 ${wateringDue} need watering • ${fertilizingDue} need fertilizing`;
+  summaryEl.classList.add('show');
 
   list.innerHTML = '';
   const filtered = plants.filter(plant => {
@@ -382,25 +355,25 @@ async function loadPlants() {
 
   filtered.forEach(plant => {
     const card = document.createElement('div');
-    card.className = TW.plantCard;
+    card.classList.add('plant-card');
     if (plant.id === window.lastUpdatedPlantId) {
-      card.classList.add(TW.justUpdated);
-      setTimeout(() => card.classList.remove(TW.justUpdated), 2000);
+      card.classList.add('just-updated');
+      setTimeout(() => card.classList.remove('just-updated'), 2000);
     }
     const soonest = getSoonestDueDate(plant);
     if (soonest < startOfToday) {
-      card.classList.add(...TW.dueOverdue.split(' '));
+      card.classList.add('due-overdue');
     } else if (soonest < startOfTomorrow) {
-      card.classList.add(...TW.dueToday.split(' '));
+      card.classList.add('due-today');
     } else {
-      card.classList.add(...TW.dueFuture.split(' '));
+      card.classList.add('due-future');
     }
 
     if (plant.photo_url) {
       const img = document.createElement('img');
       img.src = plant.photo_url;
       img.alt = plant.name;
-      img.className = TW.plantPhoto;
+      img.classList.add('plant-photo');
       card.appendChild(img);
     }
     const fileInput = document.createElement('input');
@@ -440,14 +413,14 @@ async function loadPlants() {
     card.appendChild(freqDiv);
 
     const actionsDiv = document.createElement('div');
-    actionsDiv.className = TW.actions;
+    actionsDiv.classList.add('actions');
 
     const waterDue = needsWatering(plant, today);
     const fertDue = needsFertilizing(plant, today);
 
     if (waterDue) {
       const btn = document.createElement('button');
-      btn.className = `${TW.actionBtn} ${TW.dueTask} ${TW.waterDue}`;
+      btn.classList.add('action-btn', 'due-task', 'water-due');
       btn.innerHTML = ICONS.water + '<span class="visually-hidden">Water</span>';
       btn.title = 'Mark watered';
       btn.onclick = () => markAction(plant.id, 'watered');
@@ -456,7 +429,7 @@ async function loadPlants() {
 
     if (fertDue) {
       const btn = document.createElement('button');
-      btn.className = `${TW.actionBtn} ${TW.dueTask} ${TW.fertDue}`;
+      btn.classList.add('action-btn', 'due-task', 'fert-due');
       btn.innerHTML = ICONS.fert + '<span class="visually-hidden">Fertilize</span>';
       btn.title = 'Mark fertilized';
       btn.onclick = () => markAction(plant.id, 'fertilized');
@@ -464,7 +437,7 @@ async function loadPlants() {
     }
 
     const editBtn = document.createElement('button');
-    editBtn.className = TW.actionBtn;
+    editBtn.classList.add('action-btn');
     editBtn.innerHTML = ICONS.edit + '<span class="visually-hidden">Edit</span>';
     editBtn.type = 'button';
     editBtn.onclick = () => {
@@ -476,7 +449,7 @@ async function loadPlants() {
     actionsDiv.appendChild(editBtn);
 
     const delBtn = document.createElement('button');
-    delBtn.className = TW.actionBtn;
+    delBtn.classList.add('action-btn');
     delBtn.innerHTML = ICONS.trash + '<span class="visually-hidden">Delete</span>';
     delBtn.onclick = () => showUndoBanner(plant);
     actionsDiv.appendChild(delBtn);
@@ -505,27 +478,23 @@ document.addEventListener('DOMContentLoaded',()=>{
   const cancelBtn = document.getElementById('cancel-edit');
   const undoBtn = document.getElementById('undo-btn');
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
-  const banner = document.getElementById('undo-banner');
-  const toast = document.getElementById('toast');
 
   if (showBtn) {
-    showBtn.className = TW.actionBtn;
+    showBtn.classList.add('action-btn');
     showBtn.innerHTML = ICONS.plus + ' Add a Plant';
   }
   if (cancelBtn) {
-    cancelBtn.className = TW.actionBtn;
+    cancelBtn.classList.add('action-btn');
     cancelBtn.innerHTML = ICONS.cancel + ' Cancel';
   }
   if (undoBtn) {
-    undoBtn.className = TW.actionBtn;
+    undoBtn.classList.add('action-btn');
     undoBtn.innerHTML = ICONS.undo + ' Undo';
   }
   if (submitBtn) {
-    submitBtn.className = TW.actionBtn;
+    submitBtn.classList.add('action-btn');
     submitBtn.innerHTML = ICONS.plus + ' Add Plant';
   }
-  if (banner) banner.className = TW.undoBanner;
-  if (toast) toast.className = TW.toast;
   if (showBtn && form) {
     showBtn.addEventListener('click', () => {
       form.style.display = 'block';
@@ -536,7 +505,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   document.getElementById('undo-btn').addEventListener('click',()=>{
     clearTimeout(deleteTimer);
-    document.getElementById('undo-banner').classList.remove(...TW.undoBannerShow.split(' '));
+    document.getElementById('undo-banner').classList.remove('show');
     lastDeletedPlant=null;
   });
 
