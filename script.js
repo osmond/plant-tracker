@@ -173,48 +173,62 @@ async function loadPlants() {
     header.textContent = room || 'No Room';
     list.appendChild(header);
 
+    const table = document.createElement('table');
+    table.classList.add('plant-table');
+    const thead = document.createElement('thead');
+    thead.innerHTML = '<tr><th>Name</th><th>Species</th><th>Frequencies</th><th>Actions</th></tr>';
+    table.appendChild(thead);
+    const tbody = document.createElement('tbody');
+
     roomPlants.forEach(plant => {
-      const item = document.createElement('div');
-      item.classList.add('plant-item');
+      const row = document.createElement('tr');
       if (plant.id===window.lastUpdatedPlantId) {
-        item.classList.add('just-updated');
-        setTimeout(()=>item.classList.remove('just-updated'),2000);
+        row.classList.add('just-updated');
+        setTimeout(()=>row.classList.remove('just-updated'),2000);
       }
 
       // inline editable Name
+      const nameTd = document.createElement('td');
       const nameInput = document.createElement('input');
       nameInput.value = plant.name;
       nameInput.onblur = () => updatePlantInline(plant,'name',nameInput.value);
-      item.appendChild(nameInput);
+      nameTd.appendChild(nameInput);
+      row.appendChild(nameTd);
 
       // inline editable Species
+      const specTd = document.createElement('td');
       const specInput = document.createElement('input');
       specInput.value = plant.species;
       specInput.onblur = () => updatePlantInline(plant,'species',specInput.value);
-      item.appendChild(specInput);
+      specTd.appendChild(specInput);
+      row.appendChild(specTd);
 
-      // static frequencies and room inline
-      const info = document.createElement('span');
-      info.textContent = `– water every ${plant.watering_frequency} days` +
-                         (plant.fertilizing_frequency?`, fertilize every ${plant.fertilizing_frequency} days`:``);
-      item.appendChild(info);
-
+      // static frequencies and editable room
+      const freqTd = document.createElement('td');
+      freqTd.textContent = `water every ${plant.watering_frequency} days` +
+                           (plant.fertilizing_frequency?`, fertilize every ${plant.fertilizing_frequency} days`:``);
       const roomInput = document.createElement('input');
       roomInput.value = plant.room;
       roomInput.onblur = () => updatePlantInline(plant,'room',roomInput.value);
-      item.appendChild(roomInput);
+      freqTd.appendChild(document.createElement('br'));
+      freqTd.appendChild(roomInput);
+      row.appendChild(freqTd);
 
       // due badges & actions (omitted for brevity, same as before)
       // ...
 
+      const actionsTd = document.createElement('td');
       // delete with undo
       const delBtn = document.createElement('button');
       delBtn.textContent = '🗑️';
       delBtn.onclick = () => showUndoBanner(plant);
-      item.appendChild(delBtn);
+      actionsTd.appendChild(delBtn);
+      row.appendChild(actionsTd);
 
-      list.appendChild(item);
+      tbody.appendChild(row);
     });
+    table.appendChild(tbody);
+    list.appendChild(table);
   });
 
   // refresh room filter
