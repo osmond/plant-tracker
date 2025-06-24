@@ -69,6 +69,7 @@ button:hover {
     white-space: nowrap;
     border: 0;
 }
+
 #plant-list {
     margin-top: calc(var(--spacing) * 2.5);
 }
@@ -85,6 +86,7 @@ button:hover {
 #due-filter {
     margin-left: calc(var(--spacing) / 2);
 }
+
 .error {
     color: var(--color-accent);
     font-size: 0.85em;
@@ -125,18 +127,6 @@ button:hover {
     background: #E8F5E9;
 }
 
-.plant-item {
-    padding: var(--spacing);
-    margin-bottom: var(--spacing);
-    border-radius: var(--radius);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.plant-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
 .just-updated {
   animation: highlight-fade 2s ease-in-out;
   background-color: var(--color-surface); /* light yellow background */
@@ -210,6 +200,22 @@ button:hover {
 
 .toast.error {
   background: var(--color-accent);
+}
+
+/* main plant table */
+#plant-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: calc(var(--spacing) * 2.5);
+}
+#plant-table th,
+#plant-table td {
+  padding: var(--spacing);
+  border: 1px solid var(--color-border);
+}
+#plant-table input {
+  width: 100%;
+  border-radius: var(--radius);
 }
 
 /* table layout for plant listings */
