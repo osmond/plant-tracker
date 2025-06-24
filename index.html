@@ -37,7 +37,7 @@
         </select>
     </div>
 
-    <form id="plant-form" style="display:none;">
+    <form id="plant-form">
         <label for="name">Plant Name</label>
         <input type="text" name="name" id="name" placeholder="Plant Name" />
         <div class="error" id="name-error"></div>
@@ -70,11 +70,15 @@
         <input type="hidden" name="photo_path" id="photo_path_hidden" />
 
         <button type="submit">Add Plant</button>
-        <button type="button" id="cancel-edit" style="display:none;">Cancel</button>
+        <button type="button" id="cancel-edit" class="accent">Cancel</button>
     </form>
 
 
+    <div id="controls">
+
+
     <div style="margin-top: calc(var(--spacing) * 2);">
+
         <select id="room-filter">
             <option value="all">All Rooms</option>
         </select>
@@ -82,7 +86,7 @@
             <option value="name">Sort by: Name</option>
             <option value="due">Sort by: Due Date</option>
         </select>
-        <select id="due-filter" style="margin-left: calc(var(--spacing) / 2);">
+        <select id="due-filter">
             <option value="all">Show: All</option>
             <option value="water">Needs Watering</option>
             <option value="fert">Needs Fertilizing</option>
@@ -91,17 +95,8 @@
       </div>
 
 <!-- Undo delete snackbar -->
-<div id="undo-banner" style="display:none;
-                             position:fixed;
-                             bottom: calc(var(--spacing) * 1.25);
-                             left:50%;
-                             transform:translateX(-50%);
-                             background: var(--color-text);
-                             color: var(--color-bg);
-                             padding: calc(var(--spacing) * 1.25);
-                             border-radius: var(--radius);
-                             z-index:1000;">
-  Plant deleted. <button id="undo-btn">Undo</button>
+<div id="undo-banner">
+  Plant deleted. <button id="undo-btn" class="accent">Undo</button>
 </div>
 
 <div id="toast" class="toast"></div>
