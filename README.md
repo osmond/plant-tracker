@@ -26,3 +26,7 @@ Set the following environment variables so `db.php` can establish the database c
 - `DB_PASS` - user password
 - `DB_NAME` - name of the database
 
+`db.php` reads these values using `getenv`. Ensure the variables are available in
+your environment (or defined in a `.env` file loaded by your web server) before
+running the application so credentials are not stored in the codebase.
+

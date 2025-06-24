@@ -20,6 +20,10 @@ node_modules/
 .idea/
 .vscode/
 
+
+# PHPUnit result cache
+.phpunit.result.cache
+
 # PHP unit cache
 .phpunit.result.cache
 
