@@ -2,6 +2,12 @@ let editingPlantId = null;
 let lastDeletedPlant = null;
 let deleteTimer = null;
 
+const ICONS = {
+  trash: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  water: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>',
+  fert: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+};
+
 function showToast(msg, isError = false) {
   const toast = document.getElementById('toast');
   if (!toast) return;
@@ -422,24 +428,18 @@ async function loadPlants() {
       const fertDue = needsFertilizing(plant, today);
 
       if (waterDue) {
-        const badge = document.createElement('span');
-        badge.textContent = 'Water';
-        badge.classList.add('due-task', 'water-due');
-        actionsTd.appendChild(badge);
         const btn = document.createElement('button');
-        btn.textContent = '✓';
+        btn.classList.add('action-btn', 'due-task', 'water-due');
+        btn.innerHTML = ICONS.water + '<span>Water</span>';
         btn.title = 'Mark watered';
         btn.onclick = () => markAction(plant.id, 'watered');
         actionsTd.appendChild(btn);
       }
 
       if (fertDue) {
-        const badge = document.createElement('span');
-        badge.textContent = 'Fertilize';
-        badge.classList.add('due-task', 'fert-due');
-        actionsTd.appendChild(badge);
         const btn = document.createElement('button');
-        btn.textContent = '✓';
+        btn.classList.add('action-btn', 'due-task', 'fert-due');
+        btn.innerHTML = ICONS.fert + '<span>Fertilize</span>';
         btn.title = 'Mark fertilized';
         btn.onclick = () => markAction(plant.id, 'fertilized');
         actionsTd.appendChild(btn);
@@ -458,7 +458,8 @@ async function loadPlants() {
 
       // delete with undo
       const delBtn = document.createElement('button');
-      delBtn.textContent = '🗑️';
+      delBtn.classList.add('action-btn');
+      delBtn.innerHTML = ICONS.trash + '<span>Delete</span>';
       delBtn.onclick = () => showUndoBanner(plant);
       actionsTd.appendChild(delBtn);
       row.appendChild(actionsTd);
