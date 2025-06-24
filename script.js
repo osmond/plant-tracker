@@ -79,6 +79,13 @@ function addDays(date, days) {
   return d;
 }
 
+function formatDateShort(dateStr) {
+  if (!dateStr) return 'never';
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
 function getSoonestDueDate(plant) {
   const waterDate = plant.last_watered
     ? addDays(new Date(plant.last_watered), plant.watering_frequency)
@@ -395,17 +402,25 @@ async function loadPlants() {
     waterSpan.innerHTML = ICONS.water + ` ${plant.watering_frequency}d`;
     summary.appendChild(waterSpan);
 
-    const sunSpan = document.createElement('span');
-    sunSpan.classList.add('summary-item');
-    sunSpan.innerHTML = ICONS.sun + ` ${plant.room}`;
-    summary.appendChild(sunSpan);
+    const fertSpan = document.createElement('span');
+    fertSpan.classList.add('summary-item');
+    const fertFreq = plant.fertilizing_frequency
+      ? `${plant.fertilizing_frequency}d`
+      : 'N/A';
+    fertSpan.innerHTML = ICONS.fert + ` ${fertFreq}`;
+    summary.appendChild(fertSpan);
 
-    if (plant.fertilizing_frequency) {
-      const fertSpan = document.createElement('span');
-      fertSpan.classList.add('summary-item');
-      fertSpan.innerHTML = ICONS.fert + ` ${plant.fertilizing_frequency}d`;
-      summary.appendChild(fertSpan);
-    }
+    const lastWaterSpan = document.createElement('span');
+    lastWaterSpan.classList.add('summary-item');
+    lastWaterSpan.innerHTML =
+      ICONS.water + ` last ${formatDateShort(plant.last_watered)}`;
+    summary.appendChild(lastWaterSpan);
+
+    const lastFertSpan = document.createElement('span');
+    lastFertSpan.classList.add('summary-item');
+    lastFertSpan.innerHTML =
+      ICONS.fert + ` last ${formatDateShort(plant.last_fertilized)}`;
+    summary.appendChild(lastFertSpan);
 
     card.appendChild(summary);
 
