@@ -31,5 +31,15 @@ class ApiTest extends TestCase
         $this->assertFalse($data['success']);
         $this->assertArrayHasKey('error', $data);
     }
+
+    public function testGetHistoryReturnsArray()
+    {
+        $_GET = [];
+        ob_start();
+        include __DIR__ . '/../api/get_history.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertIsArray($data);
+    }
 }
 ?>
