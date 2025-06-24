@@ -21,6 +21,17 @@ class ApiTest extends TestCase
         $this->assertArrayHasKey('error', $data);
     }
 
+    public function testAddPlantWithNotes()
+    {
+        $_POST = ['name' => 'Rose', 'notes' => 'test note'];
+        $_FILES = [];
+        ob_start();
+        include __DIR__ . '/../api/add_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertEquals('success', $data['status']);
+    }
+
     public function testDeletePlantMissingId()
     {
         $_POST = [];

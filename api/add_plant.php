@@ -24,22 +24,40 @@ $watering_frequency = intval($_POST['watering_frequency'] ?? 0);
 $fertilizing_frequency = intval($_POST['fertilizing_frequency'] ?? 0);
 $last_watered = $_POST['last_watered'] ?? null;
 $last_fertilized = $_POST['last_fertilized'] ?? null;
+$notes = trim($_POST['notes'] ?? '');
+
+$photoPath = null;
+if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+    $uploadDir = __DIR__ . '/../uploads/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    $ext = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+    $fileName = uniqid('plant_', true) . '.' . $ext;
+    $target = $uploadDir . $fileName;
+    if (move_uploaded_file($_FILES['photo']['tmp_name'], $target)) {
+        $photoPath = 'uploads/' . $fileName;
+    }
+}
 
 // Prepare and execute
 $stmt = $conn->prepare("
     INSERT INTO plants (
-        name, species, room, watering_frequency, fertilizing_frequency, last_watered, last_fertilized
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        name, species, room, watering_frequency, fertilizing_frequency,
+        last_watered, last_fertilized, notes, photo_path
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 ");
 $stmt->bind_param(
-    "sssiiss",
+    "sssiissss",
     $name,
     $species,
     $room,
     $watering_frequency,
     $fertilizing_frequency,
     $last_watered,
-    $last_fertilized
+    $last_fertilized,
+    $notes,
+    $photoPath
 );
 
 $stmt->execute();

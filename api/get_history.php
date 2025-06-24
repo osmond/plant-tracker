@@ -34,7 +34,9 @@ if ($stmt && $stmt->execute()) {
 }
 
 
-header('Content-Type: application/json');
+if (!headers_sent()) {
+    header('Content-Type: application/json');
+}
 
 $result = $conn->query(
     "SELECT name, watering_frequency, fertilizing_frequency FROM plants"
