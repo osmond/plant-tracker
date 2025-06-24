@@ -86,7 +86,11 @@ input,
 select,
 textarea {
     padding: var(--spacing);
-    margin: calc(var(--spacing) / 2);
+    /*
+     * Margin is removed so spacing relies on the container's
+     * gap. This keeps form elements aligned when using
+     * Tailwind's grid utilities.
+     */
     font-family: inherit;
     font-size: 1rem;
     border: 1px solid var(--color-border);
@@ -101,7 +105,12 @@ button {
 
 button:hover,
 button:focus {
-    background-color: var(--color-surface);
+    /*
+     * Preserve the original background color but slightly
+     * reduce brightness so buttons with custom colors remain
+     * legible on hover or focus.
+     */
+    filter: brightness(95%);
     transform: translateY(-2px);
 }
 
