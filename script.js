@@ -221,7 +221,6 @@ function populateForm(plant) {
   form.room.value = plant.room;
   form.last_watered.value = plant.last_watered;
   form.last_fertilized.value = plant.last_fertilized;
-  if (form.photo_url) form.photo_url.value = plant.photo_url || '';
   editingPlantId = plant.id;
 
   const submitBtn = form.querySelector('button[type="submit"]');

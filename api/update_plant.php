@@ -17,6 +17,19 @@ $last_watered            = $_POST['last_watered'] ?: null;
 $last_fertilized         = $_POST['last_fertilized'] ?: null;
 $photo_url               = trim($_POST['photo_url'] ?? '');
 
+// Handle uploaded photo
+if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+    $uploadDir = __DIR__ . '/../uploads/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+    $fileName = basename($_FILES['photo']['name']);
+    $dest = $uploadDir . $fileName;
+    if (move_uploaded_file($_FILES['photo']['tmp_name'], $dest)) {
+        $photo_url = 'uploads/' . $fileName;
+    }
+}
+
 // Basic validation
 if (!$id || $name === '' || $watering_frequency <= 0) {
     http_response_code(400);

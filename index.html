@@ -20,7 +20,7 @@
 
     <button id="show-add-form">Add a Plant</button>
 
-    <form id="plant-form" style="display:none;">
+    <form id="plant-form" style="display:none;" enctype="multipart/form-data">
         <label for="name">Plant Name</label>
         <input type="text" name="name" id="name" placeholder="Plant Name" />
         <div class="error" id="name-error"></div>
@@ -36,8 +36,8 @@
         <label for="fertilizing_frequency">Fertilizing Frequency (days)</label>
         <input type="number" name="fertilizing_frequency" id="fertilizing_frequency" />
 
-        <label for="photo_url">Photo URL</label>
-        <input type="text" name="photo_url" id="photo_url" placeholder="http://..." />
+        <label for="photo">Upload Photo</label>
+        <input type="file" id="photo" name="photo" accept="image/*" />
 
         <label for="room">Room</label>
         <input type="text" name="room" id="room" placeholder="Room" />
