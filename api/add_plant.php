@@ -26,6 +26,26 @@ $last_watered = $_POST['last_watered'] ?? null;
 $last_fertilized = $_POST['last_fertilized'] ?? null;
 $photo_url = trim($_POST['photo_url'] ?? '');
 
+// further validation
+$errors = [];
+if ($species !== '' && !preg_match('/^[A-Za-z0-9\s-]{1,100}$/', $species)) {
+    $errors[] = 'Invalid species';
+}
+if ($room !== '' && !preg_match('/^[A-Za-z0-9\s-]{1,50}$/', $room)) {
+    $errors[] = 'Invalid room';
+}
+if ($watering_frequency < 1 || $watering_frequency > 365) {
+    $errors[] = 'Watering frequency must be 1-365';
+}
+if ($errors) {
+    http_response_code(400);
+    echo json_encode(['error' => implode('; ', $errors)]);
+    if (!getenv('TESTING')) {
+        exit;
+    }
+    return;
+}
+
 // Handle uploaded photo
 if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
     $uploadDir = __DIR__ . '/../uploads/';
