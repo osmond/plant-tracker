@@ -1,8 +1,14 @@
 body {
     font-family: sans-serif;
     padding: 20px;
-    max-width: 600px;
     margin: auto;
+    max-width: 100%;
+}
+
+@media (min-width: 700px) {
+    body {
+        max-width: 600px;
+    }
 }
 form {
     margin-bottom: 20px;
@@ -103,4 +109,16 @@ input, button {
 
 .toast.error {
   background: #b00020;
+
+/* table layout for plant listings */
+.plant-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+.plant-table th,
+.plant-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+
 }
