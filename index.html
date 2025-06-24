@@ -13,13 +13,29 @@
   <!-- counts will go here -->
 </div>
 
-    <!-- Search Input UI -->
-    <div class="search-container">
-        <label for="search-input" class="visually-hidden">Search Plants</label>
-        <input type="text" id="search-input" placeholder="🔎 Search by name or species" />
-    </div>
+    <!-- Controls Toolbar -->
+    <div class="toolbar">
+        <div class="search-container">
+            <label for="search-input" class="visually-hidden">Search Plants</label>
+            <input type="text" id="search-input" placeholder="🔎 Search by name or species" />
+        </div>
 
-    <button id="show-add-form">Add a Plant</button>
+        <button id="show-add-form">Add a Plant</button>
+
+        <select id="room-filter">
+            <option value="all">All Rooms</option>
+        </select>
+        <select id="sort-toggle">
+            <option value="name">Sort by: Name</option>
+            <option value="due">Sort by: Due Date</option>
+        </select>
+        <select id="due-filter">
+            <option value="all">Show: All</option>
+            <option value="water">Needs Watering</option>
+            <option value="fert">Needs Fertilizing</option>
+            <option value="any">Needs Care</option>
+        </select>
+    </div>
 
     <form id="plant-form" style="display:none;">
         <label for="name">Plant Name</label>
@@ -57,6 +73,7 @@
         <button type="button" id="cancel-edit" style="display:none;">Cancel</button>
     </form>
 
+
     <div style="margin-top: calc(var(--spacing) * 2);">
         <select id="room-filter">
             <option value="all">All Rooms</option>
@@ -72,6 +89,7 @@
             <option value="any">Needs Care</option>
         </select>
       </div>
+
 <!-- Undo delete snackbar -->
 <div id="undo-banner" style="display:none;
                              position:fixed;

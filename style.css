@@ -134,6 +134,19 @@ input, button {
   font-weight: bold;
 }
 
+/* layout for header controls */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing);
+  align-items: center;
+}
+
+.toolbar > * {
+  flex: 1 1 150px;
+  max-width: 200px;
+}
+
 /* toast notification */
 .toast {
   position: fixed;
