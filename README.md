@@ -1,6 +1,7 @@
 # Plant Tracker
 
 This is a simple PHP-based application for tracking plants.
+You can filter plants that need watering or fertilizing to focus on urgent tasks.
 
 ## Running Tests
 

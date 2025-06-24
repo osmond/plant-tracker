@@ -52,6 +52,19 @@ function getSoonestDueDate(plant) {
   return waterDate || fertDate || new Date(8640000000000000);
 }
 
+function needsWatering(plant, today = new Date()) {
+  if (!plant.last_watered) return true;
+  const next = addDays(new Date(plant.last_watered), plant.watering_frequency);
+  return next <= today;
+}
+
+function needsFertilizing(plant, today = new Date()) {
+  if (!plant.fertilizing_frequency) return false;
+  if (!plant.last_fertilized) return true;
+  const next = addDays(new Date(plant.last_fertilized), plant.fertilizing_frequency);
+  return next <= today;
+}
+
 // --- mark watered/fertilized / snooze ---
 async function markAction(id, type, days = 0) {
   window.lastUpdatedPlantId = id;
@@ -147,6 +160,9 @@ async function loadPlants() {
   const plants = await res.json();
   const list = document.getElementById('plant-list');
   const selectedRoom = document.getElementById('room-filter').value;
+  const dueFilter = document.getElementById('due-filter')
+    ? document.getElementById('due-filter').value
+    : 'all';
   const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
   const today = new Date();
 
@@ -172,6 +188,13 @@ async function loadPlants() {
     if (selectedRoom !== 'all' && plant.room !== selectedRoom) return;
     const haystack = (plant.name + ' ' + plant.species).toLowerCase();
     if (searchQuery && !haystack.includes(searchQuery)) return;
+
+    const waterDue = needsWatering(plant, today);
+    const fertDue = needsFertilizing(plant, today);
+    if (dueFilter === 'water' && !waterDue) return;
+    if (dueFilter === 'fert' && !fertDue) return;
+    if (dueFilter === 'any' && !(waterDue || fertDue)) return;
+
     if (!roomsMap.has(plant.room)) roomsMap.set(plant.room, []);
     roomsMap.get(plant.room).push(plant);
   });
@@ -291,5 +314,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   document.getElementById('room-filter').addEventListener('change',loadPlants);
   document.getElementById('sort-toggle').addEventListener('change',loadPlants);
+  const df = document.getElementById('due-filter');
+  if (df) df.addEventListener('change', loadPlants);
   loadPlants();
 });
