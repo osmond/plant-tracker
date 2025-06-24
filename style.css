@@ -130,3 +130,18 @@ input, button {
   padding: 8px;
 
 }
+
+@media (max-width: 480px) {
+  body {
+    font-size: 1.1em;
+  }
+  .plant-table tr {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .plant-table th,
+  .plant-table td {
+    display: block;
+    width: 100%;
+  }
+}
