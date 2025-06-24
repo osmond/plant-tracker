@@ -11,11 +11,11 @@ if ($dbConfig && file_exists($dbConfig)) {
 header('Content-Type: application/json');
 
 $plants = [];
-$result = $conn->query("
-    SELECT id, name, species, watering_frequency, fertilizing_frequency, room, last_watered, last_fertilized 
-    FROM plants 
-    ORDER BY id DESC
-");
+ $result = $conn->query("
+     SELECT id, name, species, watering_frequency, fertilizing_frequency, room, last_watered, last_fertilized, photo_url
+     FROM plants
+     ORDER BY id DESC
+ ");
 
 while ($row = $result->fetch_assoc()) {
     $plants[] = $row;

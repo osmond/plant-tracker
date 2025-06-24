@@ -24,22 +24,24 @@ $watering_frequency = intval($_POST['watering_frequency'] ?? 0);
 $fertilizing_frequency = intval($_POST['fertilizing_frequency'] ?? 0);
 $last_watered = $_POST['last_watered'] ?? null;
 $last_fertilized = $_POST['last_fertilized'] ?? null;
+$photo_url = trim($_POST['photo_url'] ?? '');
 
 // Prepare and execute
 $stmt = $conn->prepare("
     INSERT INTO plants (
-        name, species, room, watering_frequency, fertilizing_frequency, last_watered, last_fertilized
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        name, species, room, watering_frequency, fertilizing_frequency, last_watered, last_fertilized, photo_url
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 ");
 $stmt->bind_param(
-    "sssiiss",
+    "sssiisss",
     $name,
     $species,
     $room,
     $watering_frequency,
     $fertilizing_frequency,
     $last_watered,
-    $last_fertilized
+    $last_fertilized,
+    $photo_url
 );
 
 $stmt->execute();

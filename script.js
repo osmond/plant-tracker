@@ -195,6 +195,7 @@ async function updatePlantInline(plant, field, newValue) {
   data.append('room', plant.room);
   data.append('last_watered', plant.last_watered || '');
   data.append('last_fertilized', plant.last_fertilized || '');
+  data.append('photo_url', plant.photo_url || '');
 
   data.set(field, newValue);
 
@@ -220,6 +221,7 @@ function populateForm(plant) {
   form.room.value = plant.room;
   form.last_watered.value = plant.last_watered;
   form.last_fertilized.value = plant.last_fertilized;
+  if (form.photo_url) form.photo_url.value = plant.photo_url || '';
   editingPlantId = plant.id;
 
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -298,7 +300,7 @@ async function loadPlants() {
     const table = document.createElement('table');
     table.classList.add('plant-table');
     const thead = document.createElement('thead');
-    thead.innerHTML = '<tr><th>Name</th><th>Species</th><th>Frequencies</th><th>Actions</th></tr>';
+    thead.innerHTML = '<tr><th>Photo</th><th>Name</th><th>Species</th><th>Frequencies</th><th>Actions</th></tr>';
     table.appendChild(thead);
     const tbody = document.createElement('tbody');
 
@@ -308,6 +310,16 @@ async function loadPlants() {
         row.classList.add('just-updated');
         setTimeout(()=>row.classList.remove('just-updated'),2000);
       }
+
+      const photoTd = document.createElement('td');
+      if (plant.photo_url) {
+        const img = document.createElement('img');
+        img.src = plant.photo_url;
+        img.alt = plant.name;
+        img.classList.add('plant-photo');
+        photoTd.appendChild(img);
+      }
+      row.appendChild(photoTd);
 
       // inline editable Name
       const nameTd = document.createElement('td');
