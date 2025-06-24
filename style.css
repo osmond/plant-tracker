@@ -78,3 +78,15 @@ input, button {
   margin-bottom: 1rem;
   font-weight: bold;
 }
+
+/* table layout for plant listings */
+.plant-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+.plant-table th,
+.plant-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
