@@ -42,6 +42,29 @@ h3 {
 form {
     margin-bottom: calc(var(--spacing) * 2.5);
 }
+
+#plant-form .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing);
+}
+
+#plant-form .form-control {
+    display: flex;
+    flex-direction: column;
+}
+
+#plant-form .helper-text {
+    font-size: 0.85em;
+    color: var(--color-text);
+    margin-top: calc(var(--spacing) / 4);
+}
+
+@media (min-width: 700px) {
+    #plant-form .form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
 input,
 button,
 select,
