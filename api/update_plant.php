@@ -23,10 +23,17 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
-    $fileName = basename($_FILES['photo']['name']);
-    $dest = $uploadDir . $fileName;
-    if (move_uploaded_file($_FILES['photo']['tmp_name'], $dest)) {
-        $photo_url = 'uploads/' . $fileName;
+
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+    $extension = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+
+    if (in_array($extension, $allowedExtensions)) {
+        $fileName = uniqid('plant_', true) . '.' . $extension;
+        $dest = $uploadDir . $fileName;
+
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], $dest)) {
+            $photo_url = 'uploads/' . $fileName;
+        }
     }
 }
 
