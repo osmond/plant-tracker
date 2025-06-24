@@ -300,7 +300,7 @@ async function loadPlants() {
     const table = document.createElement('table');
     table.classList.add('plant-table');
     const thead = document.createElement('thead');
-    thead.innerHTML = '<tr><th>Photo</th><th>Name</th><th>Species</th><th>Frequencies</th><th>Actions</th></tr>';
+    thead.innerHTML = '<tr><th>Photo</th><th>Name</th><th>Species</th><th>Room</th><th>Frequencies</th><th>Actions</th></tr>';
     table.appendChild(thead);
     const tbody = document.createElement('tbody');
 
@@ -337,15 +337,18 @@ async function loadPlants() {
       specTd.appendChild(specInput);
       row.appendChild(specTd);
 
-      // static frequencies and editable room
-      const freqTd = document.createElement('td');
-      freqTd.textContent = `water every ${plant.watering_frequency} days` +
-                           (plant.fertilizing_frequency?`, fertilize every ${plant.fertilizing_frequency} days`:``);
+      // inline editable Room
+      const roomTd = document.createElement('td');
       const roomInput = document.createElement('input');
       roomInput.value = plant.room;
       roomInput.onblur = () => updatePlantInline(plant,'room',roomInput.value);
-      freqTd.appendChild(document.createElement('br'));
-      freqTd.appendChild(roomInput);
+      roomTd.appendChild(roomInput);
+      row.appendChild(roomTd);
+
+      // static frequencies
+      const freqTd = document.createElement('td');
+      freqTd.textContent = `water every ${plant.watering_frequency} days` +
+                           (plant.fertilizing_frequency?`, fertilize every ${plant.fertilizing_frequency} days`:``);
       row.appendChild(freqTd);
 
       const actionsTd = document.createElement('td');
