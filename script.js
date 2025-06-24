@@ -511,19 +511,19 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   if (showBtn) {
     showBtn.classList.add('action-btn');
-    showBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add a Plant</span>';
+    showBtn.innerHTML = ICONS.plus + ' Add a Plant';
   }
   if (cancelBtn) {
     cancelBtn.classList.add('action-btn');
-    cancelBtn.innerHTML = ICONS.cancel + '<span class="visually-hidden">Cancel</span>';
+    cancelBtn.innerHTML = ICONS.cancel + ' Cancel';
   }
   if (undoBtn) {
     undoBtn.classList.add('action-btn');
-    undoBtn.innerHTML = ICONS.undo + '<span class="visually-hidden">Undo</span>';
+    undoBtn.innerHTML = ICONS.undo + ' Undo';
   }
   if (submitBtn) {
     submitBtn.classList.add('action-btn');
-    submitBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
+    submitBtn.innerHTML = ICONS.plus + ' Add Plant';
   }
   if (showBtn && form) {
     showBtn.addEventListener('click', () => {
@@ -548,7 +548,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     const btn=form.querySelector('button[type="submit"]');
     btn.disabled=true;
     btn.innerHTML=(editingPlantId?ICONS.check:ICONS.plus)+
-                  `<span class="visually-hidden">${editingPlantId?'Updating...':'Adding...'}</span>`;
+                  (editingPlantId?' Updating...':' Adding...');
     try{
       let resp;
       if(editingPlantId){ data.append('id', editingPlantId); resp=await fetch('api/update_plant.php',{method:'POST',body:data}); }
@@ -563,8 +563,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     }finally{
       btn.disabled=false;
       btn.innerHTML=editingPlantId
-        ? ICONS.check + '<span class="visually-hidden">Update Plant</span>'
-        : ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
+        ? ICONS.check + ' Update Plant'
+        : ICONS.plus + ' Add Plant';
     }
   });
 
