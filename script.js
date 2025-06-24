@@ -166,7 +166,7 @@ function resetForm() {
 async function loadPlants() {
   const res = await fetch('api/get_plants.php');
   const plants = await res.json();
-  const tbody = document.querySelector('#plant-table tbody');
+  const list = document.getElementById('plant-list');
   const selectedRoom = document.getElementById('room-filter').value;
   const dueFilter = document.getElementById('due-filter')
     ? document.getElementById('due-filter').value
@@ -189,29 +189,43 @@ async function loadPlants() {
   document.getElementById('summary').textContent =
     `🔔 ${wateringDue} need watering • ${fertilizingDue} need fertilizing`;
 
-  // filter list
-  tbody.innerHTML = '';
-  const filtered = plants.filter(plant => {
-    if (selectedRoom !== 'all' && plant.room !== selectedRoom) return false;
+  // group + filter
+  list.innerHTML = '';
+  const roomsMap = new Map();
+  plants.forEach(plant => {
+    if (selectedRoom !== 'all' && plant.room !== selectedRoom) return;
     const haystack = (plant.name + ' ' + plant.species).toLowerCase();
-    if (searchQuery && !haystack.includes(searchQuery)) return false;
+    if (searchQuery && !haystack.includes(searchQuery)) return;
 
     const waterDue = needsWatering(plant, today);
     const fertDue = needsFertilizing(plant, today);
-    if (dueFilter === 'water' && !waterDue) return false;
-    if (dueFilter === 'fert' && !fertDue) return false;
-    if (dueFilter === 'any' && !(waterDue || fertDue)) return false;
+    if (dueFilter === 'water' && !waterDue) return;
+    if (dueFilter === 'fert' && !fertDue) return;
+    if (dueFilter === 'any' && !(waterDue || fertDue)) return;
 
-    return true;
+    if (!roomsMap.has(plant.room)) roomsMap.set(plant.room, []);
+    roomsMap.get(plant.room).push(plant);
   });
 
   const sortBy = document.getElementById('sort-toggle').value || 'name';
-  filtered.sort((a,b) => sortBy==='due'
-    ? getSoonestDueDate(a)-getSoonestDueDate(b)
-    : a.name.localeCompare(b.name)
-  );
+  [...roomsMap.entries()].forEach(([room, roomPlants]) => {
+    roomPlants.sort((a,b) => sortBy==='due'
+      ? getSoonestDueDate(a)-getSoonestDueDate(b)
+      : a.name.localeCompare(b.name)
+    );
 
-  filtered.forEach(plant => {
+    const header = document.createElement('h3');
+    header.textContent = room || 'No Room';
+    list.appendChild(header);
+
+    const table = document.createElement('table');
+    table.classList.add('plant-table');
+    const thead = document.createElement('thead');
+    thead.innerHTML = '<tr><th>Name</th><th>Species</th><th>Frequencies</th><th>Notes</th><th>Photo</th><th>Actions</th></tr>';
+    table.appendChild(thead);
+    const tbody = document.createElement('tbody');
+
+    roomPlants.forEach(plant => {
       const row = document.createElement('tr');
       if (plant.id===window.lastUpdatedPlantId) {
         row.classList.add('just-updated');
@@ -238,7 +252,30 @@ async function loadPlants() {
       const freqTd = document.createElement('td');
       freqTd.textContent = `water every ${plant.watering_frequency} days` +
                            (plant.fertilizing_frequency?`, fertilize every ${plant.fertilizing_frequency} days`:``);
+      const roomInput = document.createElement('input');
+      roomInput.value = plant.room;
+      roomInput.onblur = () => updatePlantInline(plant,'room',roomInput.value);
+      freqTd.appendChild(document.createElement('br'));
+      freqTd.appendChild(roomInput);
       row.appendChild(freqTd);
+
+      const notesTd = document.createElement('td');
+      const notesInput = document.createElement('textarea');
+      notesInput.rows = 1;
+      notesInput.value = plant.notes || '';
+      notesInput.onblur = () => updatePlantInline(plant,'notes',notesInput.value);
+      notesTd.appendChild(notesInput);
+      row.appendChild(notesTd);
+
+      const photoTd = document.createElement('td');
+      if (plant.photo_path) {
+        const img = document.createElement('img');
+        img.src = plant.photo_path;
+        img.alt = '';
+        img.style.maxWidth = '50px';
+        photoTd.appendChild(img);
+      }
+      row.appendChild(photoTd);
 
       const actionsTd = document.createElement('td');
 
@@ -280,15 +317,17 @@ async function loadPlants() {
 
       tbody.appendChild(row);
     });
+    table.appendChild(tbody);
+    list.appendChild(table);
+  });
 
   // refresh room filter
   const filter = document.getElementById('room-filter');
-  const existing = Array.from(filter.options).map(o => o.value);
-  plants.forEach(p => {
-    if (!existing.includes(p.room)) {
+  Array.from(filter.options).map(o=>o.value);
+  roomsMap.forEach((_arr,room)=>{
+    if (!Array.from(filter.options).map(o=>o.value).includes(room)) {
       const opt = document.createElement('option');
-      opt.value = p.room;
-      opt.textContent = p.room;
+      opt.value=room; opt.textContent=room;
       filter.appendChild(opt);
     }
   });
