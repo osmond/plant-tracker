@@ -181,13 +181,13 @@ textarea {
 .plant-table input:focus {
   outline: none;
   border-bottom: 1px dashed var(--color-border);
+}
 
 .plant-photo {
   width: 60px;
   height: 60px;
   object-fit: cover;
   border-radius: var(--radius);
-
 }
 
 /* simple calendar styles */
