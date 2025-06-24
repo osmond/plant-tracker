@@ -251,10 +251,36 @@ async function loadPlants() {
       freqTd.appendChild(roomInput);
       row.appendChild(freqTd);
 
-      // due badges & actions (omitted for brevity, same as before)
-      // ...
-
       const actionsTd = document.createElement('td');
+
+      // due badges
+      const waterDue = needsWatering(plant, today);
+      const fertDue = needsFertilizing(plant, today);
+
+      if (waterDue) {
+        const badge = document.createElement('span');
+        badge.textContent = 'Water';
+        badge.classList.add('due-task', 'water-due');
+        actionsTd.appendChild(badge);
+        const btn = document.createElement('button');
+        btn.textContent = '✓';
+        btn.title = 'Mark watered';
+        btn.onclick = () => markAction(plant.id, 'watered');
+        actionsTd.appendChild(btn);
+      }
+
+      if (fertDue) {
+        const badge = document.createElement('span');
+        badge.textContent = 'Fertilize';
+        badge.classList.add('due-task', 'fert-due');
+        actionsTd.appendChild(badge);
+        const btn = document.createElement('button');
+        btn.textContent = '✓';
+        btn.title = 'Mark fertilized';
+        btn.onclick = () => markAction(plant.id, 'fertilized');
+        actionsTd.appendChild(btn);
+      }
+
       // delete with undo
       const delBtn = document.createElement('button');
       delBtn.textContent = '🗑️';
