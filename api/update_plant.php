@@ -15,6 +15,7 @@ $watering_frequency      = intval($_POST['watering_frequency'] ?? 0);
 $fertilizing_frequency   = intval($_POST['fertilizing_frequency'] ?? 0);
 $last_watered            = $_POST['last_watered'] ?: null;
 $last_fertilized         = $_POST['last_fertilized'] ?: null;
+$photo_url               = trim($_POST['photo_url'] ?? '');
 
 // Basic validation
 if (!$id || $name === '' || $watering_frequency <= 0) {
@@ -32,11 +33,12 @@ $stmt = $conn->prepare("
         watering_frequency = ?,
         fertilizing_frequency = ?,
         last_watered       = ?,
-        last_fertilized    = ?
+        last_fertilized    = ?,
+        photo_url          = ?
     WHERE id = ?
 ");
 $stmt->bind_param(
-    'sssiiisi',
+    'sssiisssi',
     $name,
     $species,
     $room,
@@ -44,6 +46,7 @@ $stmt->bind_param(
     $fertilizing_frequency,
     $last_watered,
     $last_fertilized,
+    $photo_url,
     $id
 );
 
