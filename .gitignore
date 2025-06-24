@@ -33,3 +33,5 @@ node_modules/
 *.swo
 *.tmp
 db.php
+uploads/*
+!uploads/.gitkeep

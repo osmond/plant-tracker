@@ -130,3 +130,7 @@ input, button {
   padding: 8px;
 
 }
+
+.plant-table img {
+  max-height: 50px;
+}
