@@ -11,9 +11,23 @@
 
 body {
     font-family: sans-serif;
+    line-height: 1.6;
     padding: calc(var(--spacing) * 2.5);
     margin: auto;
     max-width: 100%;
+}
+
+h1,
+h3 {
+  margin-bottom: calc(var(--spacing) * 2);
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.25rem;
 }
 
 @media (min-width: 700px) {
@@ -99,7 +113,7 @@ input, button {
   background: var(--color-surface);
   padding: var(--spacing);
   border-radius: var(--radius);
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 2);
   font-weight: bold;
 }
 
@@ -133,7 +147,7 @@ input, button {
 .plant-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 2);
 }
 .plant-table th,
 .plant-table td {
@@ -148,7 +162,7 @@ input, button {
   }
   .plant-table tr {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--spacing);
   }
   .plant-table th,
   .plant-table td {
