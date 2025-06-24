@@ -31,3 +31,20 @@ Set the following environment variables so `db.php` can establish the database c
 your environment (or defined in a `.env` file loaded by your web server) before
 running the application so credentials are not stored in the codebase.
 
+## Plant Events
+
+Actions like watering or fertilizing are logged to a `plant_events` table. Create
+the table using SQL similar to:
+
+```sql
+CREATE TABLE plant_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    plant_id INT NOT NULL,
+    event_type ENUM('watered', 'fertilized') NOT NULL,
+    event_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (plant_id) REFERENCES plants(id) ON DELETE CASCADE
+);
+```
+
+The endpoint `api/get_history.php` returns aggregated counts of events per plant.
+

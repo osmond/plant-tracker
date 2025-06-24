@@ -22,5 +22,14 @@ $stmt->bind_param("si", $today, $id);
 $stmt->execute();
 $stmt->close();
 
+$log = $conn->prepare(
+    "INSERT INTO plant_events (plant_id, event_type, event_time) VALUES (?, 'watered', NOW())"
+);
+if ($log) {
+    $log->bind_param('i', $id);
+    $log->execute();
+    $log->close();
+}
+
 echo json_encode(['status' => 'success', 'updated' => $today]);
 ?>
