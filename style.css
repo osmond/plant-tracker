@@ -38,7 +38,7 @@ h3 {
 
 @media (min-width: 700px) {
     body {
-        max-width: 600px;
+        max-width: 100%;
     }
 }
 form {
