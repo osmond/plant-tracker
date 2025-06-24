@@ -179,6 +179,7 @@ function showUndoBanner(plant) {
     banner.style.display = 'none';
     lastDeletedPlant = null;
     loadPlants();
+    loadCalendar();
   }, 5000);
 }
 
@@ -205,6 +206,7 @@ async function updatePlantInline(plant, field, newValue) {
     showToast('Failed to save change', true);
   } else {
     loadPlants();
+    loadCalendar();
   }
 }
 
@@ -422,7 +424,9 @@ document.addEventListener('DOMContentLoaded',()=>{
       else{ resp=await fetch('api/add_plant.php',{method:'POST',body:data}); }
       if(!resp.ok) throw new Error();
       showToast(editingPlantId?'Plant updated!':'Plant added!');
-      resetForm(); loadPlants();
+      resetForm();
+      loadPlants();
+      loadCalendar();
     }catch{
       showToast('An error occurred. Please try again.', true);
     }finally{
