@@ -83,7 +83,6 @@ form {
     margin-top: calc(var(--spacing) / 4);
 }
 input,
-button,
 select,
 textarea {
     padding: var(--spacing);
