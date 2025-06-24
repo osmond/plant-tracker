@@ -6,6 +6,10 @@ if ($dbConfig && file_exists($dbConfig)) {
     include '../db.php';
 }
 
+if (!headers_sent()) {
+    header('Content-Type: application/json');
+}
+
 // Basic validation
 if (!isset($_POST['name']) || trim($_POST['name']) === '') {
     @http_response_code(400);
@@ -40,11 +44,20 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
 }
 
 // Prepare and execute
-$stmt = $conn->prepare("
+$stmt = $conn->prepare(
+    "
     INSERT INTO plants (
         name, species, room, watering_frequency, fertilizing_frequency, last_watered, last_fertilized, photo_url
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-");
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+);
+if (!$stmt) {
+    @http_response_code(500);
+    echo json_encode(['error' => 'Database error', 'details' => $conn->error]);
+    if (!getenv('TESTING')) {
+        exit;
+    }
+    return;
+}
 $stmt->bind_param(
     "sssiisss",
     $name,
@@ -57,8 +70,16 @@ $stmt->bind_param(
     $photo_url
 );
 
-$stmt->execute();
+if (!$stmt->execute()) {
+    @http_response_code(500);
+    echo json_encode(['error' => 'Database error', 'details' => $stmt->error]);
+    if (!getenv('TESTING')) {
+        exit;
+    }
+    return;
+}
 $stmt->close();
 
+@http_response_code(201);
 echo json_encode(['status' => 'success']);
 ?>

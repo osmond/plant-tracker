@@ -6,6 +6,10 @@ if ($dbConfig && file_exists($dbConfig)) {
     include '../db.php';
 }
 
+if (!headers_sent()) {
+    header('Content-Type: application/json');
+}
+
 // Collect and sanitize
 $id                      = intval($_POST['id'] ?? 0);
 $name                    = trim($_POST['name'] ?? '');
@@ -32,7 +36,7 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
 
 // Basic validation
 if (!$id || $name === '' || $watering_frequency <= 0) {
-    http_response_code(400);
+    @http_response_code(400);
     echo json_encode(['error' => 'Missing or invalid fields']);
     exit;
 }
@@ -64,10 +68,11 @@ $stmt->bind_param(
 );
 
 if (!$stmt->execute()) {
-    http_response_code(500);
+    @http_response_code(500);
     echo json_encode(['error' => 'Database error', 'details' => $stmt->error]);
     exit;
 }
 
 $stmt->close();
+@http_response_code(200);
 echo json_encode(['status' => 'success']);
