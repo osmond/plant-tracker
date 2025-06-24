@@ -184,7 +184,8 @@ textarea {
 
 .plant-photo {
   width: 60px;
-  height: auto;
+  height: 60px;
+  object-fit: cover;
   border-radius: var(--radius);
 
 }
