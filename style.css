@@ -12,6 +12,8 @@
   --color-water-bg: #e0f7ff;
   --color-fert-bg: #e8f5e9;
   --color-highlight: #ffffcc;
+  --color-warning: #fb8c00;
+  --color-success: #388e3c;
 }
 
 body {
@@ -41,6 +43,29 @@ h3 {
 }
 form {
     margin-bottom: calc(var(--spacing) * 2.5);
+}
+
+#plant-form .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing);
+}
+
+#plant-form .form-control {
+    display: flex;
+    flex-direction: column;
+}
+
+#plant-form .helper-text {
+    font-size: 0.85em;
+    color: var(--color-text);
+    margin-top: calc(var(--spacing) / 4);
+}
+
+@media (min-width: 700px) {
+    #plant-form .form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 input,
 button,
@@ -188,6 +213,19 @@ button:focus {
   border: 1px solid var(--color-border);
   padding: var(--spacing);
 
+}
+
+/* urgency indicators */
+.plant-table tr.due-overdue > td {
+  border-color: var(--color-error);
+}
+
+.plant-table tr.due-today > td {
+  border-color: var(--color-warning);
+}
+
+.plant-table tr.due-future > td {
+  border-color: var(--color-success);
 }
 
 /* inline edit fields look like plain text */
