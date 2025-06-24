@@ -15,6 +15,16 @@ $watering_frequency      = intval($_POST['watering_frequency'] ?? 0);
 $fertilizing_frequency   = intval($_POST['fertilizing_frequency'] ?? 0);
 $last_watered            = $_POST['last_watered'] ?: null;
 $last_fertilized         = $_POST['last_fertilized'] ?: null;
+$notes                   = trim($_POST['notes'] ?? '');
+$photo_path              = null;
+if (isset($_FILES['photo']) && is_uploaded_file($_FILES['photo']['tmp_name'])) {
+    $ext = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+    $filename = uniqid('plant_', true) . ($ext ? ".{$ext}" : '');
+    $target = __DIR__ . '/../uploads/' . $filename;
+    if (move_uploaded_file($_FILES['photo']['tmp_name'], $target)) {
+        $photo_path = 'uploads/' . $filename;
+    }
+}
 
 // Basic validation
 if (!$id || $name === '' || $watering_frequency <= 0) {
@@ -32,11 +42,13 @@ $stmt = $conn->prepare("
         watering_frequency = ?,
         fertilizing_frequency = ?,
         last_watered       = ?,
-        last_fertilized    = ?
+        last_fertilized    = ?,
+        notes              = ?,
+        photo              = COALESCE(?, photo)
     WHERE id = ?
 ");
 $stmt->bind_param(
-    'sssiiisi',
+    'sssiiisssi',
     $name,
     $species,
     $room,
@@ -44,6 +56,8 @@ $stmt->bind_param(
     $fertilizing_frequency,
     $last_watered,
     $last_fertilized,
+    $notes,
+    $photo_path,
     $id
 );
 

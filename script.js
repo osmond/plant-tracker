@@ -114,6 +114,9 @@ async function updatePlantInline(plant, field, newValue) {
   data.append('room', plant.room);
   data.append('last_watered', plant.last_watered || '');
   data.append('last_fertilized', plant.last_fertilized || '');
+  if (plant.notes !== undefined) {
+    data.append('notes', plant.notes);
+  }
 
   data.set(field, newValue);
 
@@ -138,6 +141,10 @@ function populateForm(plant) {
   form.room.value = plant.room;
   form.last_watered.value = plant.last_watered;
   form.last_fertilized.value = plant.last_fertilized;
+  form.notes.value = plant.notes || '';
+  if (form.photo) {
+    form.photo.value = '';
+  }
   editingPlantId = plant.id;
 
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -216,7 +223,9 @@ async function loadPlants() {
     const table = document.createElement('table');
     table.classList.add('plant-table');
     const thead = document.createElement('thead');
-    thead.innerHTML = '<tr><th>Name</th><th>Species</th><th>Frequencies</th><th>Last Watered</th><th>Last Fertilized</th><th>Actions</th></tr>';
+
+    thead.innerHTML = '<tr><th>Name</th><th>Species</th><th>Frequencies</th><th>Notes</th><th>Photo</th><th>Actions</th></tr>';
+
     table.appendChild(thead);
     const tbody = document.createElement('tbody');
 
@@ -254,6 +263,21 @@ async function loadPlants() {
       freqTd.appendChild(roomInput);
       row.appendChild(freqTd);
 
+
+      const notesTd = document.createElement('td');
+      notesTd.textContent = plant.notes || '';
+      row.appendChild(notesTd);
+
+      const photoTd = document.createElement('td');
+      if (plant.photo) {
+        const img = document.createElement('img');
+        img.src = plant.photo;
+        img.alt = 'plant photo';
+        img.width = 50;
+        photoTd.appendChild(img);
+      }
+      row.appendChild(photoTd);
+
       // inline editable last watered date
       const waterTd = document.createElement('td');
       const waterInput = document.createElement('input');
@@ -271,6 +295,7 @@ async function loadPlants() {
       fertInput.onchange = () => updatePlantInline(plant, 'last_fertilized', fertInput.value);
       fertTd.appendChild(fertInput);
       row.appendChild(fertTd);
+
 
       const actionsTd = document.createElement('td');
 
