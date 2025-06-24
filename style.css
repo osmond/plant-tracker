@@ -71,6 +71,17 @@ input, button {
     color: var(--color-accent);
 }
 
+/* accented styles for due badges */
+.due-task.water-due {
+    border-left: 4px solid #4FC3F7;
+    background: #E3F2FD;
+}
+
+.due-task.fert-due {
+    border-left: 4px solid #66BB6A;
+    background: #E8F5E9;
+}
+
 .plant-item {
     border: 1px solid var(--color-border);
     padding: calc(var(--spacing) * 1.25);
