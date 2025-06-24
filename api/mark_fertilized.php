@@ -8,8 +8,18 @@ if ($dbConfig && file_exists($dbConfig)) {
     include '../db.php';
 }
 
+if (!headers_sent()) {
+    header('Content-Type: application/json');
+}
+
 $id = intval($_POST['id']);
 $snooze = isset($_POST['snooze_days']) ? intval($_POST['snooze_days']) : 0;
+
+if ($id <= 0) {
+    @http_response_code(400);
+    echo json_encode(['status' => 'error', 'error' => 'Invalid plant ID']);
+    return;
+}
 
 $date = new DateTime();
 if ($snooze > 0) {
@@ -18,9 +28,20 @@ if ($snooze > 0) {
 $today = $date->format('Y-m-d');
 
 $stmt = $conn->prepare("UPDATE plants SET last_fertilized = ? WHERE id = ?");
+if (!$stmt) {
+    @http_response_code(500);
+    echo json_encode(['status' => 'error', 'error' => 'Database error', 'details' => $conn->error]);
+    return;
+}
 $stmt->bind_param("si", $today, $id);
-$stmt->execute();
+if (!$stmt->execute()) {
+    @http_response_code(500);
+    echo json_encode(['status' => 'error', 'error' => 'Database error', 'details' => $stmt->error]);
+    return;
+}
 $stmt->close();
+
+@http_response_code(200);
 
 echo json_encode(['status' => 'success', 'updated' => $today]);
 ?>
