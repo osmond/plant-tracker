@@ -65,6 +65,85 @@ function needsFertilizing(plant, today = new Date()) {
   return next <= today;
 }
 
+// --- calendar helpers ---
+function getNextWaterDate(plant) {
+  if (!plant.last_watered) return new Date();
+  return addDays(new Date(plant.last_watered), plant.watering_frequency);
+}
+
+function getNextFertDate(plant) {
+  if (!plant.fertilizing_frequency) return null;
+  if (!plant.last_fertilized) return new Date();
+  return addDays(new Date(plant.last_fertilized), plant.fertilizing_frequency);
+}
+
+async function loadCalendar() {
+  const res = await fetch('api/get_plants.php');
+  const plants = await res.json();
+  const container = document.getElementById('calendar');
+  if (!container) return;
+  const daysToShow = 7;
+  const start = new Date();
+  start.setHours(0,0,0,0);
+  container.innerHTML = '';
+
+  const dayEls = [];
+  for (let i=0;i<daysToShow;i++) {
+    const d = addDays(start,i);
+    const dayEl = document.createElement('div');
+    dayEl.classList.add('cal-day');
+    dayEl.dataset.date = d.toISOString().split('T')[0];
+    dayEl.innerHTML = `<div class="cal-day-header">${d.toLocaleDateString(undefined,{weekday:'short',month:'numeric',day:'numeric'})}</div>`;
+    dayEl.addEventListener('dragover',e=>e.preventDefault());
+    dayEl.addEventListener('drop',e=>handleDrop(e, dayEl.dataset.date, plants));
+    container.appendChild(dayEl);
+    dayEls.push(dayEl);
+  }
+
+  function addEvent(plant,type,date) {
+    const dateStr = date.toISOString().split('T')[0];
+    const dayEl = container.querySelector(`.cal-day[data-date="${dateStr}"]`);
+    if (!dayEl) return;
+    const ev = document.createElement('div');
+    ev.classList.add('cal-event', type==='water' ? 'water-due' : 'fert-due');
+    ev.textContent = `${plant.name} (${type==='water'? 'Water':'Fert'})`;
+    ev.draggable = true;
+    ev.dataset.id = plant.id;
+    ev.dataset.type = type;
+    ev.dataset.date = dateStr;
+    ev.addEventListener('dragstart',e=>{
+      e.dataTransfer.setData('text/plain', JSON.stringify({id:plant.id,type,date:dateStr}));
+    });
+    dayEl.appendChild(ev);
+  }
+
+  plants.forEach(p=>{
+    const w = getNextWaterDate(p);
+    addEvent(p,'water',w);
+    const f = getNextFertDate(p);
+    if (f) addEvent(p,'fert',f);
+  });
+}
+
+async function handleDrop(e,newDate,plants) {
+  e.preventDefault();
+  const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+  const plant = plants.find(p=>p.id==data.id);
+  if (!plant) return;
+  const drop = new Date(newDate);
+  if (data.type==='water') {
+    const newLast = addDays(drop,-plant.watering_frequency).toISOString().split('T')[0];
+    await updatePlantInline(plant,'last_watered',newLast);
+    plant.last_watered = newLast;
+  } else {
+    const newLast = addDays(drop,-plant.fertilizing_frequency).toISOString().split('T')[0];
+    await updatePlantInline(plant,'last_fertilized',newLast);
+    plant.last_fertilized = newLast;
+  }
+  loadCalendar();
+  loadPlants();
+}
+
 // --- mark watered/fertilized / snooze ---
 async function markAction(id, type, days = 0) {
   window.lastUpdatedPlantId = id;
@@ -78,6 +157,7 @@ async function markAction(id, type, days = 0) {
       throw new Error(`Request failed with status ${resp.status}`);
     }
     loadPlants();
+    loadCalendar();
   } catch (err) {
     console.error('Failed to mark action:', err);
     showToast('Failed to update plant. Please try again.', true);
@@ -356,4 +436,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   const df = document.getElementById('due-filter');
   if (df) df.addEventListener('change', loadPlants);
   loadPlants();
+  loadCalendar();
 });

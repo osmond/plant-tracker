@@ -159,3 +159,35 @@ input, button {
   padding: var(--spacing);
 
 }
+
+/* simple calendar styles */
+#calendar {
+  display: flex;
+  margin-top: calc(var(--spacing) * 2);
+}
+
+#calendar .cal-day {
+  flex: 1;
+  border: 1px solid var(--color-border);
+  margin-right: calc(var(--spacing) / 2);
+  padding: var(--spacing);
+  border-radius: var(--radius);
+  min-height: 120px;
+}
+
+#calendar .cal-day:last-child {
+  margin-right: 0;
+}
+
+#calendar .cal-day-header {
+  font-weight: bold;
+  margin-bottom: calc(var(--spacing) / 2);
+}
+
+#calendar .cal-event {
+  background: var(--color-surface);
+  margin-bottom: calc(var(--spacing) / 2);
+  padding: calc(var(--spacing) / 2);
+  border-radius: var(--radius);
+  cursor: move;
+}

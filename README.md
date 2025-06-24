@@ -2,6 +2,7 @@
 
 This is a simple PHP-based application for tracking plants.
 You can filter plants that need watering or fertilizing to focus on urgent tasks.
+An optional calendar view lets you drag tasks to reschedule upcoming care dates.
 
 ## Running Tests
 
