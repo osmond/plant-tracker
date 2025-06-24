@@ -152,6 +152,9 @@ function resetForm() {
   form.querySelector('button[type="submit"]').textContent = 'Add Plant';
   document.getElementById('cancel-edit').style.display = 'none';
   document.getElementById('search-input').value = '';
+  form.style.display = 'none';
+  const btn = document.getElementById('show-add-form');
+  if (btn) btn.style.display = 'inline-block';
 }
 
 // --- main render & filter loop ---
@@ -308,6 +311,16 @@ async function loadPlants() {
 
 // --- init ---
 document.addEventListener('DOMContentLoaded',()=>{
+  const showBtn = document.getElementById('show-add-form');
+  const form = document.getElementById('plant-form');
+  if (showBtn && form) {
+    showBtn.addEventListener('click', () => {
+      form.style.display = 'block';
+      showBtn.style.display = 'none';
+      const cancel = document.getElementById('cancel-edit');
+      if (cancel) cancel.style.display = 'inline-block';
+    });
+  }
   document.getElementById('undo-btn').addEventListener('click',()=>{
     clearTimeout(deleteTimer);
     document.getElementById('undo-banner').style.display='none';
