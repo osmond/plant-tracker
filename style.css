@@ -1,8 +1,23 @@
+:root {
+    --spacing: 8px;
+}
+
 body {
     font-family: sans-serif;
-    padding: 20px;
+    line-height: 1.6;
+    padding: calc(var(--spacing) * 2.5);
     margin: auto;
     max-width: 100%;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: calc(var(--spacing) * 2);
+}
+
+h3 {
+    font-size: 1.25rem;
+    margin-bottom: calc(var(--spacing) * 1.5);
 }
 
 @media (min-width: 700px) {
@@ -11,43 +26,43 @@ body {
     }
 }
 form {
-    margin-bottom: 20px;
+    margin-bottom: calc(var(--spacing) * 2.5);
 }
 input, button {
-    padding: 8px;
-    margin: 4px;
+    padding: calc(var(--spacing) * 1);
+    margin: calc(var(--spacing) * 0.5);
 }
 .visually-hidden {
     position: absolute !important;
     width: 1px;
     height: 1px;
     padding: 0;
-    margin: -1px;
+    margin: calc(var(--spacing) * -0.125);
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
 }
 #plant-list {
-    margin-top: 20px;
+    margin-top: calc(var(--spacing) * 2.5);
 }
 .error {
     color: red;
     font-size: 0.85em;
-    margin-top: 2px;
+    margin-top: calc(var(--spacing) * 0.25);
     background-color: #ffe6e6;
     border-left: 4px solid red;
-    padding: 4px;
-    border-radius: 4px;
+    padding: calc(var(--spacing) * 0.5);
+    border-radius: calc(var(--spacing) * 0.5);
 }
 .error:empty {
     display: none;
 }
 .due-task {
-    padding: 4px 8px;
-    border-radius: 5px;
+    padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 1);
+    border-radius: calc(var(--spacing) * 0.625);
     font-weight: bold;
-    margin-left: 10px;
+    margin-left: calc(var(--spacing) * 1.25);
 }
 
 .water-due {
@@ -62,9 +77,9 @@ input, button {
 
 .plant-item {
     border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 6px;
+    padding: calc(var(--spacing) * 1.25);
+    margin-bottom: calc(var(--spacing) * 1);
+    border-radius: calc(var(--spacing) * 0.75);
 }
 .just-updated {
   animation: highlight-fade 2s ease-in-out;
@@ -86,22 +101,22 @@ input, button {
 }
 .summary-banner {
   background: #f0f8ff;
-  padding: 8px;
-  border-radius: 5px;
-  margin-bottom: 1rem;
+  padding: calc(var(--spacing) * 1);
+  border-radius: calc(var(--spacing) * 0.625);
+  margin-bottom: calc(var(--spacing) * 2);
   font-weight: bold;
 }
 
 /* toast notification */
 .toast {
   position: fixed;
-  bottom: 20px;
+  bottom: calc(var(--spacing) * 2.5);
   left: 50%;
   transform: translateX(-50%);
   background: #333;
   color: #fff;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: calc(var(--spacing) * 1.25) calc(var(--spacing) * 2.5);
+  border-radius: calc(var(--spacing) * 0.625);
   z-index: 1000;
   opacity: 0;
   pointer-events: none;
@@ -122,11 +137,11 @@ input, button {
 .plant-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 2);
 }
 .plant-table th,
 .plant-table td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: calc(var(--spacing) * 1);
 
 }
