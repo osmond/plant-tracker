@@ -53,6 +53,28 @@ textarea {
     border: 1px solid var(--color-border);
     background-color: var(--color-bg);
     appearance: none;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:hover,
+button:focus {
+    background-color: var(--color-surface);
+    transform: translateY(-2px);
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.action-btn .icon {
+    width: 1em;
+    height: 1em;
 }
 .visually-hidden {
     position: absolute !important;

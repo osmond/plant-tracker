@@ -2,6 +2,17 @@ let editingPlantId = null;
 let lastDeletedPlant = null;
 let deleteTimer = null;
 
+const ICONS = {
+  trash: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  water: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>',
+  fert: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+  add: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  edit: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>',
+  cancel: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  undo: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-5-5 5-5"/><path d="M4 9h7a4 4 0 1 1 0 8h-1"/></svg>',
+  check: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+};
+
 function showToast(msg, isError = false) {
   const toast = document.getElementById('toast');
   if (!toast) return;
@@ -272,7 +283,7 @@ function populateForm(plant) {
   editingPlantId = plant.id;
 
   const submitBtn = form.querySelector('button[type="submit"]');
-  submitBtn.textContent = 'Update Plant';
+  submitBtn.innerHTML = ICONS.check + '<span>Update Plant</span>';
   document.getElementById('cancel-edit').style.display = 'inline-block';
 }
 
@@ -280,7 +291,7 @@ function resetForm() {
   const form = document.getElementById('plant-form');
   form.reset();
   editingPlantId = null;
-  form.querySelector('button[type="submit"]').textContent = 'Add Plant';
+  form.querySelector('button[type="submit"]').innerHTML = ICONS.add + '<span>Add Plant</span>';
   document.getElementById('cancel-edit').style.display = 'none';
   document.getElementById('search-input').value = '';
   form.style.display = 'none';
@@ -422,31 +433,26 @@ async function loadPlants() {
       const fertDue = needsFertilizing(plant, today);
 
       if (waterDue) {
-        const badge = document.createElement('span');
-        badge.textContent = 'Water';
-        badge.classList.add('due-task', 'water-due');
-        actionsTd.appendChild(badge);
         const btn = document.createElement('button');
-        btn.textContent = '✓';
+        btn.classList.add('action-btn', 'due-task', 'water-due');
+        btn.innerHTML = ICONS.water + '<span>Water</span>';
         btn.title = 'Mark watered';
         btn.onclick = () => markAction(plant.id, 'watered');
         actionsTd.appendChild(btn);
       }
 
       if (fertDue) {
-        const badge = document.createElement('span');
-        badge.textContent = 'Fertilize';
-        badge.classList.add('due-task', 'fert-due');
-        actionsTd.appendChild(badge);
         const btn = document.createElement('button');
-        btn.textContent = '✓';
+        btn.classList.add('action-btn', 'due-task', 'fert-due');
+        btn.innerHTML = ICONS.fert + '<span>Fertilize</span>';
         btn.title = 'Mark fertilized';
         btn.onclick = () => markAction(plant.id, 'fertilized');
         actionsTd.appendChild(btn);
       }
 
       const editBtn = document.createElement('button');
-      editBtn.textContent = 'Edit';
+      editBtn.classList.add('action-btn');
+      editBtn.innerHTML = ICONS.edit + '<span>Edit</span>';
       editBtn.type = 'button';
       editBtn.onclick = () => {
         populateForm(plant);
@@ -458,7 +464,8 @@ async function loadPlants() {
 
       // delete with undo
       const delBtn = document.createElement('button');
-      delBtn.textContent = '🗑️';
+      delBtn.classList.add('action-btn');
+      delBtn.innerHTML = ICONS.trash + '<span>Delete</span>';
       delBtn.onclick = () => showUndoBanner(plant);
       actionsTd.appendChild(delBtn);
       row.appendChild(actionsTd);
@@ -485,7 +492,14 @@ async function loadPlants() {
 document.addEventListener('DOMContentLoaded',()=>{
   const showBtn = document.getElementById('show-add-form');
   const form = document.getElementById('plant-form');
+  const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
   if (showBtn && form) {
+    showBtn.classList.add('action-btn');
+    showBtn.innerHTML = ICONS.add + '<span>Add a Plant</span>';
+    if (submitBtn) {
+      submitBtn.classList.add('action-btn');
+      submitBtn.innerHTML = ICONS.add + '<span>Add Plant</span>';
+    }
     showBtn.addEventListener('click', () => {
       form.style.display = 'block';
       showBtn.style.display = 'none';
@@ -493,11 +507,21 @@ document.addEventListener('DOMContentLoaded',()=>{
       if (cancel) cancel.style.display = 'inline-block';
     });
   }
+  const cancelBtn = document.getElementById('cancel-edit');
+  if (cancelBtn) {
+    cancelBtn.classList.add('action-btn');
+    cancelBtn.innerHTML = ICONS.cancel + '<span>Cancel</span>';
+  }
   document.getElementById('undo-btn').addEventListener('click',()=>{
     clearTimeout(deleteTimer);
     document.getElementById('undo-banner').style.display='none';
     lastDeletedPlant=null;
   });
+  const undoBtn = document.getElementById('undo-btn');
+  if (undoBtn) {
+    undoBtn.classList.add('action-btn');
+    undoBtn.innerHTML = ICONS.undo + '<span>Undo</span>';
+  }
 
   document.getElementById('search-input').addEventListener('input',loadPlants);
   document.getElementById('cancel-edit').onclick=resetForm;
@@ -507,7 +531,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     const data=new FormData(form);
     const btn=form.querySelector('button[type="submit"]');
     btn.disabled=true;
-    btn.textContent=editingPlantId? 'Updating...':'Adding...';
+    btn.innerHTML = (editingPlantId ? ICONS.check : ICONS.add) +
+                    '<span>' + (editingPlantId ? 'Updating...' : 'Adding...') + '</span>';
     try{
       let resp;
       if(editingPlantId){ data.append('id', editingPlantId); resp=await fetch('api/update_plant.php',{method:'POST',body:data}); }
@@ -521,7 +546,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       showToast('An error occurred. Please try again.', true);
     }finally{
       btn.disabled=false;
-      btn.textContent=editingPlantId? 'Update Plant':'Add Plant';
+      btn.innerHTML = ICONS.add + '<span>Add Plant</span>';
     }
   });
 
