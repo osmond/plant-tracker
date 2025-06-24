@@ -1,5 +1,4 @@
 <?php
-
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -20,7 +19,6 @@ $stmt = $conn->prepare(
     "SELECT plant_id,
             SUM(event_type='watered') AS watered,
             SUM(event_type='fertilized') AS fertilized
-       FROM plant_events
       GROUP BY plant_id"
 );
 if ($stmt && $stmt->execute()) {
@@ -34,7 +32,6 @@ if ($stmt && $stmt->execute()) {
 }
 
 
-header('Content-Type: application/json');
 
 $result = $conn->query(
     "SELECT name, watering_frequency, fertilizing_frequency FROM plants"
@@ -67,4 +64,3 @@ $data = [
 
 
 echo json_encode($data);
-?>

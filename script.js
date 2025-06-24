@@ -184,126 +184,98 @@ async function loadPlants() {
   document.getElementById('summary').textContent =
     `🔔 ${wateringDue} need watering • ${fertilizingDue} need fertilizing`;
 
-  // group + filter
-  list.innerHTML = '';
-  const roomsMap = new Map();
-  plants.forEach(plant => {
-    if (selectedRoom !== 'all' && plant.room !== selectedRoom) return;
-    const haystack = (plant.name + ' ' + plant.species).toLowerCase();
-    if (searchQuery && !haystack.includes(searchQuery)) return;
+}
+list.innerHTML = '';
+const sortBy = document.getElementById('sort-toggle').value || 'name';
+const filtered = plants.filter(p => {
+  if (selectedRoom !== 'all' && p.room !== selectedRoom) return false;
+  const haystack = (p.name + ' ' + p.species).toLowerCase();
+  if (searchQuery && !haystack.includes(searchQuery)) return false;
+  const waterDue = needsWatering(p, today);
+  const fertDue = needsFertilizing(p, today);
+  if (dueFilter === 'water' && !waterDue) return false;
+  if (dueFilter === 'fert' && !fertDue) return false;
+  if (dueFilter === 'any' && !(waterDue || fertDue)) return false;
+  return true;
+});
+filtered.sort((a,b) => sortBy==='due'
+  ? getSoonestDueDate(a)-getSoonestDueDate(b)
+  : a.name.localeCompare(b.name)
+);
+const table = document.createElement('table');
+table.id = 'plant-table';
+table.classList.add('plant-table');
+table.innerHTML = '<thead><tr><th>Name</th><th>Species</th><th>Frequencies</th><th>Actions</th></tr></thead>';
+const tbody = document.createElement('tbody');
+filtered.forEach(plant => {
+  const row = document.createElement('tr');
+  if (plant.id===window.lastUpdatedPlantId) {
+    row.classList.add('just-updated');
+    setTimeout(()=>row.classList.remove('just-updated'),2000);
+  }
+  const nameTd = document.createElement('td');
+  const nameInput = document.createElement('input');
+  nameInput.value = plant.name;
+  nameInput.onblur = () => updatePlantInline(plant,'name',nameInput.value);
+  nameTd.appendChild(nameInput);
+  row.appendChild(nameTd);
+  const specTd = document.createElement('td');
+  const specInput = document.createElement('input');
+  specInput.value = plant.species;
+  specInput.onblur = () => updatePlantInline(plant,'species',specInput.value);
+  specTd.appendChild(specInput);
+  row.appendChild(specTd);
+  const freqTd = document.createElement('td');
+  freqTd.textContent = `water every ${plant.watering_frequency} days` +
+                       (plant.fertilizing_frequency?`, fertilize every ${plant.fertilizing_frequency} days`:``);
+  const roomInput = document.createElement('input');
+  roomInput.value = plant.room;
+  roomInput.onblur = () => updatePlantInline(plant,'room',roomInput.value);
+  freqTd.appendChild(document.createElement('br'));
+  freqTd.appendChild(roomInput);
+  row.appendChild(freqTd);
+  const actionsTd = document.createElement('td');
+  const waterDue = needsWatering(plant, today);
+  const fertDue = needsFertilizing(plant, today);
+  if (waterDue) {
+    const badge = document.createElement('span');
+    badge.textContent = 'Water';
+    badge.classList.add('due-task','water-due');
+    actionsTd.appendChild(badge);
+    const btn = document.createElement('button');
+    btn.textContent = '✓';
+    btn.title = 'Mark watered';
+    btn.onclick = () => markAction(plant.id,'watered');
+    actionsTd.appendChild(btn);
+  }
+  if (fertDue) {
+    const badge = document.createElement('span');
+    badge.textContent = 'Fertilize';
+    badge.classList.add('due-task','fert-due');
+    actionsTd.appendChild(badge);
+    const btn = document.createElement('button');
+    btn.textContent = '✓';
+    btn.title = 'Mark fertilized';
+    btn.onclick = () => markAction(plant.id,'fertilized');
+    actionsTd.appendChild(btn);
+  }
+  const delBtn = document.createElement('button');
+  delBtn.textContent = '🗑️';
+  delBtn.onclick = () => showUndoBanner(plant);
+  actionsTd.appendChild(delBtn);
+  row.appendChild(actionsTd);
+  tbody.appendChild(row);
+});
+table.appendChild(tbody);
+list.appendChild(table);
 
-    const waterDue = needsWatering(plant, today);
-    const fertDue = needsFertilizing(plant, today);
-    if (dueFilter === 'water' && !waterDue) return;
-    if (dueFilter === 'fert' && !fertDue) return;
-    if (dueFilter === 'any' && !(waterDue || fertDue)) return;
-
-    if (!roomsMap.has(plant.room)) roomsMap.set(plant.room, []);
-    roomsMap.get(plant.room).push(plant);
-  });
-
-  const sortBy = document.getElementById('sort-toggle').value || 'name';
-  [...roomsMap.entries()].forEach(([room, roomPlants]) => {
-    roomPlants.sort((a,b) => sortBy==='due'
-      ? getSoonestDueDate(a)-getSoonestDueDate(b)
-      : a.name.localeCompare(b.name)
-    );
-
-    const header = document.createElement('h3');
-    header.textContent = room || 'No Room';
-    list.appendChild(header);
-
-    const table = document.createElement('table');
-    table.classList.add('plant-table');
-    const thead = document.createElement('thead');
-    thead.innerHTML = '<tr><th>Name</th><th>Species</th><th>Frequencies</th><th>Actions</th></tr>';
-    table.appendChild(thead);
-    const tbody = document.createElement('tbody');
-
-    roomPlants.forEach(plant => {
-      const row = document.createElement('tr');
-      if (plant.id===window.lastUpdatedPlantId) {
-        row.classList.add('just-updated');
-        setTimeout(()=>row.classList.remove('just-updated'),2000);
-      }
-
-      // inline editable Name
-      const nameTd = document.createElement('td');
-      const nameInput = document.createElement('input');
-      nameInput.value = plant.name;
-      nameInput.onblur = () => updatePlantInline(plant,'name',nameInput.value);
-      nameTd.appendChild(nameInput);
-      row.appendChild(nameTd);
-
-      // inline editable Species
-      const specTd = document.createElement('td');
-      const specInput = document.createElement('input');
-      specInput.value = plant.species;
-      specInput.onblur = () => updatePlantInline(plant,'species',specInput.value);
-      specTd.appendChild(specInput);
-      row.appendChild(specTd);
-
-      // static frequencies and editable room
-      const freqTd = document.createElement('td');
-      freqTd.textContent = `water every ${plant.watering_frequency} days` +
-                           (plant.fertilizing_frequency?`, fertilize every ${plant.fertilizing_frequency} days`:``);
-      const roomInput = document.createElement('input');
-      roomInput.value = plant.room;
-      roomInput.onblur = () => updatePlantInline(plant,'room',roomInput.value);
-      freqTd.appendChild(document.createElement('br'));
-      freqTd.appendChild(roomInput);
-      row.appendChild(freqTd);
-
-      const actionsTd = document.createElement('td');
-
-      // due badges
-      const waterDue = needsWatering(plant, today);
-      const fertDue = needsFertilizing(plant, today);
-
-      if (waterDue) {
-        const badge = document.createElement('span');
-        badge.textContent = 'Water';
-        badge.classList.add('due-task', 'water-due');
-        actionsTd.appendChild(badge);
-        const btn = document.createElement('button');
-        btn.textContent = '✓';
-        btn.title = 'Mark watered';
-        btn.onclick = () => markAction(plant.id, 'watered');
-        actionsTd.appendChild(btn);
-      }
-
-      if (fertDue) {
-        const badge = document.createElement('span');
-        badge.textContent = 'Fertilize';
-        badge.classList.add('due-task', 'fert-due');
-        actionsTd.appendChild(badge);
-        const btn = document.createElement('button');
-        btn.textContent = '✓';
-        btn.title = 'Mark fertilized';
-        btn.onclick = () => markAction(plant.id, 'fertilized');
-        actionsTd.appendChild(btn);
-      }
-
-      // delete with undo
-      const delBtn = document.createElement('button');
-      delBtn.textContent = '🗑️';
-      delBtn.onclick = () => showUndoBanner(plant);
-      actionsTd.appendChild(delBtn);
-      row.appendChild(actionsTd);
-
-      tbody.appendChild(row);
-    });
-    table.appendChild(tbody);
-    list.appendChild(table);
-  });
-
-  // refresh room filter
-  const filter = document.getElementById('room-filter');
-  Array.from(filter.options).map(o=>o.value);
-  roomsMap.forEach((_arr,room)=>{
-    if (!Array.from(filter.options).map(o=>o.value).includes(room)) {
-      const opt = document.createElement('option');
-      opt.value=room; opt.textContent=room;
+// refresh room filter
+  const filter = document.getElementById("room-filter");
+  const existing = Array.from(filter.options).map(o=>o.value);
+  plants.forEach(p=>{
+    if(!existing.includes(p.room)){
+      const opt=document.createElement("option");
+      opt.value=p.room; opt.textContent=p.room;
       filter.appendChild(opt);
     }
   });
