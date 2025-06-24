@@ -396,9 +396,10 @@ button:focus {
 }
 
 .plant-summary {
-  display: flex;
-  gap: calc(var(--spacing));
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  column-gap: calc(var(--spacing));
+  row-gap: calc(var(--spacing));
   margin-bottom: calc(var(--spacing));
 }
 
