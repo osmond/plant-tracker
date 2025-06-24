@@ -22,7 +22,9 @@ function validateForm(form) {
 
 function addDays(date, days) {
   const d = new Date(date);
-  d.setDate(d.getDate() + parseInt(days));
+  const incr = parseInt(days, 10);
+  if (isNaN(incr)) return d;
+  d.setDate(d.getDate() + incr);
   return d;
 }
 
