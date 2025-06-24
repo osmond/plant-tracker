@@ -22,39 +22,59 @@
     <button id="show-add-form">Add a Plant</button>
 
     <form id="plant-form" style="display:none;">
-        <label for="name">Plant Name</label>
-        <input type="text" name="name" id="name" placeholder="Plant Name" />
-        <div class="error" id="name-error"></div>
+        <div class="form-group">
+            <label for="name">Plant Name</label>
+            <input type="text" name="name" id="name" placeholder="Plant Name" />
+            <div class="error" id="name-error"></div>
+        </div>
 
-        <label for="species">Species</label>
-        <input type="text" name="species" id="species" placeholder="Species" />
-        <div class="error" id="species-error"></div>
+        <div class="form-group">
+            <label for="species">Species</label>
+            <input type="text" name="species" id="species" placeholder="Species" />
+            <div class="error" id="species-error"></div>
+        </div>
 
-        <label for="watering_frequency">Watering Frequency (days)</label>
-        <input type="number" name="watering_frequency" id="watering_frequency" />
-        <div class="error" id="watering_frequency-error"></div>
+        <div class="form-group">
+            <label for="watering_frequency">Watering Frequency (days)</label>
+            <input type="number" name="watering_frequency" id="watering_frequency" />
+            <div class="error" id="watering_frequency-error"></div>
+        </div>
 
-        <label for="fertilizing_frequency">Fertilizing Frequency (days)</label>
-        <input type="number" name="fertilizing_frequency" id="fertilizing_frequency" />
+        <div class="form-group">
+            <label for="fertilizing_frequency">Fertilizing Frequency (days)</label>
+            <input type="number" name="fertilizing_frequency" id="fertilizing_frequency" />
+        </div>
 
-        <label for="room">Room</label>
-        <input type="text" name="room" id="room" placeholder="Room" />
+        <div class="form-group">
+            <label for="room">Room</label>
+            <input type="text" name="room" id="room" placeholder="Room" />
+        </div>
 
-        <label for="last_watered">Last Watered</label>
-        <input type="date" name="last_watered" id="last_watered" />
+        <div class="form-group">
+            <label for="last_watered">Last Watered</label>
+            <input type="date" name="last_watered" id="last_watered" />
+        </div>
 
-        <label for="last_fertilized">Last Fertilized</label>
-        <input type="date" name="last_fertilized" id="last_fertilized" />
+        <div class="form-group">
+            <label for="last_fertilized">Last Fertilized</label>
+            <input type="date" name="last_fertilized" id="last_fertilized" />
+        </div>
 
-        <label for="notes">Notes</label>
-        <textarea name="notes" id="notes" placeholder="e.g. moved to direct sun"></textarea>
+        <div class="form-group full-width">
+            <label for="notes">Notes</label>
+            <textarea name="notes" id="notes" placeholder="e.g. moved to direct sun"></textarea>
+        </div>
 
-        <label for="photo">Photo</label>
-        <input type="file" name="photo" id="photo" accept="image/*" />
-        <input type="hidden" name="photo_path" id="photo_path_hidden" />
+        <div class="form-group full-width">
+            <label for="photo">Photo</label>
+            <input type="file" name="photo" id="photo" accept="image/*" />
+            <input type="hidden" name="photo_path" id="photo_path_hidden" />
+        </div>
 
-        <button type="submit">Add Plant</button>
-        <button type="button" id="cancel-edit" style="display:none;">Cancel</button>
+        <div class="form-actions">
+            <button type="submit">Add Plant</button>
+            <button type="button" id="cancel-edit" style="display:none;">Cancel</button>
+        </div>
     </form>
 
     <div style="margin-top: calc(var(--spacing) * 2);">

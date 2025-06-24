@@ -38,9 +38,40 @@ h3 {
 form {
     margin-bottom: calc(var(--spacing) * 2.5);
 }
-input, button {
+
+input,
+button,
+textarea {
     padding: var(--spacing);
     margin: calc(var(--spacing) / 2);
+}
+
+#plant-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--spacing);
+}
+
+@media (min-width: 600px) {
+    #plant-form {
+        grid-template-columns: 1fr 1fr;
+    }
+    #plant-form .full-width {
+        grid-column: span 2;
+    }
+    .form-actions {
+        grid-column: span 2;
+    }
 }
 .visually-hidden {
     position: absolute !important;
@@ -170,10 +201,11 @@ input, button {
 .plant-table td {
   border: 1px solid var(--color-border);
   padding: var(--spacing);
+  word-break: break-word;
 
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   body {
     font-size: 1.1em;
   }
