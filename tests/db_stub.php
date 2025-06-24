@@ -4,11 +4,6 @@ if (!class_exists('MockStmt')) {
         public function bind_param(...$args) {}
         public function execute() { return true; }
         public function close() {}
-        public function get_result() {
-            return new class {
-                public function fetch_assoc() { return null; }
-            };
-        }
     }
 }
 
@@ -17,13 +12,6 @@ if (!class_exists('MockMysqli')) {
         public $connect_error = '';
         public function prepare($query) {
             return new MockStmt();
-        }
-        public function query($query) {
-            return new class {
-                public function fetch_assoc() {
-                    return null;
-                }
-            };
         }
     }
 }
