@@ -223,7 +223,9 @@ async function loadPlants() {
     const table = document.createElement('table');
     table.classList.add('plant-table');
     const thead = document.createElement('thead');
+
     thead.innerHTML = '<tr><th>Name</th><th>Species</th><th>Frequencies</th><th>Notes</th><th>Photo</th><th>Actions</th></tr>';
+
     table.appendChild(thead);
     const tbody = document.createElement('tbody');
 
@@ -261,6 +263,7 @@ async function loadPlants() {
       freqTd.appendChild(roomInput);
       row.appendChild(freqTd);
 
+
       const notesTd = document.createElement('td');
       notesTd.textContent = plant.notes || '';
       row.appendChild(notesTd);
@@ -274,6 +277,25 @@ async function loadPlants() {
         photoTd.appendChild(img);
       }
       row.appendChild(photoTd);
+
+      // inline editable last watered date
+      const waterTd = document.createElement('td');
+      const waterInput = document.createElement('input');
+      waterInput.type = 'date';
+      waterInput.value = plant.last_watered || '';
+      waterInput.onchange = () => updatePlantInline(plant, 'last_watered', waterInput.value);
+      waterTd.appendChild(waterInput);
+      row.appendChild(waterTd);
+
+      // inline editable last fertilized date
+      const fertTd = document.createElement('td');
+      const fertInput = document.createElement('input');
+      fertInput.type = 'date';
+      fertInput.value = plant.last_fertilized || '';
+      fertInput.onchange = () => updatePlantInline(plant, 'last_fertilized', fertInput.value);
+      fertTd.appendChild(fertInput);
+      row.appendChild(fertTd);
+
 
       const actionsTd = document.createElement('td');
 

@@ -128,7 +128,27 @@ input, button {
 .plant-table td {
   border: 1px solid #ddd;
   padding: 8px;
+}
 
+/* more compact date inputs in table */
+.plant-table input[type="date"] {
+  padding: 4px;
+  width: 9em;
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 1.1em;
+  }
+  .plant-table tr {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .plant-table th,
+  .plant-table td {
+    display: block;
+    width: 100%;
+  }
 }
 
 .plant-table img {
