@@ -11,9 +11,23 @@
 
 body {
     font-family: sans-serif;
+    line-height: 1.6;
     padding: calc(var(--spacing) * 2.5);
     margin: auto;
     max-width: 100%;
+}
+
+h1,
+h3 {
+  margin-bottom: calc(var(--spacing) * 2);
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.25rem;
 }
 
 @media (min-width: 700px) {
@@ -71,11 +85,28 @@ input, button {
     color: var(--color-accent);
 }
 
+/* accented styles for due badges */
+.due-task.water-due {
+    border-left: 4px solid #4FC3F7;
+    background: #E3F2FD;
+}
+
+.due-task.fert-due {
+    border-left: 4px solid #66BB6A;
+    background: #E8F5E9;
+}
+
 .plant-item {
-    border: 1px solid var(--color-border);
-    padding: calc(var(--spacing) * 1.25);
+    padding: var(--spacing);
     margin-bottom: var(--spacing);
     border-radius: var(--radius);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.plant-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 .just-updated {
   animation: highlight-fade 2s ease-in-out;
@@ -99,7 +130,7 @@ input, button {
   background: var(--color-surface);
   padding: var(--spacing);
   border-radius: var(--radius);
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 2);
   font-weight: bold;
 }
 
@@ -146,7 +177,7 @@ input, button {
 .plant-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) * 2);
 }
 .plant-table th,
 .plant-table td {
@@ -161,7 +192,7 @@ input, button {
   }
   .plant-table tr {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--spacing);
   }
   .plant-table th,
   .plant-table td {
