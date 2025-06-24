@@ -222,16 +222,45 @@ button:focus {
 }
 
 /* urgency indicators */
-.plant-table tr.due-overdue > td {
-  border-color: var(--color-error);
+.plant-table tbody tr {
+  position: relative;
+  transition: background-color 0.3s ease;
 }
 
-.plant-table tr.due-today > td {
-  border-color: var(--color-warning);
+.plant-table tr.due-overdue {
+  background-color: rgba(176, 0, 32, 0.05);
 }
 
-.plant-table tr.due-future > td {
-  border-color: var(--color-success);
+.plant-table tr.due-today {
+  background-color: rgba(251, 140, 0, 0.05);
+}
+
+.plant-table tr.due-future {
+  background-color: rgba(56, 142, 60, 0.05);
+}
+
+.plant-table tr.due-overdue::before,
+.plant-table tr.due-today::before,
+.plant-table tr.due-future::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 6px;
+  border-radius: 4px 0 0 4px;
+}
+
+.plant-table tr.due-overdue::before {
+  background: var(--color-error);
+}
+
+.plant-table tr.due-today::before {
+  background: var(--color-warning);
+}
+
+.plant-table tr.due-future::before {
+  background: var(--color-success);
 }
 
 /* inline edit fields look like plain text */
