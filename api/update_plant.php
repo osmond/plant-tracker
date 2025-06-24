@@ -64,11 +64,6 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
 if (!$id || $name === '' || $watering_frequency <= 0) {
     @http_response_code(400);
     echo json_encode(['error' => 'Missing or invalid fields']);
-
-if (!$id || $name === '') {
-    http_response_code(400);
-    echo json_encode(['error' => 'Missing id or name']);
-
     exit;
 }
 
