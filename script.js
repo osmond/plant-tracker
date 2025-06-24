@@ -114,6 +114,8 @@ async function updatePlantInline(plant, field, newValue) {
   data.append('room', plant.room);
   data.append('last_watered', plant.last_watered || '');
   data.append('last_fertilized', plant.last_fertilized || '');
+  data.append('notes', plant.notes || '');
+  data.append('photo_path', plant.photo_path || '');
 
   data.set(field, newValue);
 
@@ -138,6 +140,8 @@ function populateForm(plant) {
   form.room.value = plant.room;
   form.last_watered.value = plant.last_watered;
   form.last_fertilized.value = plant.last_fertilized;
+  form.notes.value = plant.notes || '';
+  document.getElementById('photo_path_hidden').value = plant.photo_path || '';
   editingPlantId = plant.id;
 
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -148,6 +152,7 @@ function populateForm(plant) {
 function resetForm() {
   const form = document.getElementById('plant-form');
   form.reset();
+  document.getElementById('photo_path_hidden').value = '';
   editingPlantId = null;
   form.querySelector('button[type="submit"]').textContent = 'Add Plant';
   document.getElementById('cancel-edit').style.display = 'none';
@@ -216,7 +221,7 @@ async function loadPlants() {
     const table = document.createElement('table');
     table.classList.add('plant-table');
     const thead = document.createElement('thead');
-    thead.innerHTML = '<tr><th>Name</th><th>Species</th><th>Frequencies</th><th>Actions</th></tr>';
+    thead.innerHTML = '<tr><th>Name</th><th>Species</th><th>Frequencies</th><th>Notes</th><th>Photo</th><th>Actions</th></tr>';
     table.appendChild(thead);
     const tbody = document.createElement('tbody');
 
@@ -253,6 +258,24 @@ async function loadPlants() {
       freqTd.appendChild(document.createElement('br'));
       freqTd.appendChild(roomInput);
       row.appendChild(freqTd);
+
+      const notesTd = document.createElement('td');
+      const notesInput = document.createElement('textarea');
+      notesInput.rows = 1;
+      notesInput.value = plant.notes || '';
+      notesInput.onblur = () => updatePlantInline(plant,'notes',notesInput.value);
+      notesTd.appendChild(notesInput);
+      row.appendChild(notesTd);
+
+      const photoTd = document.createElement('td');
+      if (plant.photo_path) {
+        const img = document.createElement('img');
+        img.src = plant.photo_path;
+        img.alt = '';
+        img.style.maxWidth = '50px';
+        photoTd.appendChild(img);
+      }
+      row.appendChild(photoTd);
 
       const actionsTd = document.createElement('td');
 
