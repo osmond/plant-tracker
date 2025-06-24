@@ -332,3 +332,25 @@ button:focus {
   border-radius: var(--radius);
   cursor: move;
 }
+
+@media (max-width: 600px) {
+  body {
+    padding: calc(var(--spacing) * 1.5);
+  }
+  .plant-table {
+    display: block;
+    overflow-x: auto;
+  }
+  .plant-table th,
+  .plant-table td {
+    padding: calc(var(--spacing) / 2);
+    white-space: nowrap;
+  }
+  #calendar {
+    flex-direction: column;
+  }
+  #calendar .cal-day {
+    margin-right: 0;
+    margin-bottom: calc(var(--spacing) / 2);
+  }
+}
