@@ -9,6 +9,18 @@
   --spacing: 8px;
 }
 
+/* Dark mode variables maintain accessible contrast ratios */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #121212;
+    --color-surface: #1e1e1e;
+    --color-text: #f0f0f0;
+    --color-border: #555;
+    --color-primary: #58a6ff;
+    --color-accent: #cf6679;
+  }
+}
+
 body {
     font-family: sans-serif;
     padding: calc(var(--spacing) * 2.5);
