@@ -509,19 +509,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
 
   if (showBtn) {
-    showBtn.classList.add('action-btn');
     showBtn.innerHTML = ICONS.plus + ' Add a Plant';
   }
   if (cancelBtn) {
-    cancelBtn.classList.add('action-btn');
     cancelBtn.innerHTML = ICONS.cancel + ' Cancel';
   }
   if (undoBtn) {
-    undoBtn.classList.add('action-btn');
     undoBtn.innerHTML = ICONS.undo + ' Undo';
   }
   if (submitBtn) {
-    submitBtn.classList.add('action-btn');
     submitBtn.innerHTML = ICONS.plus + ' Add Plant';
   }
   if (showBtn && form) {
