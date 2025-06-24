@@ -65,7 +65,7 @@
             <option value="name">Sort by: Name</option>
             <option value="due">Sort by: Due Date</option>
         </select>
-        <select id="due-filter" style="margin-left:4px;">
+        <select id="due-filter" style="margin-left: calc(var(--spacing) / 2);">
             <option value="all">Show: All</option>
             <option value="water">Needs Watering</option>
             <option value="fert">Needs Fertilizing</option>
@@ -75,13 +75,13 @@
 <!-- Undo delete snackbar -->
 <div id="undo-banner" style="display:none;
                              position:fixed;
-                             bottom:10px;
+                             bottom: calc(var(--spacing) * 1.25);
                              left:50%;
                              transform:translateX(-50%);
-                             background:#333;
-                             color:#fff;
-                             padding:10px;
-                             border-radius:5px;
+                             background: var(--color-text);
+                             color: var(--color-bg);
+                             padding: calc(var(--spacing) * 1.25);
+                             border-radius: var(--radius);
                              z-index:1000;">
   Plant deleted. <button id="undo-btn">Undo</button>
 </div>
