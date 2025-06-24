@@ -283,7 +283,7 @@ function populateForm(plant) {
   editingPlantId = plant.id;
 
   const submitBtn = form.querySelector('button[type="submit"]');
-  submitBtn.innerHTML = ICONS.check + '<span>Update Plant</span>';
+  submitBtn.innerHTML = ICONS.check + '<span class="visually-hidden">Update Plant</span>';
   document.getElementById('cancel-edit').style.display = 'inline-block';
 }
 
@@ -291,7 +291,7 @@ function resetForm() {
   const form = document.getElementById('plant-form');
   form.reset();
   editingPlantId = null;
-  form.querySelector('button[type="submit"]').innerHTML = ICONS.plus + '<span>Add Plant</span>';
+  form.querySelector('button[type="submit"]').innerHTML = ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
   document.getElementById('cancel-edit').style.display = 'none';
   document.getElementById('search-input').value = '';
   form.style.display = 'none';
@@ -446,7 +446,7 @@ async function loadPlants() {
       if (waterDue) {
         const btn = document.createElement('button');
         btn.classList.add('action-btn', 'due-task', 'water-due');
-        btn.innerHTML = ICONS.water + '<span>Water</span>';
+        btn.innerHTML = ICONS.water + '<span class="visually-hidden">Water</span>';
         btn.title = 'Mark watered';
         btn.onclick = () => markAction(plant.id, 'watered');
         actionsTd.appendChild(btn);
@@ -455,7 +455,7 @@ async function loadPlants() {
       if (fertDue) {
         const btn = document.createElement('button');
         btn.classList.add('action-btn', 'due-task', 'fert-due');
-        btn.innerHTML = ICONS.fert + '<span>Fertilize</span>';
+        btn.innerHTML = ICONS.fert + '<span class="visually-hidden">Fertilize</span>';
         btn.title = 'Mark fertilized';
         btn.onclick = () => markAction(plant.id, 'fertilized');
         actionsTd.appendChild(btn);
@@ -463,7 +463,7 @@ async function loadPlants() {
 
       const editBtn = document.createElement('button');
       editBtn.classList.add('action-btn');
-      editBtn.innerHTML = ICONS.edit + '<span>Edit</span>';
+      editBtn.innerHTML = ICONS.edit + '<span class="visually-hidden">Edit</span>';
       editBtn.type = 'button';
       editBtn.onclick = () => {
         populateForm(plant);
@@ -476,7 +476,7 @@ async function loadPlants() {
       // delete with undo
       const delBtn = document.createElement('button');
       delBtn.classList.add('action-btn');
-      delBtn.innerHTML = ICONS.trash + '<span>Delete</span>';
+      delBtn.innerHTML = ICONS.trash + '<span class="visually-hidden">Delete</span>';
       delBtn.onclick = () => showUndoBanner(plant);
       actionsTd.appendChild(delBtn);
       row.appendChild(actionsTd);
@@ -509,19 +509,19 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   if (showBtn) {
     showBtn.classList.add('action-btn');
-    showBtn.innerHTML = ICONS.plus + '<span>Add a Plant</span>';
+    showBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add a Plant</span>';
   }
   if (cancelBtn) {
     cancelBtn.classList.add('action-btn');
-    cancelBtn.innerHTML = ICONS.cancel + '<span>Cancel</span>';
+    cancelBtn.innerHTML = ICONS.cancel + '<span class="visually-hidden">Cancel</span>';
   }
   if (undoBtn) {
     undoBtn.classList.add('action-btn');
-    undoBtn.innerHTML = ICONS.undo + '<span>Undo</span>';
+    undoBtn.innerHTML = ICONS.undo + '<span class="visually-hidden">Undo</span>';
   }
   if (submitBtn) {
     submitBtn.classList.add('action-btn');
-    submitBtn.innerHTML = ICONS.plus + '<span>Add Plant</span>';
+    submitBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
   }
   if (showBtn && form) {
     showBtn.addEventListener('click', () => {
@@ -546,7 +546,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     const btn=form.querySelector('button[type="submit"]');
     btn.disabled=true;
     btn.innerHTML=(editingPlantId?ICONS.check:ICONS.plus)+
-                  `<span>${editingPlantId?'Updating...':'Adding...'}</span>`;
+                  `<span class="visually-hidden">${editingPlantId?'Updating...':'Adding...'}</span>`;
     try{
       let resp;
       if(editingPlantId){ data.append('id', editingPlantId); resp=await fetch('api/update_plant.php',{method:'POST',body:data}); }
@@ -561,8 +561,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     }finally{
       btn.disabled=false;
       btn.innerHTML=editingPlantId
-        ? ICONS.check + '<span>Update Plant</span>'
-        : ICONS.plus + '<span>Add Plant</span>';
+        ? ICONS.check + '<span class="visually-hidden">Update Plant</span>'
+        : ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
     }
   });
 
