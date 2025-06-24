@@ -19,6 +19,11 @@
   --color-success: #38a169;
 }
 
+.bg-primary {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
 body {
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
