@@ -360,6 +360,7 @@ async function loadPlants() {
 
     roomPlants.forEach(plant => {
       const row = document.createElement('tr');
+      row.classList.add('plant-row');
       if (plant.id===window.lastUpdatedPlantId) {
         row.classList.add('just-updated');
         setTimeout(()=>row.classList.remove('just-updated'),2000);
