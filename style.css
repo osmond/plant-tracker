@@ -160,10 +160,25 @@ input, button {
 
 }
 
+/* inline edit fields look like plain text */
+.plant-table input {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  width: 100%;
+}
+
+.plant-table input:focus {
+  outline: none;
+  border-bottom: 1px dashed var(--color-border);
+
 .plant-photo {
   width: 60px;
   height: auto;
   border-radius: var(--radius);
+
 }
 
 /* simple calendar styles */
