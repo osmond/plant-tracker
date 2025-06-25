@@ -436,13 +436,13 @@ async function loadPlants() {
 
     const waterSpan = document.createElement('span');
     waterSpan.classList.add('summary-item');
-    waterSpan.innerHTML = ICONS.water + ` ${plant.watering_frequency}d`;
+    waterSpan.innerHTML = ICONS.water + ` ${plant.watering_frequency} days`;
     summary.appendChild(waterSpan);
 
     const fertSpan = document.createElement('span');
     fertSpan.classList.add('summary-item');
     const fertFreq = plant.fertilizing_frequency
-      ? `${plant.fertilizing_frequency}d`
+      ? `${plant.fertilizing_frequency} days`
       : 'N/A';
     fertSpan.innerHTML = ICONS.fert + ` ${fertFreq}`;
     summary.appendChild(fertSpan);
