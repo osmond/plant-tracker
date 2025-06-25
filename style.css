@@ -19,9 +19,11 @@
   --color-error-bg: #fff5f5;
   --color-warning-bg: #fefcbf;
   --color-success-bg: #f0fff4;
-  --color-water-bg: #ebf8ff;
+  /* slightly lighter shade for water due indicator */
+  --color-water-bg: #f7fcff;
   --color-water: #3182ce;
-  --color-fert-bg: #fdf5f9;
+  /* fertilizing due indicator now uses a white background */
+  --color-fert-bg: #ffffff;
   --color-highlight: #faf089;
   --color-warning: #d69e2e;
   --color-success: #38a169;
