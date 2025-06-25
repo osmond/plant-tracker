@@ -529,6 +529,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const undoBtn = document.getElementById('undo-btn');
   const toggleSearch = document.getElementById('toggle-search');
   const searchContainer = document.getElementById('search-container');
+  const closeSearch = document.getElementById('close-search');
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
 
   if (showBtn) {
@@ -547,6 +548,15 @@ document.addEventListener('DOMContentLoaded',()=>{
       toggleSearch.style.display = 'none';
       const input = document.getElementById('search-input');
       if (input) input.focus();
+    });
+  }
+  if (closeSearch) {
+    closeSearch.innerHTML = ICONS.cancel + '<span class="visually-hidden">Close Search</span>';
+    closeSearch.addEventListener('click', () => {
+      if (searchContainer) searchContainer.classList.add('hidden');
+      toggleSearch.style.display = 'inline-block';
+      document.getElementById('search-input').value = '';
+      loadPlants();
     });
   }
   if (submitBtn) {
