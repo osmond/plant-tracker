@@ -39,6 +39,14 @@ if (!$stmt->execute()) {
     echo json_encode(['status' => 'error', 'error' => 'Database error', 'details' => $stmt->error]);
     return;
 }
+
+if ($stmt->affected_rows === 0) {
+    $stmt->close();
+    @http_response_code(404);
+    echo json_encode(['status' => 'error', 'error' => 'Plant not found']);
+    return;
+}
+
 $stmt->close();
 
 @http_response_code(200);
