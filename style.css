@@ -13,6 +13,7 @@
   --color-warning-bg: #fefcbf;
   --color-success-bg: #f0fff4;
   --color-water-bg: #ebf8ff;
+  --color-water: #3182ce;
   --color-fert-bg: #fdf5f9;
   --color-highlight: #faf089;
   --color-warning: #d69e2e;
@@ -473,4 +474,12 @@ button:focus {
   width: 1em;
   height: 1em;
   vertical-align: -0.125em;
+}
+
+.icon-water {
+  color: var(--color-water);
+}
+
+.icon-sprout {
+  color: var(--color-success);
 }
