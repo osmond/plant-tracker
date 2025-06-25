@@ -1,11 +1,18 @@
 :root {
   /* Blossom-inspired palette */
-  --color-primary: #8d67d6; /* lavender */
-  --color-accent: #ffa5d8; /* pink */
-  --color-bg: #fdf9fd;     /* soft light */
-  --color-surface: #ffffff; /* white */
-  --color-border: #e5d8ea;
-  --color-text: #333333;   /* dark grey */
+
+--color-primary: #4caf50; 
+
+--color-accent: #8bc34a; 
+
+--color-bg: #f1f8e9;
+
+--color-surface: #fffff;
+
+--color-border: #c8e6c9; 
+
+--color-text: #2e3a29; 
+
   --radius: 5px;
   --spacing: 8px;
   --color-error: #e53e3e;
