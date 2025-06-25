@@ -616,8 +616,8 @@ button:focus {
 }
 
 .weather-icon {
-  width: 1em;
-  height: 1em;
+  width: 3em;
+  height: 3em;
   vertical-align: -0.125em;
 }
 
