@@ -476,10 +476,16 @@ button:focus {
   vertical-align: -0.125em;
 }
 
-.icon-plant {
-  color: var(--color-success);
-}
 
 .icon-water {
   color: var(--color-water);
 }
+
+.icon-sprout {
+  color: var(--color-success);
+
+.icon-plant {
+  color: var(--color-success);
+}
+
+
