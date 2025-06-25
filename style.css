@@ -19,9 +19,9 @@
   --color-error-bg: #fff5f5;
   --color-warning-bg: #fefcbf;
   --color-success-bg: #f0fff4;
-  /* slightly lighter shade for water due indicator */
-  --color-water-bg: #e0f2ff;
-  --color-water: #3182ce;
+ --color-water-bg:   #E3F2FD;  /* Blue 50 – very light, clean background */
+  --color-water:      #2196F3;  /* Blue 500 – vivid water drop fill */
+  --color-water-hover:#1976D2;  /* Blue 700 – for hover or active states */
   /* fertilizing due indicator now uses a white background */
   --color-fert-bg: #ffffff;
   --color-highlight: #faf089;
