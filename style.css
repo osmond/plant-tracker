@@ -505,8 +505,8 @@ button:focus {
 
 /* water amount tags use the blue palette */
 .oz-tag {
-  background-color: var(--color-water);
-  color: var(--color-surface);
+  background-color: var(--color-water-bg);
+  color: var(--color-water-hover);
 }
 
 .ml-tag {
