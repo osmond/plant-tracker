@@ -470,12 +470,14 @@ async function loadPlants() {
     editBtn.classList.add('action-btn');
     editBtn.innerHTML = ICONS.edit + '<span class="visually-hidden">Edit</span>';
     editBtn.type = 'button';
-    editBtn.onclick = () => {
-      populateForm(plant);
-      document.getElementById('plant-form').style.display = 'block';
-      const showBtn = document.getElementById('show-add-form');
-      if (showBtn) showBtn.style.display = 'none';
-    };
+      editBtn.onclick = () => {
+        populateForm(plant);
+        const form = document.getElementById('plant-form');
+        form.style.display = 'block';
+        form.scrollIntoView({ behavior: 'smooth' });
+        const showBtn = document.getElementById('show-add-form');
+        if (showBtn) showBtn.style.display = 'none';
+      };
     actionsDiv.appendChild(editBtn);
 
     const delBtn = document.createElement('button');
