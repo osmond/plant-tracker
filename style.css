@@ -425,7 +425,7 @@ button:focus {
   margin-bottom: calc(var(--spacing));
 }
 
-/* tag showing the plant's room */
+/* tag showing the plant's room - color is set inline via JS */
 .room-tag {
   align-self: flex-start;
   background-color: var(--color-accent);
@@ -476,10 +476,16 @@ button:focus {
   vertical-align: -0.125em;
 }
 
+
 .icon-water {
   color: var(--color-water);
 }
 
 .icon-sprout {
   color: var(--color-success);
+
+.icon-plant {
+  color: var(--color-success);
 }
+
+
