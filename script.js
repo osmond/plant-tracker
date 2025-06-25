@@ -100,10 +100,10 @@ function validateForm(form) {
     }
   }
 
-  const waterAmt = form.querySelector('[name="water_amount"]');
-  if (waterAmt && waterAmt.value.trim() !== '') {
-    const amt = parseWaterAmount(waterAmt.value);
-    if (isNaN(amt) || amt <= 0) {
+  const waterAmtField = form.water_amount;
+  if (waterAmtField) {
+    const amt = parseWaterAmount(waterAmtField.value);
+    if (waterAmtField.value.trim() === '' || isNaN(amt) || amt <= 0) {
       const errorDiv = document.getElementById('water_amount-error');
       if (errorDiv) errorDiv.textContent = 'Enter a positive number.';
       valid = false;
