@@ -14,7 +14,7 @@ if (!headers_sent()) {
 
 $plants = [];
 $result = $conn->query(
-    "SELECT id, name, species, watering_frequency, water_amount, fertilizing_frequency, room, last_watered, last_fertilized, photo_url
+    "SELECT id, name, species, watering_frequency, fertilizing_frequency, room, last_watered, last_fertilized, photo_url
     FROM plants
     ORDER BY id DESC"
 );
