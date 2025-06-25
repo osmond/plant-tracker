@@ -602,7 +602,7 @@ async function loadPlants() {
       const snooze = document.createElement('select');
       snooze.classList.add('snooze-select');
       const placeholder = document.createElement('option');
-      placeholder.textContent = 'Snooze';
+      placeholder.textContent = '';
       placeholder.selected = true;
       placeholder.disabled = true;
       snooze.appendChild(placeholder);
@@ -632,7 +632,7 @@ async function loadPlants() {
       const snooze = document.createElement('select');
       snooze.classList.add('snooze-select');
       const placeholder = document.createElement('option');
-      placeholder.textContent = 'Snooze';
+      placeholder.textContent = '';
       placeholder.selected = true;
       placeholder.disabled = true;
       snooze.appendChild(placeholder);
