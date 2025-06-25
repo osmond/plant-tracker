@@ -103,6 +103,14 @@ function formatDateShort(dateStr) {
   if (!dateStr) return 'never';
   const d = new Date(dateStr);
   if (isNaN(d)) return dateStr;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayToFormat = new Date(d);
+  dayToFormat.setHours(0, 0, 0, 0);
+  const diff = Math.round((dayToFormat - today) / 86400000);
+  if (diff === 0) return 'today';
+  if (diff === -1) return 'yesterday';
+  if (diff === 1) return 'tomorrow';
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
