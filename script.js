@@ -411,6 +411,10 @@ async function loadPlants() {
     return true;
   });
 
+  if (filtered.length === 0) {
+    list.innerHTML = '<p class="no-results">No plants match your filters.</p>';
+  }
+
   // summary of due counts and totals for filtered plants
   let wateringDue = 0, fertilizingDue = 0;
   const totalPlants = filtered.length;
