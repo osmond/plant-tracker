@@ -481,6 +481,7 @@ button:focus {
   width: 1em;
   height: 1em;
   vertical-align: -0.125em;
+  color: var(--color-success);
 }
 
 
@@ -491,6 +492,7 @@ button:focus {
 
 .icon-sprout {
   color: var(--color-success);
+}
 
 .icon-plant {
   color: var(--color-success);
