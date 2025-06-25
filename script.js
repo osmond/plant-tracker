@@ -523,22 +523,36 @@ async function loadPlants() {
   });
   const summaryEl = document.getElementById('summary');
   summaryEl.innerHTML = '';
-  const fragments = [
+  const row1 = document.createElement('div');
+  row1.classList.add('summary-row');
+  const row1Items = [
     `${ICONS.plant} ${totalPlants} plants`,
     `${ICONS.water} ${wateringDue} need watering`,
-    `${ICONS.fert} ${fertilizingDue} need fertilizing`,
-    `${ICONS.calendar} ${todayStr}`
+    `${ICONS.fert} ${fertilizingDue} need fertilizing`
   ];
-  if (currentWeather) {
-    const img = `<img src="${currentWeatherIcon}" alt="${currentWeatherDesc}" class="weather-icon">`;
-    fragments.push(`${img} ${currentWeather}`);
-  }
-  fragments.forEach(text => {
+  row1Items.forEach(text => {
     const span = document.createElement('span');
     span.classList.add('summary-item');
     span.innerHTML = text;
-    summaryEl.appendChild(span);
+    row1.appendChild(span);
   });
+
+  const row2 = document.createElement('div');
+  row2.classList.add('summary-row');
+  const row2Items = [`${ICONS.calendar} ${todayStr}`];
+  if (currentWeather) {
+    const img = `<img src="${currentWeatherIcon}" alt="${currentWeatherDesc}" class="weather-icon">`;
+    row2Items.push(`${img} ${currentWeather}`);
+  }
+  row2Items.forEach(text => {
+    const span = document.createElement('span');
+    span.classList.add('summary-item');
+    span.innerHTML = text;
+    row2.appendChild(span);
+  });
+
+  summaryEl.appendChild(row1);
+  summaryEl.appendChild(row2);
   summaryEl.classList.add('show');
 
   const sortBy = document.getElementById('sort-toggle').value || 'name';
