@@ -4,6 +4,8 @@ let deleteTimer = null;
 
 // track weather info so the summary can include current conditions
 let currentWeather = null;
+let currentWeatherIcon = null;
+let currentWeatherDesc = null;
 
 // public OpenWeather API key provided by user
 const WEATHER_API_KEY = '2aa3ade8428368a141f7951420570c16';
@@ -407,8 +409,10 @@ async function updatePlantPhoto(plant, file) {
 
 // --- weather helper ---
 function fetchWeather() {
-  const addWeather = (temp, desc) => {
+  const addWeather = (temp, desc, icon) => {
     currentWeather = `${temp}°F ${desc}`;
+    currentWeatherIcon = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+    currentWeatherDesc = desc;
     loadPlants();
   };
 
@@ -417,7 +421,7 @@ function fetchWeather() {
       const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${WEATHER_API_KEY}`);
       if (!res.ok) return;
       const data = await res.json();
-      addWeather(Math.round(data.main.temp), data.weather[0].main);
+      addWeather(Math.round(data.main.temp), data.weather[0].main, data.weather[0].icon);
     } catch (e) {
       console.error('Weather fetch failed', e);
     }
@@ -526,7 +530,8 @@ async function loadPlants() {
     `${ICONS.calendar} ${todayStr}`
   ];
   if (currentWeather) {
-    fragments.push(`${ICONS.sun} ${currentWeather}`);
+    const img = `<img src="${currentWeatherIcon}" alt="${currentWeatherDesc}" class="weather-icon">`;
+    fragments.push(`${img} ${currentWeather}`);
   }
   fragments.forEach(text => {
     const span = document.createElement('span');

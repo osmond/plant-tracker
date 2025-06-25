@@ -615,6 +615,12 @@ button:focus {
   color: var(--color-success);
 }
 
+.weather-icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+}
+
 
 .icon-water {
   color: var(--color-water);
