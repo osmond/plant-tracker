@@ -482,6 +482,18 @@ button:focus {
   background-position: 8px center;
   background-size: 1rem 1rem;
   padding-left: calc(var(--spacing) * 2 + 1rem);
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.snooze-select:hover,
+.snooze-select:focus {
+  background-color: var(--color-surface);
+  transform: translateY(-2px);
+}
+
+.snooze-select:active {
+  transform: translateY(0);
 }
 
 .plant-card .plant-photo {
