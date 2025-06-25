@@ -445,9 +445,13 @@ button:focus {
 
 .plant-card .actions {
   margin-top: calc(var(--spacing) * 1.5);
-  display: flex;
+  display: grid;
   gap: calc(var(--spacing) / 2);
-  flex-wrap: wrap;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+}
+
+.plant-card .actions .action-btn {
+  width: 100%;
 }
 
 .plant-card .plant-photo {
