@@ -405,6 +405,13 @@ async function loadPlants() {
     speciesEl.textContent = plant.species;
     card.appendChild(speciesEl);
 
+    if (plant.room) {
+      const roomTag = document.createElement('span');
+      roomTag.classList.add('room-tag');
+      roomTag.textContent = plant.room;
+      card.appendChild(roomTag);
+    }
+
     const summary = document.createElement('div');
     summary.classList.add('plant-summary');
 

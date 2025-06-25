@@ -412,6 +412,18 @@ button:focus {
   margin-bottom: calc(var(--spacing));
 }
 
+/* tag showing the plant's room */
+.room-tag {
+  align-self: flex-start;
+  background-color: var(--color-accent);
+  color: var(--color-surface);
+  padding: 2px 6px;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: calc(var(--spacing));
+}
+
 .plant-summary {
   display: grid;
   grid-template-columns: repeat(2, auto);
