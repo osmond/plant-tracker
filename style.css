@@ -447,6 +447,18 @@ button:focus {
     padding-left: 0;
     padding-right: 0;
   }
+
+  /* Stack title controls vertically on narrow screens */
+  .app-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing);
+  }
+
+  .app-title button {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 
 #plant-grid .no-results {
