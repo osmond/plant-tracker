@@ -504,7 +504,10 @@ button:focus {
   display: block;
   margin: calc(var(--spacing) * -2) calc(var(--spacing) * -2)
           calc(var(--spacing) * 1.5);
-  border-radius: 0;
+  /* match card radius so top corners align while bottom stays flush */
+  border-radius: inherit;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .plant-card.due-overdue {
