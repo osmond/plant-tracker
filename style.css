@@ -439,8 +439,8 @@ button:focus {
   #plant-grid {
     /* Force a single column layout on small screens */
     grid-template-columns: 1fr;
-    padding-left: 0;
-    padding-right: 0;
+    margin-left: calc(var(--spacing) * 2);
+    margin-right: calc(var(--spacing) * 2);
   }
 
   body {
