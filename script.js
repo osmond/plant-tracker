@@ -301,6 +301,38 @@ async function loadCalendar() {
     const f = getNextFertDate(p);
     if (f) addEvent(p,'fert',f);
   });
+
+  loadHeatmap(plants);
+}
+
+async function loadHeatmap(plantsData) {
+  const plants = plantsData || (await (await fetch('api/get_plants.php')).json());
+  const container = document.getElementById('heatmap');
+  if (!container) return;
+  const days = 28;
+  const start = new Date();
+  start.setHours(0,0,0,0);
+  const counts = new Array(days).fill(0);
+  plants.forEach(p => {
+    const w = getNextWaterDate(p);
+    let diff = Math.floor((w - start) / 86400000);
+    if (diff >= 0 && diff < days) counts[diff]++;
+    const f = getNextFertDate(p);
+    if (f) {
+      diff = Math.floor((f - start) / 86400000);
+      if (diff >= 0 && diff < days) counts[diff]++;
+    }
+  });
+  container.innerHTML = '';
+  for (let i=0;i<days;i++) {
+    const cell = document.createElement('div');
+    cell.classList.add('heat-cell');
+    const level = counts[i] >= 3 ? 3 : counts[i];
+    cell.classList.add(`level-${level}`);
+    const date = addDays(start,i);
+    cell.title = `${date.toLocaleDateString()} - ${counts[i]} task${counts[i]!==1?'s':''}`;
+    container.appendChild(cell);
+  }
 }
 
 async function handleDrop(e,newDate,plants) {
