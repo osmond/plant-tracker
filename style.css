@@ -435,6 +435,12 @@ button:focus {
   gap: calc(var(--spacing) * 2);
 }
 
+@media (min-width: 1000px) {
+  #plant-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
 #plant-grid .no-results {
   grid-column: 1 / -1;
   text-align: center;
