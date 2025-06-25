@@ -88,6 +88,16 @@ function validateForm(form) {
     }
   }
 
+  const waterAmt = form.querySelector('[name="water_amount"]');
+  if (waterAmt && waterAmt.value.trim() !== '') {
+    const amt = parseFloat(waterAmt.value);
+    if (isNaN(amt) || amt <= 0) {
+      const errorDiv = document.getElementById('water_amount-error');
+      if (errorDiv) errorDiv.textContent = 'Enter a positive number.';
+      valid = false;
+    }
+  }
+
   return valid;
 }
 
