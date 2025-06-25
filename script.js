@@ -275,6 +275,7 @@ async function updatePlantInline(plant, field, newValue) {
   data.append('species', plant.species);
   data.append('watering_frequency', plant.watering_frequency);
   data.append('fertilizing_frequency', plant.fertilizing_frequency);
+  data.append('water_amount', plant.water_amount);
   data.append('room', plant.room);
   data.append('last_watered', plant.last_watered || '');
   data.append('last_fertilized', plant.last_fertilized || '');
@@ -301,6 +302,7 @@ async function updatePlantPhoto(plant, file) {
   data.append('species', plant.species);
   data.append('watering_frequency', plant.watering_frequency);
   data.append('fertilizing_frequency', plant.fertilizing_frequency);
+  data.append('water_amount', plant.water_amount);
   data.append('room', plant.room);
   data.append('last_watered', plant.last_watered || '');
   data.append('last_fertilized', plant.last_fertilized || '');
@@ -321,6 +323,9 @@ function populateForm(plant) {
   form.name.value = plant.name;
   form.species.value = plant.species;
   form.watering_frequency.value = plant.watering_frequency;
+  if (form.water_amount) {
+    form.water_amount.value = plant.water_amount;
+  }
   form.fertilizing_frequency.value = plant.fertilizing_frequency;
   form.room.value = plant.room;
   form.last_watered.value = plant.last_watered;
@@ -335,6 +340,7 @@ function populateForm(plant) {
 function resetForm() {
   const form = document.getElementById('plant-form');
   form.reset();
+  if (form.water_amount) form.water_amount.value = '';
   editingPlantId = null;
   form.querySelector('button[type="submit"]').innerHTML = ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
   document.getElementById('cancel-edit').style.display = 'none';
@@ -456,6 +462,13 @@ async function loadPlants() {
     waterSpan.classList.add('summary-item');
     waterSpan.innerHTML = ICONS.water + ` ${plant.watering_frequency} days`;
     summary.appendChild(waterSpan);
+
+    if (plant.water_amount) {
+      const amtSpan = document.createElement('span');
+      amtSpan.classList.add('summary-item');
+      amtSpan.textContent = `${plant.water_amount} ml`;
+      summary.appendChild(amtSpan);
+    }
 
     const fertSpan = document.createElement('span');
     fertSpan.classList.add('summary-item');
@@ -618,6 +631,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     e.preventDefault(); const form=e.target;
     if (!validateForm(form)) return;
     const data=new FormData(form);
+    data.set('water_amount', form.water_amount ? form.water_amount.value : '');
     const btn=form.querySelector('button[type="submit"]');
     btn.disabled=true;
     btn.innerHTML=(editingPlantId?ICONS.check:ICONS.plus)+

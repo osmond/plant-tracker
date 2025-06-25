@@ -31,5 +31,36 @@ class ApiTest extends TestCase
         $this->assertFalse($data['success']);
         $this->assertArrayHasKey('error', $data);
     }
+
+    public function testAddPlantWithWaterAmount()
+    {
+        $_POST = [
+            'name' => 'Test Plant',
+            'watering_frequency' => 5,
+            'water_amount' => 100
+        ];
+        ob_start();
+        include __DIR__ . '/../api/add_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertEquals('success', $data['status']);
+    }
+
+    public function testUpdatePlantWithWaterAmount()
+    {
+        $_POST = [
+            'id' => 1,
+            'name' => 'Updated',
+            'watering_frequency' => 7,
+            'water_amount' => 150,
+            'last_watered' => '',
+            'last_fertilized' => ''
+        ];
+        ob_start();
+        include __DIR__ . '/../api/update_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertEquals('success', $data['status']);
+    }
 }
 ?>

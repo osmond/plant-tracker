@@ -26,6 +26,7 @@ $species = trim($_POST['species'] ?? '');
 $room = trim($_POST['room'] ?? '');
 $watering_frequency = intval($_POST['watering_frequency'] ?? 0);
 $fertilizing_frequency = intval($_POST['fertilizing_frequency'] ?? 0);
+$water_amount = isset($_POST['water_amount']) ? floatval($_POST['water_amount']) : 0;
 $last_watered = $_POST['last_watered'] ?? null;
 $last_fertilized = $_POST['last_fertilized'] ?? null;
 $photo_url = trim($_POST['photo_url'] ?? '');
@@ -40,6 +41,9 @@ if ($room !== '' && !preg_match('/^[A-Za-z0-9\s-]{1,50}$/', $room)) {
 }
 if ($watering_frequency < 1 || $watering_frequency > 365) {
     $errors[] = 'Watering frequency must be 1-365';
+}
+if ($water_amount <= 0) {
+    $errors[] = 'Water amount must be positive';
 }
 if ($errors) {
     http_response_code(400);
@@ -74,8 +78,16 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
 $stmt = $conn->prepare(
     "
     INSERT INTO plants (
-        name, species, room, watering_frequency, fertilizing_frequency, last_watered, last_fertilized, photo_url
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        name,
+        species,
+        room,
+        watering_frequency,
+        fertilizing_frequency,
+        last_watered,
+        last_fertilized,
+        photo_url,
+        water_amount
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 );
 if (!$stmt) {
     @http_response_code(500);
@@ -86,7 +98,7 @@ if (!$stmt) {
     return;
 }
 $stmt->bind_param(
-    "sssiisss",
+    "sssiisssd",
     $name,
     $species,
     $room,
@@ -94,7 +106,8 @@ $stmt->bind_param(
     $fertilizing_frequency,
     $last_watered,
     $last_fertilized,
-    $photo_url
+    $photo_url,
+    $water_amount
 );
 
 if (!$stmt->execute()) {
