@@ -487,7 +487,7 @@ async function loadPlants() {
     }
 
     const editBtn = document.createElement('button');
-    editBtn.classList.add('action-btn');
+    editBtn.classList.add('action-btn', 'edit-btn');
     editBtn.innerHTML = ICONS.edit + '<span class="visually-hidden">Edit</span>';
     editBtn.type = 'button';
       editBtn.onclick = () => {
@@ -501,7 +501,7 @@ async function loadPlants() {
     actionsDiv.appendChild(editBtn);
 
     const delBtn = document.createElement('button');
-    delBtn.classList.add('action-btn');
+    delBtn.classList.add('action-btn', 'delete-btn');
     delBtn.innerHTML = ICONS.trash + '<span class="visually-hidden">Delete</span>';
     delBtn.onclick = () => showUndoBanner(plant);
     actionsDiv.appendChild(delBtn);
@@ -516,7 +516,7 @@ async function loadPlants() {
       }
     };
     const changeBtn = document.createElement('button');
-    changeBtn.classList.add('action-btn');
+    changeBtn.classList.add('action-btn', 'photo-btn');
     changeBtn.innerHTML = ICONS.photo + '<span class="visually-hidden">Change Photo</span>';
     changeBtn.type = 'button';
     changeBtn.onclick = () => fileInput.click();

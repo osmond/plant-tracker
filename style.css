@@ -27,6 +27,22 @@
   --color-highlight: #faf089;
   --color-warning: #d69e2e;
   --color-success: #38a169;
+  /* action button colors */
+  --color-sprout-bg: #E8F5E9;  /* Green 50 – soft background */
+  --color-plant: #388E3C;      /* Green 600 – vibrant leaf */
+  --color-plant-hover: #2E7D32;/* Green 700 – hover state */
+
+  --color-edit-bg: #FFF8E1;    /* Amber 50 – light canvas */
+  --color-edit: #FBC02D;       /* Amber 600 – warm pencil */
+  --color-edit-hover: #F9A825; /* Amber 700 – hover state */
+
+  --color-trash-bg: #FFEBEE;   /* Red 50 – pale alert */
+  --color-trash: #D32F2F;      /* Red 700 – clear warning */
+  --color-trash-hover: #C62828;/* Red 800 – hover state */
+
+  --add-photo-bg: #EDE7F6;     /* Deep Purple 50 – subtle backdrop */
+  --add-photo: #5E35B1;        /* Deep Purple 600 – rich frame */
+  --add-photo-hover: #512DA8;  /* Deep Purple 700 – hover state */
 }
 
 .bg-primary {
@@ -161,6 +177,34 @@ button:focus {
     height: 1em;
 }
 
+/* specific action button colors */
+.edit-btn {
+    background-color: var(--color-edit-bg);
+    color: var(--color-edit);
+}
+.edit-btn:hover,
+.edit-btn:focus {
+    color: var(--color-edit-hover);
+}
+
+.delete-btn {
+    background-color: var(--color-trash-bg);
+    color: var(--color-trash);
+}
+.delete-btn:hover,
+.delete-btn:focus {
+    color: var(--color-trash-hover);
+}
+
+.photo-btn {
+    background-color: var(--add-photo-bg);
+    color: var(--add-photo);
+}
+.photo-btn:hover,
+.photo-btn:focus {
+    color: var(--add-photo-hover);
+}
+
 .action-btn:hover,
 .action-btn:focus {
     background-color: var(--color-surface);
@@ -209,8 +253,13 @@ button:focus {
 }
 
 .fert-due {
-    background-color: var(--color-fert-bg);
-    color: var(--color-accent);
+    background-color: var(--color-sprout-bg);
+    color: var(--color-plant);
+}
+
+.fert-due:hover,
+.fert-due:focus {
+    color: var(--color-plant-hover);
 }
 
 .plant-item {
