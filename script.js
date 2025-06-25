@@ -542,8 +542,8 @@ async function loadPlants() {
     row1.appendChild(span);
   });
 
-  const row2 = document.createElement('div');
-  row2.classList.add('summary-row');
+  const headerRow = document.getElementById('date-weather');
+  headerRow.innerHTML = '';
   const row2Items = [];
   if (currentWeather) {
     const img = `<img src="${currentWeatherIcon}" alt="${currentWeatherDesc}" class="weather-icon">`;
@@ -554,11 +554,10 @@ async function loadPlants() {
     const span = document.createElement('span');
     span.classList.add('summary-item');
     span.innerHTML = text;
-    row2.appendChild(span);
+    headerRow.appendChild(span);
   });
 
   summaryEl.appendChild(row1);
-  summaryEl.appendChild(row2);
   summaryEl.classList.add('show');
 
   const sortBy = document.getElementById('sort-toggle').value || 'name';
