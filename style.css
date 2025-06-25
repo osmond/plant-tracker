@@ -42,6 +42,18 @@ h1 {
     font-weight: 700;
 }
 
+.app-title {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing));
+}
+
+.app-title .title-icon {
+  width: 1.5em;
+  height: 1.5em;
+  color: var(--color-primary);
+}
+
 h2 {
     font-size: 1.5rem;
 }
