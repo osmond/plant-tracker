@@ -120,6 +120,15 @@ function clearFilterPrefs() {
   localStorage.removeItem('dueFilter');
 }
 
+function updateActiveFilters() {
+  const rf = document.getElementById('room-filter');
+  const sf = document.getElementById('sort-toggle');
+  const df = document.getElementById('due-filter');
+  if (rf) rf.classList.toggle('filter-active', rf.value !== 'all');
+  if (sf) sf.classList.toggle('filter-active', sf.value !== 'name');
+  if (df) df.classList.toggle('filter-active', df.value !== 'all');
+}
+
 // expose so it can be called externally
 window.clearFilterPrefs = clearFilterPrefs;
 
@@ -824,6 +833,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // apply saved preferences before initial load
   loadFilterPrefs();
+  updateActiveFilters();
 
   if (showBtn) {
     showBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add a Plant</span>';
@@ -903,18 +913,21 @@ document.addEventListener('DOMContentLoaded',()=>{
   if (roomFilter) {
     roomFilter.addEventListener('change', () => {
       saveFilterPrefs();
+      updateActiveFilters();
       loadPlants();
     });
   }
   if (sortToggle) {
     sortToggle.addEventListener('change', () => {
       saveFilterPrefs();
+      updateActiveFilters();
       loadPlants();
     });
   }
   if (dueFilterEl) {
     dueFilterEl.addEventListener('change', () => {
       saveFilterPrefs();
+      updateActiveFilters();
       loadPlants();
     });
   }
