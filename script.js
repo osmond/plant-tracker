@@ -23,10 +23,11 @@ function colorForRoom(room) {
 function parseWaterAmount(value) {
   let amt = parseFloat(value);
   if (isNaN(amt)) return NaN;
-  if (/oz/i.test(value)) {
-    amt *= ML_PER_US_FL_OUNCE;
+  if (/ml/i.test(value)) {
+    return amt;
   }
-  return amt;
+  // assume ounces if units are omitted or specified as oz
+  return amt * ML_PER_US_FL_OUNCE;
 }
 
 function formatWaterAmount(ml) {

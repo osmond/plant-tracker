@@ -59,8 +59,8 @@ milliliters (ml).
 ## Usage
 
 Once the migration is applied, each plant entry includes a `water_amount` value
-that indicates how much water it typically receives. The UI shows this amount in
-milliliters and also displays the equivalent in fluid ounces so you can work in
-your preferred units.
+that indicates how much water it typically receives. Enter the amount in fluid
+ounces and the UI shows the equivalent in milliliters. The value is stored in
+milliliters so you can work in either unit as needed.
 
 
