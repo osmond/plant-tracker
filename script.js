@@ -424,6 +424,11 @@ async function loadPlants() {
     : 'all';
   const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
   const today = new Date();
+  const todayStr = today.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
   const startOfToday = new Date(today);
   startOfToday.setHours(0,0,0,0);
   const startOfTomorrow = addDays(startOfToday,1);
@@ -464,7 +469,8 @@ async function loadPlants() {
   const fragments = [
     `${ICONS.plant} ${totalPlants} plants`,
     `${ICONS.water} ${wateringDue} need watering`,
-    `${ICONS.fert} ${fertilizingDue} need fertilizing`
+    `${ICONS.fert} ${fertilizingDue} need fertilizing`,
+    `${ICONS.sun} ${todayStr}`
   ];
   fragments.forEach(text => {
     const span = document.createElement('span');
