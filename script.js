@@ -12,8 +12,7 @@ function colorForRoom(room) {
       hash = room.charCodeAt(i) + ((hash << 5) - hash);
     }
     const hue = Math.abs(hash) % 360;
-    // darker, more saturated colors for better contrast with white text
-    roomColors[room] = `hsl(${hue}, 70%, 45%)`;
+    roomColors[room] = `hsl(${hue}, 60%, 80%)`;
   }
   return roomColors[room];
 }
