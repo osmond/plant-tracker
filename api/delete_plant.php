@@ -11,10 +11,11 @@ if (!headers_sent()) {
 }
 
 $id = $_POST['id'] ?? null;
+$id = filter_var($id, FILTER_VALIDATE_INT);
 
-if (!$id) {
+if ($id === false || $id <= 0) {
     @http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'No ID provided']);
+    echo json_encode(['success' => false, 'error' => 'Invalid plant ID']);
     return;
 }
 
