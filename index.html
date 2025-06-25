@@ -48,53 +48,63 @@
 
 
     <form id="plant-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-card rounded-lg shadow hidden" enctype="multipart/form-data">
-        <div>
-            <label for="name" class="block mb-1">Plant Name</label>
-            <input type="text" name="name" id="name" placeholder="Plant Name" class="w-full border rounded-md p-2" />
-            <div class="error" id="name-error"></div>
-        </div>
-        <div>
-            <label for="species" class="block mb-1">Species</label>
-            <input type="text" name="species" id="species" placeholder="Species" class="w-full border rounded-md p-2" />
-            <div class="error" id="species-error"></div>
-        </div>
-        <div>
-            <label for="watering_frequency" class="block mb-1">Watering Frequency (days)</label>
-            <input type="number" name="watering_frequency" id="watering_frequency" class="w-full border rounded-md p-2" />
-            <div class="error" id="watering_frequency-error"></div>
-        </div>
-        <div>
-            <label for="water_amount" class="block mb-1">Water Amount (oz)</label>
-            <input type="number" name="water_amount" id="water_amount" class="w-full border rounded-md p-2" />
+        <div id="form-progress" class="form-progress sm:col-span-2">Step 1 of 2</div>
 
+        <div class="form-step" data-step="1">
+            <div>
+                <label for="name" class="block mb-1">Plant Name</label>
+                <input type="text" name="name" id="name" placeholder="Plant Name" class="w-full border rounded-md p-2" />
+                <div class="error" id="name-error"></div>
+            </div>
+            <div>
+                <label for="species" class="block mb-1">Species</label>
+                <input type="text" name="species" id="species" placeholder="Species" class="w-full border rounded-md p-2" />
+                <div class="error" id="species-error"></div>
+            </div>
+            <div>
+                <label for="room" class="block mb-1">Room</label>
+                <input type="text" name="room" id="room" placeholder="Room" class="w-full border rounded-md p-2" />
+                <div class="error" id="room-error"></div>
+            </div>
+            <div>
+                <label for="photo" class="block mb-1">Upload Photo</label>
+                <div id="photo-drop" class="photo-drop-zone">Drop image or click to upload</div>
+                <input type="file" id="photo" name="photo" accept="image/*" class="hidden" />
+            </div>
+        </div>
 
-            <div class="error" id="water_amount-error"></div>
+        <div class="form-step hidden" data-step="2">
+            <div>
+                <label for="watering_frequency" class="block mb-1">Watering Frequency (days)</label>
+                <input type="number" name="watering_frequency" id="watering_frequency" class="w-full border rounded-md p-2" />
+                <p class="helper">Days between waterings, e.g. 7 for weekly</p>
+                <div class="error" id="watering_frequency-error"></div>
+            </div>
+            <div>
+                <label for="water_amount" class="block mb-1">Water Amount (oz)</label>
+                <input type="number" name="water_amount" id="water_amount" class="w-full border rounded-md p-2" />
+                <p class="helper">Enter ounces of water</p>
+                <div class="error" id="water_amount-error"></div>
+            </div>
+            <div>
+                <label for="fertilizing_frequency" class="block mb-1">Fertilizing Frequency (days)</label>
+                <input type="number" name="fertilizing_frequency" id="fertilizing_frequency" class="w-full border rounded-md p-2" />
+            </div>
+            <div>
+                <label for="last_watered" class="block mb-1">Last Watered</label>
+                <input type="date" name="last_watered" id="last_watered" class="w-full border rounded-md p-2" />
+            </div>
+            <div>
+                <label for="last_fertilized" class="block mb-1">Last Fertilized</label>
+                <input type="date" name="last_fertilized" id="last_fertilized" class="w-full border rounded-md p-2" />
+            </div>
+        </div>
 
-        </div>
-        <div>
-            <label for="fertilizing_frequency" class="block mb-1">Fertilizing Frequency (days)</label>
-            <input type="number" name="fertilizing_frequency" id="fertilizing_frequency" class="w-full border rounded-md p-2" />
-        </div>
-        <div>
-            <label for="photo" class="block mb-1">Upload Photo</label>
-            <input type="file" id="photo" name="photo" accept="image/*" class="w-full" />
-        </div>
-        <div>
-            <label for="room" class="block mb-1">Room</label>
-            <input type="text" name="room" id="room" placeholder="Room" class="w-full border rounded-md p-2" />
-            <div class="error" id="room-error"></div>
-        </div>
-        <div>
-            <label for="last_watered" class="block mb-1">Last Watered</label>
-            <input type="date" name="last_watered" id="last_watered" class="w-full border rounded-md p-2" />
-        </div>
-        <div>
-            <label for="last_fertilized" class="block mb-1">Last Fertilized</label>
-            <input type="date" name="last_fertilized" id="last_fertilized" class="w-full border rounded-md p-2" />
-        </div>
-        <div class="sm:col-span-2 flex gap-2 justify-end">
+        <div class="sm:col-span-2 flex gap-2 justify-end" id="step-nav">
+            <button type="button" id="prev-step" class="bg-gray-200 rounded-md px-4 py-2 hidden">Back</button>
+            <button type="button" id="next-step" class="bg-primary text-white rounded-md px-4 py-2">Next</button>
             <button type="button" id="cancel-edit" class="bg-gray-200 rounded-md px-4 py-2 hidden"></button>
-            <button type="submit" class="bg-primary text-white rounded-md px-4 py-2"></button>
+            <button type="submit" id="submit-btn" class="bg-primary text-white rounded-md px-4 py-2 hidden"></button>
         </div>
     </form>
 

@@ -2,6 +2,8 @@ let editingPlantId = null;
 let lastDeletedPlant = null;
 let deleteTimer = null;
 
+let currentFormStep = 1;
+
 // track weather info so the summary can include current conditions
 let currentWeather = null;
 let currentWeatherIcon = null;
@@ -175,6 +177,24 @@ function validateForm(form) {
     }
   }
 
+  return valid;
+}
+
+function validateCurrentStep(step) {
+  const form = document.getElementById('plant-form');
+  if (!form) return false;
+  let valid = true;
+  document.querySelectorAll('.error').forEach(el => el.textContent = '');
+  const stepEl = form.querySelector(`.form-step[data-step="${step}"]`);
+  if (!stepEl) return true;
+  stepEl.querySelectorAll('input').forEach(inp => {
+    if (inp.name === 'watering_frequency' || inp.name === 'water_amount') return; // skip step2 fields in step1
+    if (inp.required && !inp.value.trim()) {
+      const err = document.getElementById(`${inp.name}-error`);
+      if (err) err.textContent = 'This field is required.';
+      valid = false;
+    }
+  });
   return valid;
 }
 
@@ -466,6 +486,7 @@ function populateForm(plant) {
   const submitBtn = form.querySelector('button[type="submit"]');
   submitBtn.innerHTML = ICONS.check + '<span class="visually-hidden">Update Plant</span>';
   document.getElementById('cancel-edit').style.display = 'inline-block';
+  showFormStep(1);
 }
 
 function resetForm() {
@@ -479,6 +500,26 @@ function resetForm() {
   form.style.display = 'none';
   const btn = document.getElementById('show-add-form');
   if (btn) btn.style.display = 'inline-block';
+  showFormStep(1);
+}
+
+function showFormStep(step) {
+  const form = document.getElementById('plant-form');
+  if (!form) return;
+  const steps = form.querySelectorAll('.form-step');
+  currentFormStep = Math.max(1, Math.min(step, steps.length));
+  steps.forEach((el, idx) => {
+    if (idx === currentFormStep - 1) el.classList.remove('hidden');
+    else el.classList.add('hidden');
+  });
+  const progress = document.getElementById('form-progress');
+  if (progress) progress.textContent = `Step ${currentFormStep} of ${steps.length}`;
+  const prev = document.getElementById('prev-step');
+  const next = document.getElementById('next-step');
+  const submit = document.getElementById('submit-btn');
+  if (prev) prev.style.display = currentFormStep === 1 ? 'none' : 'inline-block';
+  if (next) next.style.display = currentFormStep === steps.length ? 'none' : 'inline-block';
+  if (submit) submit.style.display = currentFormStep === steps.length ? 'inline-block' : 'none';
 }
 
 // --- main render & filter loop ---
@@ -763,6 +804,7 @@ async function loadPlants() {
         form.scrollIntoView({ behavior: 'smooth' });
         const showBtn = document.getElementById('show-add-form');
         if (showBtn) showBtn.style.display = 'none';
+        showFormStep(1);
       };
     actionsDiv.appendChild(editBtn);
 
@@ -821,9 +863,16 @@ document.addEventListener('DOMContentLoaded',()=>{
   const dueFilterEl = document.getElementById('due-filter');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
+  const nextStepBtn = document.getElementById('next-step');
+  const prevStepBtn = document.getElementById('prev-step');
+  const photoDrop = document.getElementById('photo-drop');
+  const photoInput = document.getElementById('photo');
+  const waterFreqInput = document.getElementById('watering_frequency');
+  const waterAmtInput = document.getElementById('water_amount');
 
   // apply saved preferences before initial load
   loadFilterPrefs();
+  showFormStep(1);
 
   if (showBtn) {
     showBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add a Plant</span>';
@@ -861,6 +910,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       showBtn.style.display = 'none';
       const cancel = document.getElementById('cancel-edit');
       if (cancel) cancel.style.display = 'inline-block';
+      showFormStep(1);
     });
   }
   document.getElementById('undo-btn').addEventListener('click',()=>{
@@ -871,6 +921,38 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   document.getElementById('search-input').addEventListener('input',loadPlants);
   document.getElementById('cancel-edit').onclick=resetForm;
+  if (nextStepBtn) nextStepBtn.addEventListener('click', () => {
+    if (validateCurrentStep(currentFormStep)) showFormStep(currentFormStep + 1);
+  });
+  if (prevStepBtn) prevStepBtn.addEventListener('click', () => {
+    showFormStep(currentFormStep - 1);
+  });
+  if (photoDrop && photoInput) {
+    photoDrop.addEventListener('click', () => photoInput.click());
+    photoDrop.addEventListener('dragover', e => { e.preventDefault(); photoDrop.classList.add('dragover'); });
+    photoDrop.addEventListener('dragleave', () => photoDrop.classList.remove('dragover'));
+    photoDrop.addEventListener('drop', e => {
+      e.preventDefault();
+      if (e.dataTransfer.files[0]) {
+        photoInput.files = e.dataTransfer.files;
+        photoDrop.textContent = e.dataTransfer.files[0].name;
+      }
+      photoDrop.classList.remove('dragover');
+    });
+    photoInput.addEventListener('change', () => {
+      if (photoInput.files[0]) photoDrop.textContent = photoInput.files[0].name;
+    });
+  }
+  if (waterFreqInput) waterFreqInput.addEventListener('input', () => {
+    const err = document.getElementById('watering_frequency-error');
+    if (parseInt(waterFreqInput.value,10) > 0) err.textContent = '';
+    else err.textContent = 'Watering Frequency must be > 0';
+  });
+  if (waterAmtInput) waterAmtInput.addEventListener('input', () => {
+    const err = document.getElementById('water_amount-error');
+    if (parseFloat(waterAmtInput.value) > 0) err.textContent = '';
+    else err.textContent = 'Enter a positive number.';
+  });
   document.getElementById('plant-form').addEventListener('submit',async e=>{
     e.preventDefault(); const form=e.target;
     if (!validateForm(form)) return;
