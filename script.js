@@ -2,6 +2,12 @@ let editingPlantId = null;
 let lastDeletedPlant = null;
 let deleteTimer = null;
 
+// track weather info so the summary can include current conditions
+let currentWeather = null;
+
+// public OpenWeather API key provided by user
+const WEATHER_API_KEY = '2aa3ade8428368a141f7951420570c16';
+
 // number of milliliters in one US fluid ounce
 const ML_PER_US_FL_OUNCE = 29.5735;
 
@@ -380,6 +386,34 @@ async function updatePlantPhoto(plant, file) {
   }
 }
 
+// --- weather helper ---
+function fetchWeather() {
+  const addWeather = (temp, desc) => {
+    currentWeather = `${temp}°F ${desc}`;
+    loadPlants();
+  };
+
+  const fetchByCoords = async (lat, lon) => {
+    try {
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${WEATHER_API_KEY}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      addWeather(Math.round(data.main.temp), data.weather[0].main);
+    } catch (e) {
+      console.error('Weather fetch failed', e);
+    }
+  };
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => fetchByCoords(pos.coords.latitude, pos.coords.longitude),
+      () => fetchByCoords(40.71, -74.01)
+    );
+  } else {
+    fetchByCoords(40.71, -74.01);
+  }
+}
+
 // --- full-form populate & reset for edit ---
 function populateForm(plant) {
   const form = document.getElementById('plant-form');
@@ -466,6 +500,9 @@ async function loadPlants() {
     `${ICONS.water} ${wateringDue} need watering`,
     `${ICONS.fert} ${fertilizingDue} need fertilizing`
   ];
+  if (currentWeather) {
+    fragments.push(`${ICONS.sun} ${currentWeather}`);
+  }
   fragments.forEach(text => {
     const span = document.createElement('span');
     span.classList.add('summary-item');
@@ -817,4 +854,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   loadPlants();
   loadCalendar();
+  fetchWeather();
 });
