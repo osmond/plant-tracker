@@ -593,6 +593,7 @@ async function loadPlants() {
       const img = document.createElement('img');
       img.src = plant.photo_url;
       img.alt = plant.name;
+      img.loading = 'lazy';
       img.classList.add('plant-photo');
       card.appendChild(img);
     }
