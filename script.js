@@ -15,7 +15,8 @@ function colorForRoom(room) {
       hash = room.charCodeAt(i) + ((hash << 5) - hash);
     }
     const hue = Math.abs(hash) % 360;
-    roomColors[room] = `hsl(${hue}, 60%, 80%)`;
+    // use a darker lightness so the white tag text stays readable
+    roomColors[room] = `hsl(${hue}, 60%, 45%)`;
   }
   return roomColors[room];
 }
