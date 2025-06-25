@@ -550,6 +550,27 @@ async function loadPlants() {
       btn.title = 'Mark watered';
       btn.onclick = () => markAction(plant.id, 'watered');
       actionsDiv.appendChild(btn);
+
+      const snooze = document.createElement('select');
+      snooze.classList.add('snooze-select');
+      const placeholder = document.createElement('option');
+      placeholder.textContent = 'Snooze';
+      placeholder.selected = true;
+      placeholder.disabled = true;
+      snooze.appendChild(placeholder);
+      [1, 2, 3].forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d;
+        opt.textContent = `${d} day${d > 1 ? 's' : ''}`;
+        snooze.appendChild(opt);
+      });
+      snooze.onchange = () => {
+        if (snooze.value) {
+          markAction(plant.id, 'watered', parseInt(snooze.value));
+          snooze.selectedIndex = 0;
+        }
+      };
+      actionsDiv.appendChild(snooze);
     }
 
     if (fertDue) {
@@ -559,6 +580,27 @@ async function loadPlants() {
       btn.title = 'Mark fertilized';
       btn.onclick = () => markAction(plant.id, 'fertilized');
       actionsDiv.appendChild(btn);
+
+      const snooze = document.createElement('select');
+      snooze.classList.add('snooze-select');
+      const placeholder = document.createElement('option');
+      placeholder.textContent = 'Snooze';
+      placeholder.selected = true;
+      placeholder.disabled = true;
+      snooze.appendChild(placeholder);
+      [1, 2, 3].forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d;
+        opt.textContent = `${d} day${d > 1 ? 's' : ''}`;
+        snooze.appendChild(opt);
+      });
+      snooze.onchange = () => {
+        if (snooze.value) {
+          markAction(plant.id, 'fertilized', parseInt(snooze.value));
+          snooze.selectedIndex = 0;
+        }
+      };
+      actionsDiv.appendChild(snooze);
     }
 
     const editBtn = document.createElement('button');
