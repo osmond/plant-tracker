@@ -68,6 +68,37 @@ function showToast(msg, isError = false) {
   }, 3000);
 }
 
+// --- filter preference helpers ---
+function saveFilterPrefs() {
+  const rf = document.getElementById('room-filter');
+  const sf = document.getElementById('sort-toggle');
+  const df = document.getElementById('due-filter');
+  if (rf) localStorage.setItem('roomFilter', rf.value);
+  if (sf) localStorage.setItem('sortPref', sf.value);
+  if (df) localStorage.setItem('dueFilter', df.value);
+}
+
+function loadFilterPrefs() {
+  const rf = document.getElementById('room-filter');
+  const sf = document.getElementById('sort-toggle');
+  const df = document.getElementById('due-filter');
+  const rVal = localStorage.getItem('roomFilter');
+  const sVal = localStorage.getItem('sortPref');
+  const dVal = localStorage.getItem('dueFilter');
+  if (rf && rVal !== null) rf.value = rVal;
+  if (sf && sVal !== null) sf.value = sVal;
+  if (df && dVal !== null) df.value = dVal;
+}
+
+function clearFilterPrefs() {
+  localStorage.removeItem('roomFilter');
+  localStorage.removeItem('sortPref');
+  localStorage.removeItem('dueFilter');
+}
+
+// expose so it can be called externally
+window.clearFilterPrefs = clearFilterPrefs;
+
 // --- validation, date math, due-date helpers ---
 function validateForm(form) {
   let valid = true;
@@ -625,6 +656,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   const searchContainer = document.getElementById('search-container');
   const closeSearch = document.getElementById('close-search');
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+  const roomFilter = document.getElementById('room-filter');
+  const sortToggle = document.getElementById('sort-toggle');
+  const dueFilterEl = document.getElementById('due-filter');
+
+  // apply saved preferences before initial load
+  loadFilterPrefs();
 
   if (showBtn) {
     showBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add a Plant</span>';
@@ -701,10 +738,24 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
 
-  document.getElementById('room-filter').addEventListener('change',loadPlants);
-  document.getElementById('sort-toggle').addEventListener('change',loadPlants);
-  const df = document.getElementById('due-filter');
-  if (df) df.addEventListener('change', loadPlants);
+  if (roomFilter) {
+    roomFilter.addEventListener('change', () => {
+      saveFilterPrefs();
+      loadPlants();
+    });
+  }
+  if (sortToggle) {
+    sortToggle.addEventListener('change', () => {
+      saveFilterPrefs();
+      loadPlants();
+    });
+  }
+  if (dueFilterEl) {
+    dueFilterEl.addEventListener('change', () => {
+      saveFilterPrefs();
+      loadPlants();
+    });
+  }
   loadPlants();
   loadCalendar();
 });
