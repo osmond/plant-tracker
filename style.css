@@ -437,7 +437,8 @@ button:focus {
 
 @media (max-width: 640px) {
   #plant-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    /* Force a single column layout on small screens */
+    grid-template-columns: 1fr;
     padding-left: 0;
     padding-right: 0;
   }
