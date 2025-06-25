@@ -7,13 +7,18 @@ Room tags now automatically get unique colors so it's easy to distinguish where 
 
 ## Running Tests
 
-The project includes a minimal PHPUnit test suite for the API endpoints. To run the tests:
+The project includes a minimal PHPUnit test suite for the API endpoints.
 
-1. Install PHPUnit if it is not already available. On Ubuntu you can run:
+1. **Install PHPUnit.** The `phpunit` command must be available before running the tests.
+   On Ubuntu you can install it with:
    ```bash
    sudo apt-get update && sudo apt-get install -y phpunit
    ```
-2. Execute PHPUnit from the repository root:
+   Alternatively install it locally using Composer:
+   ```bash
+   composer require --dev phpunit/phpunit
+   ```
+2. Execute the tests from the repository root:
    ```bash
    phpunit --configuration phpunit.xml
    ```
