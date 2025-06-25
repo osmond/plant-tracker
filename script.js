@@ -278,8 +278,9 @@ async function loadCalendar() {
     const dayEl = container.querySelector(`.cal-day[data-date="${dateStr}"]`);
     if (!dayEl) return;
     const ev = document.createElement('div');
-    ev.classList.add('cal-event', type==='water' ? 'water-due' : 'fert-due');
-    ev.textContent = `${plant.name} (${type==='water'? 'Water':'Fert'})`;
+    ev.classList.add('cal-event', type === 'water' ? 'water-due' : 'fert-due');
+    ev.innerHTML =
+      (type === 'water' ? ICONS.water : ICONS.fert) + ' ' + plant.name;
     ev.draggable = true;
     ev.dataset.id = plant.id;
     ev.dataset.type = type;
