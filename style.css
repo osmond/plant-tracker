@@ -471,6 +471,11 @@ button:focus {
   border-radius: var(--radius);
   background: var(--color-bg);
   font-size: 0.85rem;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMmUzYTI5IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48cG9seWxpbmUgcG9pbnRzPSIxMiA2IDEyIDEyIDE2IDE0Ii8+PC9zdmc+");
+  background-repeat: no-repeat;
+  background-position: 8px center;
+  background-size: 1rem 1rem;
+  padding-left: calc(var(--spacing) * 2 + 1rem);
 }
 
 .plant-card .plant-photo {
