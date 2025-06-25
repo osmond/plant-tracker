@@ -432,7 +432,21 @@ button:focus {
   margin-bottom: calc(var(--spacing));
 }
 
+
 .plant-summary .summary-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 1.5);
+  align-items: center;
+}
+
+#summary .summary-item {
   display: flex;
   align-items: center;
   gap: 4px;

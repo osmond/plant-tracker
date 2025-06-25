@@ -337,8 +337,18 @@ async function loadPlants() {
     }
   });
   const summaryEl = document.getElementById('summary');
-  summaryEl.innerHTML =
-    `${ICONS.plant} ${totalPlants} plants • ${ICONS.water} ${wateringDue} need watering • ${ICONS.fert} ${fertilizingDue} need fertilizing`;
+  summaryEl.innerHTML = '';
+  const fragments = [
+    `${ICONS.plant} ${totalPlants} plants`,
+    `${ICONS.water} ${wateringDue} need watering`,
+    `${ICONS.fert} ${fertilizingDue} need fertilizing`
+  ];
+  fragments.forEach(text => {
+    const span = document.createElement('span');
+    span.classList.add('summary-item');
+    span.innerHTML = text;
+    summaryEl.appendChild(span);
+  });
   summaryEl.classList.add('show');
 
   list.innerHTML = '';
