@@ -13,6 +13,10 @@ const WEATHER_API_KEY = '2aa3ade8428368a141f7951420570c16';
 // number of milliliters in one US fluid ounce
 const ML_PER_US_FL_OUNCE = 29.5735;
 
+// starting date for the calendar view
+let calendarStartDate = new Date();
+calendarStartDate.setHours(0, 0, 0, 0);
+
 // map room names to generated colors so tags remain consistent
 const roomColors = {};
 function colorForRoom(room) {
@@ -256,7 +260,7 @@ async function loadCalendar() {
   const container = document.getElementById('calendar');
   if (!container) return;
   const daysToShow = 7;
-  const start = new Date();
+  const start = new Date(calendarStartDate);
   start.setHours(0,0,0,0);
   container.innerHTML = '';
 
@@ -808,6 +812,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   const roomFilter = document.getElementById('room-filter');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('due-filter');
+  const prevBtn = document.getElementById('prev-week');
+  const nextBtn = document.getElementById('next-week');
 
   // apply saved preferences before initial load
   loadFilterPrefs();
@@ -903,6 +909,18 @@ document.addEventListener('DOMContentLoaded',()=>{
     dueFilterEl.addEventListener('change', () => {
       saveFilterPrefs();
       loadPlants();
+    });
+  }
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      calendarStartDate = addDays(calendarStartDate, -7);
+      loadCalendar();
+    });
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      calendarStartDate = addDays(calendarStartDate, 7);
+      loadCalendar();
     });
   }
   loadPlants();
