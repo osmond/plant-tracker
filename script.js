@@ -21,6 +21,17 @@ function colorForRoom(room) {
   return roomColors[room];
 }
 
+function borderColorForRoom(room) {
+  if (!room) return 'var(--color-accent)';
+  let hash = 0;
+  for (let i = 0; i < room.length; i++) {
+    hash = room.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = Math.abs(hash) % 360;
+  // slightly darker than the fill color
+  return `hsl(${hue}, 60%, 35%)`;
+}
+
 function parseWaterAmount(value) {
   let amt = parseFloat(value);
   if (isNaN(amt)) return NaN;
@@ -527,6 +538,7 @@ async function loadPlants() {
       roomTag.classList.add('tag', 'room-tag');
       roomTag.textContent = plant.room;
       roomTag.style.backgroundColor = colorForRoom(plant.room);
+      roomTag.style.borderColor = borderColorForRoom(plant.room);
       tagList.appendChild(roomTag);
     }
     if (plant.water_amount) {

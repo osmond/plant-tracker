@@ -561,7 +561,9 @@ button:focus {
 }
 
 /* tag showing the plant's room - color is set inline via JS */
-.room-tag {}
+.room-tag {
+  border: 1px solid transparent;
+}
 
 .plant-summary {
   display: grid;
