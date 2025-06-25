@@ -33,3 +33,14 @@ Set the following environment variables so `db.php` can establish the database c
 your environment (or defined in a `.env` file loaded by your web server) before
 running the application so credentials are not stored in the codebase.
 
+## Setup
+
+Run the included migration to add the `water_amount` column used by the API:
+
+```bash
+mysql -u <user> -p <database> < migrations/001_add_water_amount.sql
+```
+
+This script alters the existing `plants` table so each record stores the amount
+of water to give the plant in milliliters.
+
