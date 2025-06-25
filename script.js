@@ -88,16 +88,6 @@ function validateForm(form) {
     }
   }
 
-  const waterAmt = form.querySelector('[name="water_amount"]');
-  if (waterAmt && waterAmt.value) {
-    const v = parseFloat(waterAmt.value);
-    if (isNaN(v) || v < 0) {
-      document.getElementById('water_amount-error').textContent =
-        'Enter a positive number.';
-      valid = false;
-    }
-  }
-
   return valid;
 }
 
@@ -267,7 +257,6 @@ async function updatePlantInline(plant, field, newValue) {
   data.append('name', plant.name);
   data.append('species', plant.species);
   data.append('watering_frequency', plant.watering_frequency);
-  data.append('water_amount', plant.water_amount);
   data.append('fertilizing_frequency', plant.fertilizing_frequency);
   data.append('room', plant.room);
   data.append('last_watered', plant.last_watered || '');
@@ -294,7 +283,6 @@ async function updatePlantPhoto(plant, file) {
   data.append('name', plant.name);
   data.append('species', plant.species);
   data.append('watering_frequency', plant.watering_frequency);
-  data.append('water_amount', plant.water_amount);
   data.append('fertilizing_frequency', plant.fertilizing_frequency);
   data.append('room', plant.room);
   data.append('last_watered', plant.last_watered || '');
@@ -316,7 +304,6 @@ function populateForm(plant) {
   form.name.value = plant.name;
   form.species.value = plant.species;
   form.watering_frequency.value = plant.watering_frequency;
-  form.water_amount.value = plant.water_amount;
   form.fertilizing_frequency.value = plant.fertilizing_frequency;
   form.room.value = plant.room;
   form.last_watered.value = plant.last_watered;
@@ -452,10 +439,6 @@ async function loadPlants() {
     waterSpan.classList.add('summary-item');
     waterSpan.innerHTML = ICONS.water + ` ${plant.watering_frequency} days`;
     summary.appendChild(waterSpan);
-    const amountSpan = document.createElement("span");
-    amountSpan.classList.add("summary-item");
-    amountSpan.innerHTML = ICONS.water + ` ${plant.water_amount || 0} mL`;
-    summary.appendChild(amountSpan);
 
     const fertSpan = document.createElement('span');
     fertSpan.classList.add('summary-item');

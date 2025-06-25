@@ -16,7 +16,6 @@ $name                    = trim($_POST['name'] ?? '');
 $species                 = trim($_POST['species'] ?? '');
 $room                    = trim($_POST['room'] ?? '');
 $watering_frequency      = intval($_POST['watering_frequency'] ?? 0);
-$water_amount            = floatval($_POST['water_amount'] ?? 0);
 $fertilizing_frequency   = intval($_POST['fertilizing_frequency'] ?? 0);
 $last_watered            = $_POST['last_watered'] ?: null;
 $last_fertilized         = $_POST['last_fertilized'] ?: null;
@@ -32,9 +31,6 @@ if ($room !== '' && !preg_match('/^[A-Za-z0-9\s-]{1,50}$/', $room)) {
 }
 if ($watering_frequency < 1 || $watering_frequency > 365) {
     $errors[] = 'Watering frequency must be 1-365';
-}
-if ($water_amount < 0) {
-    $errors[] = 'Water amount must be positive';
 }
 
 if ($errors) {
@@ -78,7 +74,6 @@ $stmt = $conn->prepare("
         species            = ?,
         room               = ?,
         watering_frequency = ?,
-        water_amount       = ?,
         fertilizing_frequency = ?,
         last_watered       = ?,
         last_fertilized    = ?,
@@ -86,12 +81,11 @@ $stmt = $conn->prepare("
     WHERE id = ?
 ");
 $stmt->bind_param(
-    'sssidisssi',
+    'sssiisssi',
     $name,
     $species,
     $room,
     $watering_frequency,
-    $water_amount,
     $fertilizing_frequency,
     $last_watered,
     $last_fertilized,
