@@ -2,6 +2,21 @@ let editingPlantId = null;
 let lastDeletedPlant = null;
 let deleteTimer = null;
 
+// map room names to generated colors so tags remain consistent
+const roomColors = {};
+function colorForRoom(room) {
+  if (!room) return 'var(--color-accent)';
+  if (!roomColors[room]) {
+    let hash = 0;
+    for (let i = 0; i < room.length; i++) {
+      hash = room.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash) % 360;
+    roomColors[room] = `hsl(${hue}, 60%, 80%)`;
+  }
+  return roomColors[room];
+}
+
 const ICONS = {
   trash: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
   water: '<svg class="icon icon-water" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>',
@@ -410,6 +425,7 @@ async function loadPlants() {
       const roomTag = document.createElement('span');
       roomTag.classList.add('room-tag');
       roomTag.textContent = plant.room;
+      roomTag.style.backgroundColor = colorForRoom(plant.room);
       card.appendChild(roomTag);
     }
 
