@@ -33,7 +33,8 @@ function parseWaterAmount(value) {
 function formatWaterAmount(ml) {
   const ounces = ml / ML_PER_US_FL_OUNCE;
   const mlDisplay = Math.round(ml);
-  return `<span class="oz-line">${ounces.toFixed(1)}oz</span>` +
+  const ozDisplay = ounces.toFixed(1).replace(/\.0$/, '');
+  return `<span class="oz-line">${ozDisplay}oz</span>` +
          `<span class="ml-line">(${mlDisplay} ml)</span>`;
 }
 
@@ -491,7 +492,7 @@ async function loadPlants() {
       if (!isNaN(ml)) {
         const ozTag = document.createElement('span');
         ozTag.classList.add('tag', 'oz-tag');
-        ozTag.textContent = `${(ml / ML_PER_US_FL_OUNCE).toFixed(1)}oz`;
+        ozTag.textContent = `${(ml / ML_PER_US_FL_OUNCE).toFixed(1).replace(/\.0$/, '')}oz`;
         tagList.appendChild(ozTag);
 
         const mlTag = document.createElement('span');
