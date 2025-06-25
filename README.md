@@ -40,12 +40,15 @@ running the application so credentials are not stored in the codebase.
 
 ## Setup
 
-Run the included migration to add the `water_amount` column used by the API:
+Run the migration scripts to ensure the `water_amount` column exists and uses a
+precise DECIMAL type:
 
 ```bash
 mysql -u <user> -p <database> < migrations/001_add_water_amount.sql
+mysql -u <user> -p <database> < migrations/002_add_water_amount.sql
 ```
 
-This script alters the existing `plants` table so each record stores the amount
-of water to give the plant in milliliters.
+The first script adds the column if it's missing. The second upgrades the
+column to use DECIMAL(8,2) so each record stores the amount of water in
+milliliters with consistent precision.
 
