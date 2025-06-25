@@ -596,7 +596,12 @@ async function loadPlants() {
 
   summaryEl.appendChild(row1);
   summaryEl.appendChild(row2);
+  const heatmapEl = document.createElement('div');
+  heatmapEl.id = 'heatmap';
+  heatmapEl.classList.add('p-4');
+  summaryEl.appendChild(heatmapEl);
   summaryEl.classList.add('show');
+  loadHeatmap(plants);
 
   const sortBy = document.getElementById('sort-toggle').value || 'name';
   filtered.sort((a, b) =>
