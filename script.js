@@ -342,10 +342,24 @@ async function loadPlants() {
   startOfToday.setHours(0,0,0,0);
   const startOfTomorrow = addDays(startOfToday,1);
 
-  // summary of due counts and totals
+  list.innerHTML = '';
+  const filtered = plants.filter(plant => {
+    if (selectedRoom !== 'all' && plant.room !== selectedRoom) return false;
+    const haystack = (plant.name + ' ' + plant.species).toLowerCase();
+    if (searchQuery && !haystack.includes(searchQuery)) return false;
+
+    const waterDue = needsWatering(plant, today);
+    const fertDue = needsFertilizing(plant, today);
+    if (dueFilter === 'water' && !waterDue) return false;
+    if (dueFilter === 'fert' && !fertDue) return false;
+    if (dueFilter === 'any' && !(waterDue || fertDue)) return false;
+    return true;
+  });
+
+  // summary of due counts and totals for filtered plants
   let wateringDue = 0, fertilizingDue = 0;
-  const totalPlants = plants.length;
-  plants.forEach(p => {
+  const totalPlants = filtered.length;
+  filtered.forEach(p => {
     if (p.last_watered) {
       const nxt = addDays(new Date(p.last_watered), p.watering_frequency);
       if (nxt <= today) wateringDue++;
@@ -369,20 +383,6 @@ async function loadPlants() {
     summaryEl.appendChild(span);
   });
   summaryEl.classList.add('show');
-
-  list.innerHTML = '';
-  const filtered = plants.filter(plant => {
-    if (selectedRoom !== 'all' && plant.room !== selectedRoom) return false;
-    const haystack = (plant.name + ' ' + plant.species).toLowerCase();
-    if (searchQuery && !haystack.includes(searchQuery)) return false;
-
-    const waterDue = needsWatering(plant, today);
-    const fertDue = needsFertilizing(plant, today);
-    if (dueFilter === 'water' && !waterDue) return false;
-    if (dueFilter === 'fert' && !fertDue) return false;
-    if (dueFilter === 'any' && !(waterDue || fertDue)) return false;
-    return true;
-  });
 
   const sortBy = document.getElementById('sort-toggle').value || 'name';
   filtered.sort((a, b) =>
