@@ -22,6 +22,16 @@ $last_watered            = $_POST['last_watered'] ?? null;
 $last_fertilized         = $_POST['last_fertilized'] ?? null;
 $photo_url               = trim($_POST['photo_url'] ?? '');
 
+// fetch current photo to clean up after upload
+$oldPhoto = '';
+$result = $conn->query('SELECT photo_url FROM plants WHERE id = ' . intval($id));
+if ($result && ($row = $result->fetch_assoc())) {
+    $oldPhoto = $row['photo_url'];
+}
+if ($result) {
+    $result->free();
+}
+
 // further validation
 $errors = [];
 if ($species !== '' && !preg_match('/^[A-Za-z0-9\s-]{1,100}$/', $species)) {
@@ -44,6 +54,7 @@ if ($errors) {
 }
 
 // Handle uploaded photo
+$newPhotoUploaded = false;
 if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
     $uploadDir = __DIR__ . '/../uploads/';
     if (!is_dir($uploadDir)) {
@@ -59,6 +70,7 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
 
         if (move_uploaded_file($_FILES['photo']['tmp_name'], $dest)) {
             $photo_url = 'uploads/' . $fileName;
+            $newPhotoUploaded = true;
         }
     }
 }
@@ -106,5 +118,13 @@ if (!$stmt->execute()) {
 }
 
 $stmt->close();
+
+// remove old photo if a new one was uploaded successfully
+if ($newPhotoUploaded && $oldPhoto && $oldPhoto !== $photo_url) {
+    $oldPath = __DIR__ . '/../' . $oldPhoto;
+    if (is_file($oldPath)) {
+        unlink($oldPath);
+    }
+}
 @http_response_code(200);
 echo json_encode(['status' => 'success']);
