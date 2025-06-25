@@ -545,11 +545,11 @@ async function loadPlants() {
   const row2 = document.createElement('div');
   row2.classList.add('summary-row');
   const row2Items = [];
+  row2Items.push(`${ICONS.calendar} ${todayStr}`);
   if (currentWeather) {
     const img = `<img src="${currentWeatherIcon}" alt="${currentWeatherDesc}" class="weather-icon">`;
     row2Items.push(`${img} ${currentWeather}`);
   }
-  row2Items.push(`${ICONS.calendar} ${todayStr}`);
   row2Items.forEach(text => {
     const span = document.createElement('span');
     span.classList.add('summary-item');
