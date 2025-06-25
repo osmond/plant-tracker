@@ -623,4 +623,10 @@ button:focus {
   color: var(--color-success);
 }
 
+.water-warning {
+  color: var(--color-error);
+  font-weight: bold;
+  margin-bottom: var(--spacing);
+}
+
 
