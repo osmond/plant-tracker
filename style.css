@@ -204,7 +204,7 @@ button:focus {
 }
 
 .water-due {
-    background-color: var(--color-water-bg);
+    background-color: #ffffff; /* white background for due button */
     color: var(--color-primary);
 }
 
