@@ -126,6 +126,28 @@ form {
     margin-top: calc(var(--spacing) / 4);
 }
 
+.form-progress {
+    font-size: 0.9em;
+    margin-bottom: calc(var(--spacing));
+}
+
+.photo-drop-zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: calc(var(--spacing) * 2);
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius);
+    background: var(--add-photo-bg);
+    color: var(--add-photo);
+    cursor: pointer;
+    text-align: center;
+}
+
+.photo-drop-zone.dragover {
+    background: var(--color-surface);
+}
+
 button {
     cursor: pointer;
 }
