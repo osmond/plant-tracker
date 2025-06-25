@@ -2,6 +2,9 @@ let editingPlantId = null;
 let lastDeletedPlant = null;
 let deleteTimer = null;
 
+// number of milliliters in one US fluid ounce
+const ML_PER_US_FL_OUNCE = 29.5735;
+
 // map room names to generated colors so tags remain consistent
 const roomColors = {};
 function colorForRoom(room) {
@@ -15,6 +18,15 @@ function colorForRoom(room) {
     roomColors[room] = `hsl(${hue}, 60%, 80%)`;
   }
   return roomColors[room];
+}
+
+function parseWaterAmount(value) {
+  let amt = parseFloat(value);
+  if (isNaN(amt)) return NaN;
+  if (/oz/i.test(value)) {
+    amt *= ML_PER_US_FL_OUNCE;
+  }
+  return amt;
 }
 
 const ICONS = {
@@ -90,7 +102,7 @@ function validateForm(form) {
 
   const waterAmt = form.querySelector('[name="water_amount"]');
   if (waterAmt && waterAmt.value.trim() !== '') {
-    const amt = parseFloat(waterAmt.value);
+    const amt = parseWaterAmount(waterAmt.value);
     if (isNaN(amt) || amt <= 0) {
       const errorDiv = document.getElementById('water_amount-error');
       if (errorDiv) errorDiv.textContent = 'Enter a positive number.';
@@ -641,7 +653,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     e.preventDefault(); const form=e.target;
     if (!validateForm(form)) return;
     const data=new FormData(form);
-    data.set('water_amount', form.water_amount ? form.water_amount.value : '');
+    data.set('water_amount',
+      form.water_amount ? parseWaterAmount(form.water_amount.value) : '');
     const btn=form.querySelector('button[type="submit"]');
     btn.disabled=true;
     btn.innerHTML=(editingPlantId?ICONS.check:ICONS.plus)+
