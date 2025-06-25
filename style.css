@@ -75,8 +75,8 @@ h1 {
 }
 
 .app-title .title-icon {
-  width: 1.5em;
-  height: 1.5em;
+  width: 3em;
+  height: 3em;
   color: var(--color-primary);
 }
 

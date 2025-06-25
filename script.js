@@ -553,8 +553,7 @@ async function loadPlants() {
   const row2Items = [];
   row2Items.push(`${ICONS.calendar} ${todayStr}`);
   if (currentWeather) {
-    const img = `<img src="${currentWeatherIcon}" alt="${currentWeatherDesc}" class="weather-icon">`;
-    row2Items.push(`${img} ${currentWeather}`);
+    row2Items.push(`${currentWeather}`);
   }
   row2Items.forEach(text => {
     const span = document.createElement('span');
