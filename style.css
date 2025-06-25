@@ -592,6 +592,12 @@ button:focus {
 
 #summary {
   display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+
+.summary-row {
+  display: flex;
   flex-wrap: wrap;
   gap: calc(var(--spacing) * 1.5);
   align-items: center;
