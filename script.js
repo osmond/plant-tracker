@@ -440,10 +440,16 @@ async function loadPlants() {
       card.classList.add('due-future');
     }
 
-    if (plant.photo_url) {
-      const img = document.createElement('img');
-      img.src = plant.photo_url;
-      img.alt = plant.name;
+      const oz = (plant.water_amount / 29.5735).toFixed(1);
+      const ozSpan = document.createElement('span');
+      ozSpan.classList.add('summary-item');
+      ozSpan.textContent = `${oz}oz`;
+      summary.appendChild(ozSpan);
+
+      const mlSpan = document.createElement('span');
+      mlSpan.classList.add('summary-item');
+      mlSpan.textContent = `${plant.water_amount} ml`;
+      summary.appendChild(mlSpan);
       img.classList.add('plant-photo');
       card.appendChild(img);
     }
