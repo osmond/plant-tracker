@@ -13,6 +13,7 @@ const ICONS = {
   undo: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
   check: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
   ,sun: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+  ,search: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
 };
 
 function showToast(msg, isError = false) {
@@ -526,6 +527,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   const form = document.getElementById('plant-form');
   const cancelBtn = document.getElementById('cancel-edit');
   const undoBtn = document.getElementById('undo-btn');
+  const toggleSearch = document.getElementById('toggle-search');
+  const searchContainer = document.getElementById('search-container');
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
 
   if (showBtn) {
@@ -536,6 +539,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   if (undoBtn) {
     undoBtn.innerHTML = ICONS.undo + ' Undo';
+  }
+  if (toggleSearch) {
+    toggleSearch.innerHTML = ICONS.search + '<span class="visually-hidden">Search</span>';
+    toggleSearch.addEventListener('click', () => {
+      if (searchContainer) searchContainer.classList.remove('hidden');
+      toggleSearch.style.display = 'none';
+      const input = document.getElementById('search-input');
+      if (input) input.focus();
+    });
   }
   if (submitBtn) {
     submitBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
