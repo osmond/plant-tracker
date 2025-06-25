@@ -452,13 +452,11 @@ async function loadPlants() {
       card.classList.add('due-future');
     }
 
-    if (plant.photo_url) {
-      const img = document.createElement('img');
-      img.src = plant.photo_url;
-      img.alt = plant.name;
-      img.classList.add('plant-photo');
-      card.appendChild(img);
-    }
+    const img = document.createElement('img');
+    img.src = plant.photo_url || 'https://source.unsplash.com/random/400x300/?plant';
+    img.alt = plant.name;
+    img.classList.add('plant-photo');
+    card.appendChild(img);
     const titleEl = document.createElement('h3');
     titleEl.classList.add('plant-title');
     titleEl.textContent = plant.name;
