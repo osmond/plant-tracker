@@ -32,8 +32,9 @@ function parseWaterAmount(value) {
 
 function formatWaterAmount(ml) {
   const ounces = ml / ML_PER_US_FL_OUNCE;
+  const mlDisplay = parseFloat(ml.toFixed(2));
   return `<span class="oz-line">${ounces.toFixed(1)}oz</span>` +
-         `<span class="ml-line">(${ml.toFixed(2)} ml)</span>`;
+         `<span class="ml-line">(${mlDisplay} ml)</span>`;
 }
 
 const ICONS = {
@@ -495,7 +496,7 @@ async function loadPlants() {
 
         const mlTag = document.createElement('span');
         mlTag.classList.add('tag', 'ml-tag');
-        mlTag.textContent = `${ml.toFixed(2)} ml`;
+        mlTag.textContent = `${parseFloat(ml.toFixed(2))} ml`;
         tagList.appendChild(mlTag);
       }
     }
