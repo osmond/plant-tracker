@@ -31,7 +31,8 @@ function parseWaterAmount(value) {
 
 function formatWaterAmount(ml) {
   const ounces = ml / ML_PER_US_FL_OUNCE;
-  return `${ounces.toFixed(1)}oz (${ml.toFixed(2)} ml)`;
+  return `<span class="oz-line">${ounces.toFixed(1)}oz</span>` +
+         `<span class="ml-line">(${ml.toFixed(2)} ml)</span>`;
 }
 
 const ICONS = {
@@ -492,8 +493,8 @@ async function loadPlants() {
 
     if (plant.water_amount) {
       const amtSpan = document.createElement('span');
-      amtSpan.classList.add('summary-item');
-      amtSpan.textContent = formatWaterAmount(parseFloat(plant.water_amount));
+      amtSpan.classList.add('summary-item', 'water-amount');
+      amtSpan.innerHTML = formatWaterAmount(parseFloat(plant.water_amount));
       summary.appendChild(amtSpan);
     }
 
