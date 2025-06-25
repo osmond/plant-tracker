@@ -32,6 +32,17 @@ class ApiTest extends TestCase
         $this->assertArrayHasKey('error', $data);
     }
 
+    public function testDeletePlantInvalidId()
+    {
+        $_POST = ['id' => 'abc'];
+        ob_start();
+        include __DIR__ . '/../api/delete_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertFalse($data['success']);
+        $this->assertArrayHasKey('error', $data);
+    }
+
     public function testAddPlantWithWaterAmount()
     {
         $_POST = [
