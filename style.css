@@ -479,6 +479,7 @@ button:focus {
 
 .icon-water {
   color: var(--color-water);
+  fill: var(--color-water-bg);
 }
 
 .icon-sprout {
