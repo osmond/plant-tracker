@@ -418,6 +418,12 @@ function fetchWeather() {
     currentWeather = `${temp}°F ${desc}`;
     currentWeatherIcon = `https://openweathermap.org/img/wn/${icon}@2x.png`;
     currentWeatherDesc = desc;
+    const titleIcon = document.getElementById('title-weather-icon');
+    if (titleIcon) {
+      titleIcon.src = currentWeatherIcon;
+      titleIcon.alt = currentWeatherDesc;
+      titleIcon.style.display = '';
+    }
     loadPlants();
   };
 
