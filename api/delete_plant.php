@@ -19,16 +19,6 @@ if ($id === false || $id <= 0) {
     return;
 }
 
-// look up current photo path for cleanup
-$photoPath = '';
-$res = $conn->query('SELECT photo_url FROM plants WHERE id = ' . intval($id));
-if ($res && ($row = $res->fetch_assoc())) {
-    $photoPath = $row['photo_url'];
-}
-if ($res) {
-    $res->free();
-}
-
 $stmt = $conn->prepare("DELETE FROM plants WHERE id = ?");
 if (!$stmt) {
     @http_response_code(500);
@@ -43,12 +33,6 @@ if (!$stmt->execute()) {
 }
 
 if ($stmt->affected_rows > 0) {
-    if ($photoPath) {
-        $fullPath = __DIR__ . '/../' . $photoPath;
-        if (is_file($fullPath)) {
-            unlink($fullPath);
-        }
-    }
     @http_response_code(200);
     echo json_encode(['success' => true]);
 } else {
