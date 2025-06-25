@@ -476,12 +476,31 @@ async function loadPlants() {
     speciesEl.textContent = plant.species;
     card.appendChild(speciesEl);
 
+    const tagList = document.createElement('div');
+    tagList.classList.add('tag-list');
     if (plant.room) {
       const roomTag = document.createElement('span');
-      roomTag.classList.add('room-tag');
+      roomTag.classList.add('tag', 'room-tag');
       roomTag.textContent = plant.room;
       roomTag.style.backgroundColor = colorForRoom(plant.room);
-      card.appendChild(roomTag);
+      tagList.appendChild(roomTag);
+    }
+    if (plant.water_amount) {
+      const ml = parseFloat(plant.water_amount);
+      if (!isNaN(ml)) {
+        const ozTag = document.createElement('span');
+        ozTag.classList.add('tag', 'oz-tag');
+        ozTag.textContent = `${(ml / ML_PER_US_FL_OUNCE).toFixed(1)}oz`;
+        tagList.appendChild(ozTag);
+
+        const mlTag = document.createElement('span');
+        mlTag.classList.add('tag', 'ml-tag');
+        mlTag.textContent = `${ml.toFixed(2)} ml`;
+        tagList.appendChild(mlTag);
+      }
+    }
+    if (tagList.childElementCount > 0) {
+      card.appendChild(tagList);
     }
 
     const summary = document.createElement('div');
@@ -491,13 +510,6 @@ async function loadPlants() {
     waterSpan.classList.add('summary-item');
     waterSpan.innerHTML = ICONS.water + ` ${plant.watering_frequency} days`;
     summary.appendChild(waterSpan);
-
-    if (plant.water_amount) {
-      const amtSpan = document.createElement('span');
-      amtSpan.classList.add('summary-item', 'water-amount');
-      amtSpan.innerHTML = formatWaterAmount(parseFloat(plant.water_amount));
-      summary.appendChild(amtSpan);
-    }
 
     const fertSpan = document.createElement('span');
     fertSpan.classList.add('summary-item');
@@ -512,6 +524,7 @@ async function loadPlants() {
     lastWaterSpan.innerHTML =
       ICONS.water + ` last ${formatDateShort(plant.last_watered)}`;
     summary.appendChild(lastWaterSpan);
+
 
     const lastFertSpan = document.createElement('span');
     lastFertSpan.classList.add('summary-item');
