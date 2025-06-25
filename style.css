@@ -451,6 +451,19 @@ button:focus {
   }
 }
 
+@media (max-width: 640px) {
+  #plant-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  body {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 #plant-grid .no-results {
   grid-column: 1 / -1;
   text-align: center;
