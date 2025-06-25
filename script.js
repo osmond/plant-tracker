@@ -557,6 +557,19 @@ async function loadPlants() {
     fertSpan.innerHTML = ICONS.fert + ` ${fertFreq}`;
     summary.appendChild(fertSpan);
 
+    const nextWaterSpan = document.createElement('span');
+    nextWaterSpan.classList.add('summary-item');
+    nextWaterSpan.innerHTML =
+      ICONS.water + ` next ${formatDateShort(getNextWaterDate(plant))}`;
+    summary.appendChild(nextWaterSpan);
+
+    const nextFertSpan = document.createElement('span');
+    nextFertSpan.classList.add('summary-item');
+    const nextFert = getNextFertDate(plant);
+    nextFertSpan.innerHTML =
+      ICONS.fert + ` next ${nextFert ? formatDateShort(nextFert) : 'N/A'}`;
+    summary.appendChild(nextFertSpan);
+
     const lastWaterSpan = document.createElement('span');
     lastWaterSpan.classList.add('summary-item');
     lastWaterSpan.innerHTML =
