@@ -52,3 +52,15 @@ The first script adds the column if it's missing. The second upgrades the
 column to use DECIMAL(8,2) so each record stores the amount of water in
 milliliters with consistent precision.
 
+This script alters the existing `plants` table so each record stores the amount
+of water to give the plant. The `water_amount` column is measured in
+milliliters (ml).
+
+## Usage
+
+Once the migration is applied, each plant entry includes a `water_amount` value
+that indicates how much water it typically receives. The UI shows this amount in
+milliliters and also displays the equivalent in fluid ounces so you can work in
+your preferred units.
+
+
