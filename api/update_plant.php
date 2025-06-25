@@ -17,6 +17,7 @@ $species                 = trim($_POST['species'] ?? '');
 $room                    = trim($_POST['room'] ?? '');
 $watering_frequency      = intval($_POST['watering_frequency'] ?? 0);
 $fertilizing_frequency   = intval($_POST['fertilizing_frequency'] ?? 0);
+$water_amount            = isset($_POST['water_amount']) ? floatval($_POST['water_amount']) : 0;
 $last_watered            = $_POST['last_watered'] ?: null;
 $last_fertilized         = $_POST['last_fertilized'] ?: null;
 $photo_url               = trim($_POST['photo_url'] ?? '');
@@ -31,6 +32,9 @@ if ($room !== '' && !preg_match('/^[A-Za-z0-9\s-]{1,50}$/', $room)) {
 }
 if ($watering_frequency < 1 || $watering_frequency > 365) {
     $errors[] = 'Watering frequency must be 1-365';
+}
+if ($water_amount <= 0) {
+    $errors[] = 'Water amount must be positive';
 }
 
 if ($errors) {
@@ -61,7 +65,7 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
 
 // Basic validation
 
-if (!$id || $name === '' || $watering_frequency <= 0) {
+if (!$id || $name === '' || $watering_frequency <= 0 || $water_amount <= 0) {
     @http_response_code(400);
     echo json_encode(['error' => 'Missing or invalid fields']);
     exit;
@@ -77,11 +81,12 @@ $stmt = $conn->prepare("
         fertilizing_frequency = ?,
         last_watered       = ?,
         last_fertilized    = ?,
-        photo_url          = ?
+        photo_url          = ?,
+        water_amount       = ?
     WHERE id = ?
 ");
 $stmt->bind_param(
-    'sssiisssi',
+    'sssiisssdi',
     $name,
     $species,
     $room,
@@ -90,6 +95,7 @@ $stmt->bind_param(
     $last_watered,
     $last_fertilized,
     $photo_url,
+    $water_amount,
     $id
 );
 
