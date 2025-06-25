@@ -18,8 +18,8 @@ $room                    = trim($_POST['room'] ?? '');
 $watering_frequency      = intval($_POST['watering_frequency'] ?? 0);
 $fertilizing_frequency   = intval($_POST['fertilizing_frequency'] ?? 0);
 $water_amount            = isset($_POST['water_amount']) ? floatval($_POST['water_amount']) : 0;
-$last_watered            = $_POST['last_watered'] ?: null;
-$last_fertilized         = $_POST['last_fertilized'] ?: null;
+$last_watered            = $_POST['last_watered'] ?? null;
+$last_fertilized         = $_POST['last_fertilized'] ?? null;
 $photo_url               = trim($_POST['photo_url'] ?? '');
 
 // further validation
