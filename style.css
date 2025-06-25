@@ -503,6 +503,17 @@ button:focus {
   font-weight: 600;
 }
 
+/* water amount tags use the blue palette */
+.oz-tag {
+  background-color: var(--color-water);
+  color: var(--color-surface);
+}
+
+.ml-tag {
+  background-color: var(--color-water-bg);
+  color: var(--color-water-hover);
+}
+
 /* tag showing the plant's room - color is set inline via JS */
 .room-tag {}
 
