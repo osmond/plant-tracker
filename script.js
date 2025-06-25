@@ -91,17 +91,26 @@ function validateForm(form) {
   return valid;
 }
 
+function parseLocalDate(date) {
+  if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    const [y, m, d] = date.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+  return new Date(date);
+}
+
 function addDays(date, days) {
-  const d = new Date(date);
+  const d = parseLocalDate(date);
   const incr = parseInt(days, 10);
-  if (isNaN(incr)) return d;
-  d.setDate(d.getDate() + incr);
+  if (!isNaN(incr)) {
+    d.setDate(d.getDate() + incr);
+  }
   return d;
 }
 
 function formatDateShort(dateStr) {
   if (!dateStr) return 'never';
-  const d = new Date(dateStr);
+  const d = parseLocalDate(dateStr);
   if (isNaN(d)) return dateStr;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -116,10 +125,10 @@ function formatDateShort(dateStr) {
 
 function getSoonestDueDate(plant) {
   const waterDate = plant.last_watered
-    ? addDays(new Date(plant.last_watered), plant.watering_frequency)
+    ? addDays(parseLocalDate(plant.last_watered), plant.watering_frequency)
     : null;
   const fertDate = plant.last_fertilized && plant.fertilizing_frequency
-    ? addDays(new Date(plant.last_fertilized), plant.fertilizing_frequency)
+    ? addDays(parseLocalDate(plant.last_fertilized), plant.fertilizing_frequency)
     : null;
 
   if (waterDate && fertDate) return waterDate < fertDate ? waterDate : fertDate;
@@ -128,27 +137,27 @@ function getSoonestDueDate(plant) {
 
 function needsWatering(plant, today = new Date()) {
   if (!plant.last_watered) return true;
-  const next = addDays(new Date(plant.last_watered), plant.watering_frequency);
+  const next = addDays(parseLocalDate(plant.last_watered), plant.watering_frequency);
   return next <= today;
 }
 
 function needsFertilizing(plant, today = new Date()) {
   if (!plant.fertilizing_frequency) return false;
   if (!plant.last_fertilized) return true;
-  const next = addDays(new Date(plant.last_fertilized), plant.fertilizing_frequency);
+  const next = addDays(parseLocalDate(plant.last_fertilized), plant.fertilizing_frequency);
   return next <= today;
 }
 
 // --- calendar helpers ---
 function getNextWaterDate(plant) {
   if (!plant.last_watered) return new Date();
-  return addDays(new Date(plant.last_watered), plant.watering_frequency);
+  return addDays(parseLocalDate(plant.last_watered), plant.watering_frequency);
 }
 
 function getNextFertDate(plant) {
   if (!plant.fertilizing_frequency) return null;
   if (!plant.last_fertilized) return new Date();
-  return addDays(new Date(plant.last_fertilized), plant.fertilizing_frequency);
+  return addDays(parseLocalDate(plant.last_fertilized), plant.fertilizing_frequency);
 }
 
 async function loadCalendar() {
@@ -204,7 +213,7 @@ async function handleDrop(e,newDate,plants) {
   const data = JSON.parse(e.dataTransfer.getData('text/plain'));
   const plant = plants.find(p=>p.id==data.id);
   if (!plant) return;
-  const drop = new Date(newDate);
+  const drop = parseLocalDate(newDate);
   if (data.type==='water') {
     const newLast = addDays(drop,-plant.watering_frequency).toISOString().split('T')[0];
     await updatePlantInline(plant,'last_watered',newLast);
