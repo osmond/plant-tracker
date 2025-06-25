@@ -512,6 +512,17 @@ button:focus {
   gap: 4px;
 }
 
+.plant-summary .water-amount {
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.plant-summary .water-amount .ml-line {
+  font-size: 0.85em;
+  opacity: 0.8;
+}
+
 #summary {
   display: flex;
   flex-wrap: wrap;
