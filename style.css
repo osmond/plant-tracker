@@ -466,7 +466,6 @@ button:focus {
   display: flex;
   flex-direction: column;
   overflow: hidden; /* clip photo when it extends to edges */
-  height: 300px; /* allow photo to fill entire card */
 }
 
 .plant-card .actions {
@@ -510,11 +509,10 @@ button:focus {
 
 .plant-card .plant-photo {
   width: 100%;
-  height: 100%;
+  height: 150px;
   object-fit: cover;
   display: block;
-  flex-grow: 1;
-  margin-bottom: 0;
+  margin-bottom: calc(var(--spacing) * 1.5);
   border-radius: 12px;
 }
 
