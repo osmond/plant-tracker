@@ -63,4 +63,9 @@ that indicates how much water it typically receives. Enter the amount in fluid
 ounces and the UI shows the equivalent in milliliters. The value is stored in
 milliliters so you can work in either unit as needed.
 
+### Photo cleanup
+
+Uploading a new photo now removes the previous image from the `uploads/`
+directory. Deleting a plant also deletes its photo so the folder stays tidy.
+
 

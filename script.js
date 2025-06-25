@@ -338,6 +338,9 @@ async function updatePlantPhoto(plant, file) {
   data.append('room', plant.room);
   data.append('last_watered', plant.last_watered || '');
   data.append('last_fertilized', plant.last_fertilized || '');
+  if (plant.photo_url) {
+    data.append('photo_url', plant.photo_url);
+  }
   data.append('photo', file);
 
   const resp = await fetch('api/update_plant.php', { method: 'POST', body: data });
