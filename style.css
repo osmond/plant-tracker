@@ -244,7 +244,8 @@ button:focus {
     padding: calc(var(--spacing) / 2) var(--spacing);
     border-radius: var(--radius);
     font-weight: bold;
-    margin-left: calc(var(--spacing) * 1.25);
+    /* spacing is handled by the actions grid gap */
+    margin: 0;
 }
 
 .water-due {
