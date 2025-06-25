@@ -346,8 +346,6 @@ async function loadPlants() {
     const haystack = (plant.name + ' ' + plant.species).toLowerCase();
     if (searchQuery && !haystack.includes(searchQuery)) return false;
 
-    const waterDue = needsWatering(plant, today);
-    const fertDue = needsFertilizing(plant, today);
     if (dueFilter === 'water' && !waterDue) return false;
     if (dueFilter === 'fert' && !fertDue) return false;
     if (dueFilter === 'any' && !(waterDue || fertDue)) return false;
@@ -375,6 +373,17 @@ async function loadPlants() {
       card.classList.add('due-today');
     } else {
       card.classList.add('due-future');
+    }
+
+    const waterDue = needsWatering(plant, today);
+    const fertDue = needsFertilizing(plant, today);
+
+    if (waterDue && fertDue) {
+      card.classList.add('both-due-card');
+    } else if (waterDue) {
+      card.classList.add('water-due-card');
+    } else if (fertDue) {
+      card.classList.add('fert-due-card');
     }
 
     if (plant.photo_url) {
@@ -426,9 +435,6 @@ async function loadPlants() {
 
     const actionsDiv = document.createElement('div');
     actionsDiv.classList.add('actions');
-
-    const waterDue = needsWatering(plant, today);
-    const fertDue = needsFertilizing(plant, today);
 
     if (waterDue) {
       const btn = document.createElement('button');
