@@ -125,22 +125,6 @@ form {
     opacity: 0.8;
     margin-top: calc(var(--spacing) / 4);
 }
-input,
-select,
-textarea {
-    padding: var(--spacing);
-    /*
-     * Margin is removed so spacing relies on the container's
-     * gap. This keeps form elements aligned when using
-     * Tailwind's grid utilities.
-     */
-    font-family: inherit;
-    font-size: 1rem;
-    border: 1px solid var(--color-border);
-    background-color: var(--color-bg);
-    appearance: none;
-    transition: background-color 0.2s, transform 0.1s;
-}
 
 button {
     cursor: pointer;
