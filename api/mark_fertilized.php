@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../csrf.php';
 if (getenv('DEBUG')) {
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
@@ -12,6 +13,9 @@ if ($dbConfig && file_exists($dbConfig)) {
 
 if (!headers_sent()) {
     header('Content-Type: application/json');
+}
+if (!csrf_validate()) {
+    return;
 }
 
 $id = intval($_POST['id']);
@@ -54,4 +58,4 @@ $stmt->close();
 @http_response_code(200);
 
 echo json_encode(['status' => 'success', 'updated' => $today]);
-?>
+

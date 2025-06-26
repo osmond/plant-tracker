@@ -1,13 +1,17 @@
 <?php
+require_once __DIR__ . '/../csrf.php';
 $dbConfig = getenv('DB_CONFIG');
 if ($dbConfig && file_exists($dbConfig)) {
     include $dbConfig;
 } else {
-    include '../db.php';
+include '../db.php';
 }
 
 if (!headers_sent()) {
     header('Content-Type: application/json');
+}
+if (!csrf_validate()) {
+    return;
 }
 
 // Basic validation
@@ -122,4 +126,4 @@ $stmt->close();
 
 @http_response_code(201);
 echo json_encode(['status' => 'success']);
-?>
+

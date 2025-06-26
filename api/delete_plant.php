@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../csrf.php';
 $dbConfig = getenv('DB_CONFIG');
 if ($dbConfig && file_exists($dbConfig)) {
     include $dbConfig;
@@ -8,6 +9,9 @@ if ($dbConfig && file_exists($dbConfig)) {
 
 if (!headers_sent()) {
     header('Content-Type: application/json');
+}
+if (!csrf_validate()) {
+    return;
 }
 
 $id = $_POST['id'] ?? null;
@@ -62,4 +66,4 @@ if ($stmt->affected_rows > 0) {
     @http_response_code(404);
     echo json_encode(['success' => false, 'error' => 'Plant not found']);
 }
-?>
+

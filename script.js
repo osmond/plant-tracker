@@ -64,6 +64,11 @@ function formatWaterAmount(ml) {
          `<span class="ml-line">(${mlDisplay} ml)</span>`;
 }
 
+function getCsrfToken() {
+  const el = document.getElementById('csrf_token');
+  return el ? el.value : '';
+}
+
 const ICONS = {
   trash: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
   water: '<svg class="icon icon-water" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>',
@@ -382,7 +387,7 @@ async function markAction(id, type, days = 0) {
     const resp = await fetch(`api/mark_${type}.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `id=${id}&snooze_days=${days}`
+      body: `id=${id}&snooze_days=${days}&csrf_token=${encodeURIComponent(getCsrfToken())}`
     });
     if (!resp.ok) {
       throw new Error(`Request failed with status ${resp.status}`);
@@ -405,7 +410,7 @@ function showUndoBanner(plant) {
     await fetch('api/delete_plant.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `id=${plant.id}`
+      body: `id=${plant.id}&csrf_token=${encodeURIComponent(getCsrfToken())}`
     });
     banner.classList.remove('show');
     lastDeletedPlant = null;
@@ -430,6 +435,7 @@ async function updatePlantInline(plant, field, newValue) {
   data.append('photo_url', plant.photo_url || '');
 
   data.set(field, newValue);
+  data.append('csrf_token', getCsrfToken());
 
   const resp = await fetch('api/update_plant.php', {
     method: 'POST',
@@ -460,6 +466,7 @@ async function updatePlantPhoto(plant, file) {
   data.append('last_watered', plant.last_watered || '');
   data.append('last_fertilized', plant.last_fertilized || '');
   data.append('photo', file);
+  data.append('csrf_token', getCsrfToken());
 
   const resp = await fetch('api/update_plant.php', { method: 'POST', body: data });
   if (!resp.ok) {
@@ -950,6 +957,13 @@ function init(){
   const photoInput = document.getElementById('photo');
   const waterFreqInput = document.getElementById('watering_frequency');
   const waterAmtInput = document.getElementById('water_amount');
+
+  const csrfInput = document.getElementById('csrf_token');
+  if (csrfInput) {
+    fetch('api/get_csrf_token.php')
+      .then(r => r.json())
+      .then(d => { csrfInput.value = d.token; });
+  }
 
 
   // apply saved preferences before initial load
