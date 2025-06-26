@@ -435,7 +435,12 @@ async function updatePlantInline(plant, field, newValue) {
     body: data
   });
   if (!resp.ok) {
-    showToast('Failed to save change', true);
+    let msg = 'Failed to save change';
+    try {
+      const err = await resp.json();
+      if (err && err.error) msg = err.error;
+    } catch (e) {}
+    showToast(msg, true);
   } else {
     loadPlants();
     loadCalendar();
@@ -724,11 +729,30 @@ async function loadPlants() {
     const summary = document.createElement('div');
     summary.classList.add('plant-summary');
 
+    const waterGroup = document.createElement('div');
+    waterGroup.classList.add('summary-group');
+
     const waterSpan = document.createElement('span');
     waterSpan.classList.add('summary-item');
     waterSpan.innerHTML =
       ICONS.water + ` water every ${plant.watering_frequency} days`;
-    summary.appendChild(waterSpan);
+    waterGroup.appendChild(waterSpan);
+
+    const nextWaterSpan = document.createElement('span');
+    nextWaterSpan.classList.add('summary-item');
+    nextWaterSpan.innerHTML =
+      ICONS.water +
+      ` next watering is ${formatDateShort(getNextWaterDate(plant))}`;
+    waterGroup.appendChild(nextWaterSpan);
+
+    const lastWaterSpan = document.createElement('span');
+    lastWaterSpan.classList.add('summary-item');
+    lastWaterSpan.innerHTML =
+      ICONS.water + ` last watered ${formatDateShort(plant.last_watered)}`;
+    waterGroup.appendChild(lastWaterSpan);
+
+    const fertGroup = document.createElement('div');
+    fertGroup.classList.add('summary-group');
 
     const fertSpan = document.createElement('span');
     fertSpan.classList.add('summary-item');
@@ -736,6 +760,7 @@ async function loadPlants() {
       ? `${plant.fertilizing_frequency} days`
       : 'N/A';
     fertSpan.innerHTML = ICONS.fert + ` fertilize every ${fertFreq}`;
+<<<<<<< codex/compact-date-display-for-watering-and-fertilizing
     summary.appendChild(fertSpan);
 
     const waterHistory = document.createElement('span');
@@ -745,14 +770,31 @@ async function loadPlants() {
       ICONS.water +
       ` Watering: ${formatDateShort(plant.last_watered)} \u2192 ${nextWater}`;
     summary.appendChild(waterHistory);
+=======
+    fertGroup.appendChild(fertSpan);
+>>>>>>> main
 
     const fertHistory = document.createElement('span');
     fertHistory.classList.add('summary-item');
     const nextFert = getNextFertDate(plant);
     fertHistory.innerHTML =
       ICONS.fert +
+<<<<<<< codex/compact-date-display-for-watering-and-fertilizing
       ` Fertilizing: ${formatDateShort(plant.last_fertilized)} \u2192 ${nextFert ? formatDateShort(nextFert) : 'N/A'}`;
     summary.appendChild(fertHistory);
+=======
+      ` next fertilizing is ${nextFert ? formatDateShort(nextFert) : 'N/A'}`;
+    fertGroup.appendChild(nextFertSpan);
+
+    const lastFertSpan = document.createElement('span');
+    lastFertSpan.classList.add('summary-item');
+    lastFertSpan.innerHTML =
+      ICONS.fert + ` last fertilized ${formatDateShort(plant.last_fertilized)}`;
+    fertGroup.appendChild(lastFertSpan);
+
+    summary.appendChild(waterGroup);
+    summary.appendChild(fertGroup);
+>>>>>>> main
 
     card.appendChild(summary);
 
