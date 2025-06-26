@@ -662,14 +662,16 @@ async function loadPlants() {
       card.classList.add('due-future');
     }
 
+    const img = document.createElement('img');
+    img.src = plant.photo_url || 'https://jonosmond.com/plant-tracker/placeholder.png';
     if (plant.photo_url) {
-      const img = document.createElement('img');
-      img.src = plant.photo_url;
       img.alt = plant.name;
-      img.loading = 'lazy';
-      img.classList.add('plant-photo');
-      card.appendChild(img);
+    } else {
+      img.alt = 'No photo available for ' + plant.name;
     }
+    img.loading = 'lazy';
+    img.classList.add('plant-photo');
+    card.appendChild(img);
     const titleEl = document.createElement('h3');
     titleEl.classList.add('plant-title');
     titleEl.textContent = plant.name;
