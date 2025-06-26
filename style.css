@@ -43,16 +43,10 @@
   --add-photo-bg: #EDE7F6;     /* Deep Purple 50 – subtle backdrop */
   --add-photo: #5E35B1;        /* Deep Purple 600 – rich frame */
   --add-photo-hover: #512DA8;  /* Deep Purple 700 – hover state */
-  /* 1.25× modular scale */
-  --fs-0: 0.75rem;    /* small */
-  --fs-1: 0.9375rem;  /* ↓1: 16px/1.25 */
-  --fs-2: 1rem;       /* base */
-  --fs-3: 1.25rem;    /* → large (.fs-2 × 1.25) */
-  --fs-4: 1.5625rem;  /* → xl */
-  --fs-5: 1.953125rem;
-  /* line-height scale */
-  --lh-body: 1.5;
-  --lh-heading: 1.2;
+  --font-size-sm: 0.75rem;     /* ~12px small text */
+  --font-size-base: 1rem;      /* 16px base text */
+  --font-size-lg: 1.25rem;     /* 20px large text */
+  --font-size-xl: 1.5rem;      /* 24px extra large text */
 }
 
 .bg-primary {
@@ -61,28 +55,22 @@
 }
 
 html {
-  font-size: clamp(0.875rem, 0.875rem + 1vw, 1.125rem);
+  font-size: 100%;
 }
-
 
 body {
     font-family: 'Inter', sans-serif;
-    font-size: var(--fs-2);
-    line-height: var(--lh-body);
+    line-height: 1.6;
     padding: calc(var(--spacing) * 2.5);
     margin: auto;
     max-width: 100%;
 }
+
 h1, h2, h3 {
     margin-bottom: calc(var(--spacing) * 1.5);
-    line-height: var(--lh-heading);
-}
-h1, h2 {
-    font-weight: 700;
-}
-h3 {
     font-weight: 600;
 }
+
 h1 {
     font-size: clamp(1.75rem, 5vw, 2rem);
     font-weight: 700;
@@ -624,16 +612,15 @@ button:focus {
 }
 
 .plant-title {
-  font-size: clamp(1.25rem, 1.25rem + 1.5vw, 1.9531rem);
-  line-height: var(--lh-heading);
+  font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: calc(var(--spacing) / 2);
 }
+
 .plant-species {
-  font-size: var(--fs-1);
+  font-size: 0.9rem;
   opacity: 0.8;
   margin-bottom: calc(var(--spacing));
-}
 }
 
 /* container for small tags like room and water amount */
@@ -644,14 +631,14 @@ button:focus {
   gap: calc(var(--spacing) / 2);
   margin-bottom: calc(var(--spacing));
 }
+
 .tag {
   background-color: var(--color-accent);
   color: var(--color-surface);
   padding: 2px 6px;
   border-radius: var(--radius);
-  font-size: var(--fs-0);
+  font-size: 0.75rem;
   font-weight: 600;
-}
 }
 
 /* water amount tags use the blue palette */
@@ -676,9 +663,14 @@ button:focus {
   display: flex;
   flex-direction: column;
   gap: calc(var(--spacing) * 0.75);
-  font-size: clamp(0.9375rem, 0.9375rem + 0.5vw, 1.25rem);
-  line-height: var(--lh-body);
+  font-size: var(--font-size-sm);
   margin-bottom: calc(var(--spacing));
+}
+
+@media (min-width: 1000px) {
+  .plant-summary {
+    font-size: 0.9rem; /* 14.4px */
+  }
 }
 
 
@@ -764,7 +756,7 @@ button:focus {
   left: calc(var(--spacing) * 2);
   padding: 2px 6px;
   border-radius: var(--radius);
-  font-size: var(--fs-0);
+  font-size: 0.75rem;
   font-weight: 600;
   z-index: 5;
   color: var(--color-surface);
