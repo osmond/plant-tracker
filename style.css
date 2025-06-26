@@ -285,6 +285,11 @@ button:focus {
   0%   { background-color: var(--color-highlight); }
   100% { background-color: transparent; }
 }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
 #undo-banner {
   position: fixed;
   bottom: calc(var(--spacing) * 1.25);
@@ -731,8 +736,10 @@ button:focus {
   background-color: var(--color-error);
 }
 .urgency-today {
-  background-color: var(--color-warning);
+  background-color: #ff5722; /* more vivid red-orange */
   color: var(--color-text);
+  animation: pulse 1.5s ease-in-out infinite;
+  transform-origin: left top;
 }
 .urgency-future {
   background-color: var(--color-success);
