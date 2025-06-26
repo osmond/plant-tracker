@@ -452,26 +452,23 @@ button:focus {
 /* small heatmap to show upcoming task counts */
 #heatmap {
   display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(7, 1fr);
-  grid-auto-columns: 10px;
-  gap: 3px;
-  max-width: fit-content;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  max-width: 200px;
   margin: calc(var(--spacing) * 2) auto;
 }
 
 #heatmap .heat-cell {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 2px;
-  background: #ebedf0;
-  cursor: pointer;
+  background: var(--color-border);
 }
 
-#heatmap .level-0 { background: #ebedf0; }
-#heatmap .level-1 { background: #9be9a8; }
-#heatmap .level-2 { background: #40c463; }
-#heatmap .level-3 { background: #30a14e; }
+#heatmap .level-0 { background: var(--color-border); }
+#heatmap .level-1 { background: #c6f6d5; }
+#heatmap .level-2 { background: #68d391; }
+#heatmap .level-3 { background: #38a169; }
 
 /* card layout */
 #plant-grid {
