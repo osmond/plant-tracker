@@ -691,7 +691,8 @@ async function loadPlants() {
     if (soonest < startOfToday) {
       card.classList.add('due-overdue');
       urgencyClass = 'urgency-overdue';
-      urgencyText = 'Overdue';
+      const overdueDays = Math.floor((startOfToday - soonest) / 86400000);
+      urgencyText = `Overdue by ${overdueDays} day${overdueDays !== 1 ? 's' : ''}`;
     } else if (soonest < startOfTomorrow) {
       card.classList.add('due-today');
       urgencyClass = 'urgency-today';
