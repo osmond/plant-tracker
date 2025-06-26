@@ -679,19 +679,6 @@ button:focus {
   line-height: 1.2;
 }
 
-/* grouped summary sections */
-.summary-group {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  column-gap: calc(var(--spacing));
-  row-gap: calc(var(--spacing));
-}
-
-.summary-group + .summary-group {
-  margin-top: calc(var(--spacing));
-  padding-top: calc(var(--spacing) / 2);
-  border-top: 1px solid var(--color-border);
-}
 
 .plant-summary .water-amount .ml-line {
   font-size: 0.85em;
