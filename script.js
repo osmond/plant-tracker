@@ -896,10 +896,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   const dueFilterEl = document.getElementById('due-filter');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
+  const closeCal = document.getElementById('close-calendar');
 
   const heatmap = document.getElementById('heatmap');
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
+  let showCalendar;
 
   const nextStepBtn = document.getElementById('next-step');
   const prevStepBtn = document.getElementById('prev-step');
@@ -916,7 +918,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if (calendarEl) calendarEl.classList.add('hidden');
   if (calendarHeading) calendarHeading.classList.add('hidden');
   if (heatmap) {
-    const showCalendar = () => {
+    showCalendar = () => {
       if (calendarEl) calendarEl.classList.remove('hidden');
       if (calendarHeading) calendarHeading.classList.remove('hidden');
       loadCalendar();
@@ -950,6 +952,17 @@ document.addEventListener('DOMContentLoaded',()=>{
       toggleSearch.style.display = 'inline-block';
       document.getElementById('search-input').value = '';
       loadPlants();
+    });
+  }
+  if (closeCal) {
+    closeCal.innerHTML = ICONS.cancel + '<span class="visually-hidden">Close Calendar</span>';
+    closeCal.addEventListener('click', () => {
+      if (calendarEl) calendarEl.classList.add('hidden');
+      if (calendarHeading) calendarHeading.classList.add('hidden');
+      if (heatmap) {
+        heatmap.addEventListener('click', showCalendar, { once: true });
+        heatmap.addEventListener('touchstart', showCalendar, { once: true });
+      }
     });
   }
   if (submitBtn) {
