@@ -12,6 +12,7 @@ if (!headers_sent()) {
 
 $id = $_POST['id'] ?? null;
 $id = filter_var($id, FILTER_VALIDATE_INT);
+$photo_url = trim($_POST['photo_url'] ?? '');
 
 if ($id === false || $id <= 0) {
     @http_response_code(400);
@@ -33,6 +34,28 @@ if (!$stmt->execute()) {
 }
 
 if ($stmt->affected_rows > 0) {
+    if ($photo_url !== '') {
+        $oldPath = __DIR__ . '/../' . ltrim($photo_url, '/\\');
+        $oldReal = realpath($oldPath);
+        $uploadsRoot = realpath(__DIR__ . '/../uploads');
+        if (
+            $oldReal &&
+            $uploadsRoot &&
+            strpos($oldReal, $uploadsRoot) === 0 &&
+            is_file($oldReal)
+        ) {
+            $archiveDir = $uploadsRoot . '/archive';
+            if (!is_dir($archiveDir)) {
+                mkdir($archiveDir, 0755, true);
+            }
+            $archivePath = $archiveDir . '/' . basename($oldReal);
+            if (file_exists($archivePath)) {
+                $info = pathinfo($oldReal);
+                $archivePath = $archiveDir . '/' . $info['filename'] . '_' . time() . '.' . $info['extension'];
+            }
+            rename($oldReal, $archivePath);
+        }
+    }
     @http_response_code(200);
     echo json_encode(['success' => true]);
 } else {
