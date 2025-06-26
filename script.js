@@ -729,72 +729,24 @@ async function loadPlants() {
     const summary = document.createElement('div');
     summary.classList.add('plant-summary');
 
-    const waterGroup = document.createElement('div');
-    waterGroup.classList.add('summary-group');
-
-    const waterSpan = document.createElement('span');
-    waterSpan.classList.add('summary-item');
-    waterSpan.innerHTML =
-      ICONS.water + ` water every ${plant.watering_frequency} days`;
-    waterGroup.appendChild(waterSpan);
-
-    const nextWaterSpan = document.createElement('span');
-    nextWaterSpan.classList.add('summary-item');
-    nextWaterSpan.innerHTML =
+    const waterSummary = document.createElement('span');
+    waterSummary.classList.add('summary-item');
+    const waterNext = formatDateShort(getNextWaterDate(plant));
+    waterSummary.innerHTML =
       ICONS.water +
-      ` next watering is ${formatDateShort(getNextWaterDate(plant))}`;
-    waterGroup.appendChild(nextWaterSpan);
+      ` Water every ${plant.watering_frequency} days. Last ${formatDateShort(plant.last_watered)}, next ${waterNext}.`;
+    summary.appendChild(waterSummary);
 
-    const lastWaterSpan = document.createElement('span');
-    lastWaterSpan.classList.add('summary-item');
-    lastWaterSpan.innerHTML =
-      ICONS.water + ` last watered ${formatDateShort(plant.last_watered)}`;
-    waterGroup.appendChild(lastWaterSpan);
-
-    const fertGroup = document.createElement('div');
-    fertGroup.classList.add('summary-group');
-
-    const fertSpan = document.createElement('span');
-    fertSpan.classList.add('summary-item');
+    const fertSummary = document.createElement('span');
+    fertSummary.classList.add('summary-item');
     const fertFreq = plant.fertilizing_frequency
       ? `${plant.fertilizing_frequency} days`
       : 'N/A';
-    fertSpan.innerHTML = ICONS.fert + ` fertilize every ${fertFreq}`;
-<<<<<<< codex/compact-date-display-for-watering-and-fertilizing
-    summary.appendChild(fertSpan);
-
-    const waterHistory = document.createElement('span');
-    waterHistory.classList.add('summary-item');
-    const nextWater = formatDateShort(getNextWaterDate(plant));
-    waterHistory.innerHTML =
-      ICONS.water +
-      ` Watering: ${formatDateShort(plant.last_watered)} \u2192 ${nextWater}`;
-    summary.appendChild(waterHistory);
-=======
-    fertGroup.appendChild(fertSpan);
->>>>>>> main
-
-    const fertHistory = document.createElement('span');
-    fertHistory.classList.add('summary-item');
-    const nextFert = getNextFertDate(plant);
-    fertHistory.innerHTML =
+    const fertNext = getNextFertDate(plant);
+    fertSummary.innerHTML =
       ICONS.fert +
-<<<<<<< codex/compact-date-display-for-watering-and-fertilizing
-      ` Fertilizing: ${formatDateShort(plant.last_fertilized)} \u2192 ${nextFert ? formatDateShort(nextFert) : 'N/A'}`;
-    summary.appendChild(fertHistory);
-=======
-      ` next fertilizing is ${nextFert ? formatDateShort(nextFert) : 'N/A'}`;
-    fertGroup.appendChild(nextFertSpan);
-
-    const lastFertSpan = document.createElement('span');
-    lastFertSpan.classList.add('summary-item');
-    lastFertSpan.innerHTML =
-      ICONS.fert + ` last fertilized ${formatDateShort(plant.last_fertilized)}`;
-    fertGroup.appendChild(lastFertSpan);
-
-    summary.appendChild(waterGroup);
-    summary.appendChild(fertGroup);
->>>>>>> main
+      ` Fertilize every ${fertFreq}. Last ${formatDateShort(plant.last_fertilized)}, next ${fertNext ? formatDateShort(fertNext) : 'N/A'}.`;
+    summary.appendChild(fertSummary);
 
     card.appendChild(summary);
 
