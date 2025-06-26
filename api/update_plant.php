@@ -5,6 +5,7 @@ if ($dbConfig && file_exists($dbConfig)) {
 } else {
     include '../db.php';
 }
+include_once __DIR__ . '/../image_utils.php';
 
 $debug = getenv('DEBUG');
 if ($debug) {
@@ -87,7 +88,8 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
                     rename($oldReal, $archivePath);
                 }
             }
-            $photo_url = 'uploads/' . $fileName;
+            $converted = convert_to_webp($dest);
+            $photo_url = 'uploads/' . basename($converted);
         }
     }
 }
