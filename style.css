@@ -757,6 +757,8 @@ button:focus {
 
 .urgency-overdue {
   background-color: var(--color-error);
+  animation: pulse 1.5s ease-in-out infinite;
+  transform-origin: left top;
 }
 .urgency-today {
   background-color: #ff5722; /* more vivid red-orange */
