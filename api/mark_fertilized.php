@@ -1,6 +1,8 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+if (getenv('DEBUG')) {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+}
 $dbConfig = getenv('DB_CONFIG');
 if ($dbConfig && file_exists($dbConfig)) {
     include $dbConfig;
