@@ -926,6 +926,24 @@ async function loadPlants() {
 
 // --- init ---
 function init(){
+  const loginForm = document.getElementById('login-form');
+  const appContainer = document.getElementById('app-container');
+  if (loginForm) {
+    loginForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const data = new FormData(loginForm);
+      const resp = await fetch('api/login.php', { method: 'POST', body: data, credentials: 'same-origin' });
+      if (resp.ok) {
+        loginForm.style.display = 'none';
+        if (appContainer) appContainer.classList.remove('hidden');
+        loadPlants();
+        loadCalendar();
+      } else {
+        const out = await resp.json().catch(() => ({}));
+        document.getElementById('login-error').textContent = out.error || 'Login failed';
+      }
+    });
+  }
   const showBtn = document.getElementById('show-add-form');
   const exportBtn = document.getElementById('export-json');
   const form = document.getElementById('plant-form');
