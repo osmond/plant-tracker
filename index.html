@@ -28,6 +28,19 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
 </head>
 <body class="bg-bg text-text min-h-screen">
+    <form id="login-form" class="p-4 bg-card rounded-lg shadow max-w-sm mx-auto mt-6">
+        <div class="mb-2">
+            <label for="login-username" class="block mb-1">Username</label>
+            <input type="text" id="login-username" name="username" class="w-full border rounded-md p-2" />
+        </div>
+        <div class="mb-2">
+            <label for="login-password" class="block mb-1">Password</label>
+            <input type="password" id="login-password" name="password" class="w-full border rounded-md p-2" />
+        </div>
+        <div id="login-error" class="error mb-2"></div>
+        <button type="submit" class="bg-primary text-white rounded-md px-4 py-2 w-full">Login</button>
+    </form>
+    <div id="app-container" class="hidden">
     <h1 class="app-title text font-bold px-4 py-0">
         <img id="title-weather-icon" class="title-icon" alt="" style="display:none;">
         My Plant Tracker
@@ -143,6 +156,7 @@
         </span>
     </h2>
     <div id="calendar" class="p-4"></div>
+    </div> <!-- end app-container -->
 
     <script>
       const script = document.createElement('script');
