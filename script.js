@@ -692,9 +692,8 @@ async function loadPlants() {
       roomTag.style.borderColor = borderColorForRoom(plant.room);
       tagList.appendChild(roomTag);
     }
-    if (plant.water_amount) {
-      const ml = parseFloat(plant.water_amount);
-      if (!isNaN(ml)) {
+    const ml = parseFloat(plant.water_amount);
+    if (!isNaN(ml) && ml > 0) {
         const ozTag = document.createElement('span');
         ozTag.classList.add('tag', 'oz-tag');
         ozTag.textContent = `${(ml / ML_PER_US_FL_OUNCE).toFixed(1).replace(/\.0$/, '')}oz`;
@@ -705,7 +704,6 @@ async function loadPlants() {
         mlTag.textContent = `${Math.round(ml)} ml`;
         tagList.appendChild(mlTag);
       }
-    }
     if (tagList.childElementCount > 0) {
       card.appendChild(tagList);
     }
