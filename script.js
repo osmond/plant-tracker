@@ -435,7 +435,12 @@ async function updatePlantInline(plant, field, newValue) {
     body: data
   });
   if (!resp.ok) {
-    showToast('Failed to save change', true);
+    let msg = 'Failed to save change';
+    try {
+      const err = await resp.json();
+      if (err && err.error) msg = err.error;
+    } catch (e) {}
+    showToast(msg, true);
   } else {
     loadPlants();
     loadCalendar();
