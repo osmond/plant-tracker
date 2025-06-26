@@ -8,6 +8,7 @@ let currentFormStep = 1;
 let currentWeather = null;
 let currentWeatherIcon = null;
 let currentWeatherDesc = null;
+let forecastDays = [];
 
 // public OpenWeather API key provided by user
 const WEATHER_API_KEY = '2aa3ade8428368a141f7951420570c16';
@@ -485,12 +486,30 @@ function fetchWeather() {
     loadPlants();
   };
 
+  const fetchForecast = async (lat, lon) => {
+    try {
+      const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&units=imperial&appid=${WEATHER_API_KEY}`;
+      const res = await fetch(url);
+      if (!res.ok) return;
+      const data = await res.json();
+      forecastDays = data.daily.slice(1, 4).map(d => ({
+        temp: Math.round(d.temp.day),
+        icon: d.weather[0].icon,
+        desc: d.weather[0].main
+      }));
+      displayForecast();
+    } catch (e) {
+      console.error('Forecast fetch failed', e);
+    }
+  };
+
   const fetchByCoords = async (lat, lon) => {
     try {
       const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${WEATHER_API_KEY}`);
       if (!res.ok) return;
       const data = await res.json();
       addWeather(Math.round(data.main.temp), data.weather[0].main, data.weather[0].icon);
+      fetchForecast(lat, lon);
     } catch (e) {
       console.error('Weather fetch failed', e);
     }
@@ -504,6 +523,25 @@ function fetchWeather() {
   } else {
     fetchByCoords(40.71, -74.01);
   }
+}
+
+function displayForecast() {
+  const container = document.getElementById('forecast');
+  if (!container) return;
+  container.innerHTML = '';
+  forecastDays.forEach(d => {
+    const div = document.createElement('div');
+    div.classList.add('forecast-day');
+    const img = document.createElement('img');
+    img.classList.add('weather-icon');
+    img.src = `https://openweathermap.org/img/wn/${d.icon}@2x.png`;
+    img.alt = d.desc;
+    div.appendChild(img);
+    const temp = document.createElement('div');
+    temp.textContent = `${d.temp}\u00B0F`;
+    div.appendChild(temp);
+    container.appendChild(div);
+  });
 }
 
 // --- full-form populate & reset for edit ---
