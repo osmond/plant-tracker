@@ -734,7 +734,9 @@ async function loadPlants() {
     const waterNext = formatDateShort(getNextWaterDate(plant));
     waterSummary.innerHTML =
       ICONS.water +
+
       ` Water every ${plant.watering_frequency} days. Last ${formatDateShort(plant.last_watered)}, next ${waterNext}.`;
+
     summary.appendChild(waterSummary);
 
     const fertSummary = document.createElement('span');
@@ -745,7 +747,9 @@ async function loadPlants() {
     const fertNext = getNextFertDate(plant);
     fertSummary.innerHTML =
       ICONS.fert +
+
       ` Fertilize every ${fertFreq}. Last ${formatDateShort(plant.last_fertilized)}, next ${fertNext ? formatDateShort(fertNext) : 'N/A'}.`;
+
     summary.appendChild(fertSummary);
 
     card.appendChild(summary);
