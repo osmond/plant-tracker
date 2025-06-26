@@ -681,7 +681,7 @@ async function loadPlants() {
     card.appendChild(urgencyTag);
 
     const img = document.createElement('img');
-    img.src = plant.photo_url || 'https://jonosmond.com/plant-tracker/placeholder.png';
+    img.src = plant.photo_url || 'https://placehold.co/600x400.png';
     if (plant.photo_url) {
       img.alt = plant.name;
     } else {
