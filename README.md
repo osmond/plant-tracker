@@ -1,9 +1,28 @@
 # Plant Tracker
 
-This is a simple PHP-based application for tracking plants.
-You can filter plants that need watering or fertilizing to focus on urgent tasks.
-An optional calendar view lets you drag tasks to reschedule upcoming care dates.
-Room tags now automatically get unique colors so it's easy to distinguish where each plant lives.
+Plant Tracker is a lightweight PHP and JavaScript application for keeping tabs on your plants. It lets you filter which ones need watering or fertilizing and provides a drag-and-drop calendar for rescheduling upcoming tasks. Room tags are color coded automatically so you can easily see where each plant lives.
+
+## Requirements
+
+- PHP 7.4+ with the `mysqli` extension
+- MySQL or MariaDB
+- (optional) an OpenWeather API key if you want to display local weather
+
+## Getting Started
+
+1. Clone the repository and install any PHP dependencies you need for testing.
+2. Configure the database connection as described in **Configuration** below.
+3. Apply the migrations in the `migrations/` directory:
+   ```bash
+   mysql -u <user> -p <database> < migrations/001_add_water_amount.sql
+   mysql -u <user> -p <database> < migrations/002_add_water_amount.sql
+   ```
+   The first script adds the column if it does not exist. The second modifies it to DECIMAL(8,2) for consistent precision.
+4. Launch a local development server:
+   ```bash
+   php -S localhost:8000
+   ```
+   Then open `http://localhost:8000/index.html` in your browser.
 
 ## Running Tests
 
@@ -34,38 +53,12 @@ Set the following environment variables so `db.php` can establish the database c
 - `DB_PASS` - user password
 - `DB_NAME` - name of the database
 
-`db.php` reads these values using `getenv`. Ensure the variables are available in
-your environment (or defined in a `.env` file loaded by your web server) before
-running the application so credentials are not stored in the codebase.
+`db.php` reads these values using `getenv`. Alternatively you can set `DB_CONFIG` to the path of a PHP file that defines `$host`, `$user`, `$pass` and `$dbname`. Ensure these variables are available in your environment (or defined in a `.env` file loaded by your web server) before running the application so credentials are not stored in the codebase.
 
-## Setup
-
-Run the migration scripts to ensure the `water_amount` column exists and uses a
-precise DECIMAL type:
-
-```bash
-mysql -u <user> -p <database> < migrations/001_add_water_amount.sql
-mysql -u <user> -p <database> < migrations/002_add_water_amount.sql
-```
-
-The first script adds the column if it's missing. The second upgrades the
-column to use DECIMAL(8,2) so each record stores the amount of water in
-milliliters with consistent precision.
-
-This script alters the existing `plants` table so each record stores the amount
-of water to give the plant. The `water_amount` column is measured in
-milliliters (ml).
+If you want to use the weather lookup feature, edit `script.js` and replace the `WEATHER_API_KEY` constant with your own OpenWeather API key.
 
 ## Usage
 
-Once the migration is applied, each plant entry includes a `water_amount` value
-that indicates how much water it typically receives. Enter the amount in fluid
-ounces and the UI shows the equivalent in milliliters. The value is stored in
-milliliters so you can work in either unit as needed.
+Once the migration is applied, each plant entry includes a `water_amount` value that indicates how much water it typically receives. Enter the amount in fluid ounces and the UI shows the equivalent in milliliters. The value is stored in milliliters so you can work in either unit as needed.
 
-Uploaded photos are placed in the `uploads` directory. When a plant is updated
-with a new image or removed entirely, the previous photo is moved to
-`uploads/archive/` rather than deleted. If a name collision occurs, a timestamp
-is appended so the older file is preserved.
-
-
+Uploaded photos are placed in the `uploads` directory. When a plant is updated with a new image or removed entirely, the previous photo is moved to `uploads/archive/` rather than deleted. If a name collision occurs, a timestamp is appended so the older file is preserved.
