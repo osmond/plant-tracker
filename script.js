@@ -939,6 +939,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   if (toggleSearch) {
     toggleSearch.innerHTML = ICONS.search + '<span class="visually-hidden">Search</span>';
     toggleSearch.addEventListener('click', () => {
+      if (form) {
+        form.style.display = 'none';
+        if (showBtn) showBtn.style.display = 'inline-block';
+        const cancel = document.getElementById('cancel-edit');
+        if (cancel) cancel.style.display = 'none';
+      }
       if (searchContainer) searchContainer.classList.remove('hidden');
       toggleSearch.style.display = 'none';
       const input = document.getElementById('search-input');
@@ -972,6 +978,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   if (showBtn && form) {
     showBtn.addEventListener('click', () => {
+      if (searchContainer) {
+        searchContainer.classList.add('hidden');
+        toggleSearch.style.display = 'inline-block';
+      }
       form.style.display = 'block';
       showBtn.style.display = 'none';
       const cancel = document.getElementById('cancel-edit');
