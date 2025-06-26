@@ -688,7 +688,7 @@ async function loadPlants() {
 
     const img = document.createElement('img');
     img.src = plant.photo_url ||
-      'https://placehold.co/600x400?text=No+Photo';
+      'https://placehold.co/600x600?text=Add+Photo';
     if (plant.photo_url) {
       img.alt = plant.name;
     } else {
