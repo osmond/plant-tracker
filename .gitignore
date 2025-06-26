@@ -34,3 +34,4 @@ node_modules/
 *.tmp
 db.php
 uploads/
+plant-tracker-starter.code-workspace
