@@ -464,6 +464,23 @@ async function updatePlantPhoto(plant, file) {
   }
 }
 
+// --- photo modal ---
+function showPhotoModal(src, alt) {
+  const modal = document.getElementById('photo-modal');
+  const img = document.getElementById('photo-modal-img');
+  if (!modal || !img) return;
+  img.src = src;
+  img.alt = alt || '';
+  modal.classList.add('show');
+}
+
+function hidePhotoModal() {
+  const modal = document.getElementById('photo-modal');
+  const img = document.getElementById('photo-modal-img');
+  if (modal) modal.classList.remove('show');
+  if (img) img.src = '';
+}
+
 // --- weather helper ---
 function fetchWeather() {
   const addWeather = (temp, desc, icon) => {
@@ -668,6 +685,7 @@ async function loadPlants() {
       img.alt = plant.name;
       img.loading = 'lazy';
       img.classList.add('plant-photo');
+      img.addEventListener('click', () => showPhotoModal(img.src, img.alt));
       card.appendChild(img);
     }
     const titleEl = document.createElement('h3');
@@ -912,6 +930,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const photoInput = document.getElementById('photo');
   const waterFreqInput = document.getElementById('watering_frequency');
   const waterAmtInput = document.getElementById('water_amount');
+  const photoModal = document.getElementById('photo-modal');
 
 
   // apply saved preferences before initial load
@@ -1077,6 +1096,12 @@ document.addEventListener('DOMContentLoaded',()=>{
     dueFilterEl.addEventListener('change', () => {
       saveFilterPrefs();
       loadPlants();
+    });
+  }
+  if (photoModal) {
+    photoModal.addEventListener('click', hidePhotoModal);
+    document.addEventListener('keyup', e => {
+      if (e.key === 'Escape') hidePhotoModal();
     });
   }
   if (prevBtn) {
