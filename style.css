@@ -43,6 +43,7 @@
   --add-photo-bg: #EDE7F6;     /* Deep Purple 50 – subtle backdrop */
   --add-photo: #5E35B1;        /* Deep Purple 600 – rich frame */
   --add-photo-hover: #512DA8;  /* Deep Purple 700 – hover state */
+  --font-size-sm: 0.75rem;     /* ~12px small text */
 }
 
 .bg-primary {
@@ -623,6 +624,7 @@ button:focus {
   grid-template-columns: repeat(2, auto);
   column-gap: calc(var(--spacing));
   row-gap: calc(var(--spacing));
+  font-size: var(--font-size-sm);
   margin-bottom: calc(var(--spacing));
 }
 
