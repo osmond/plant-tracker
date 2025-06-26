@@ -58,6 +58,29 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         $dest = $uploadDir . $fileName;
 
         if (move_uploaded_file($_FILES['photo']['tmp_name'], $dest)) {
+            // archive old image if one was supplied
+            if (!empty($_POST['photo_url'])) {
+                $oldPath = __DIR__ . '/../' . ltrim($_POST['photo_url'], '/\\');
+                $oldReal = realpath($oldPath);
+                $uploadsRoot = realpath(__DIR__ . '/../uploads');
+                if (
+                    $oldReal &&
+                    $uploadsRoot &&
+                    strpos($oldReal, $uploadsRoot) === 0 &&
+                    is_file($oldReal)
+                ) {
+                    $archiveDir = $uploadsRoot . '/archive';
+                    if (!is_dir($archiveDir)) {
+                        mkdir($archiveDir, 0755, true);
+                    }
+                    $archivePath = $archiveDir . '/' . basename($oldReal);
+                    if (file_exists($archivePath)) {
+                        $info = pathinfo($oldReal);
+                        $archivePath = $archiveDir . '/' . $info['filename'] . '_' . time() . '.' . $info['extension'];
+                    }
+                    rename($oldReal, $archivePath);
+                }
+            }
             $photo_url = 'uploads/' . $fileName;
         }
     }

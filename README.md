@@ -63,4 +63,9 @@ that indicates how much water it typically receives. Enter the amount in fluid
 ounces and the UI shows the equivalent in milliliters. The value is stored in
 milliliters so you can work in either unit as needed.
 
+Uploaded photos are placed in the `uploads` directory. When a plant is updated
+with a new image or removed entirely, the previous photo is moved to
+`uploads/archive/` rather than deleted. If a name collision occurs, a timestamp
+is appended so the older file is preserved.
+
 
