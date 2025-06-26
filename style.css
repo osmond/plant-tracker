@@ -628,6 +628,12 @@ button:focus {
   margin-bottom: calc(var(--spacing));
 }
 
+@media (min-width: 1000px) {
+  .plant-summary {
+    font-size: 1rem;
+  }
+}
+
 
 .plant-summary .summary-item {
   display: flex;
