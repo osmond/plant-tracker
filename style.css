@@ -516,6 +516,38 @@ button:focus {
   font-style: italic;
   color: var(--color-text);
 }
+#plant-grid.plant-list {
+  display: block;
+}
+
+.plant-list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+}
+
+.plant-list .plant-card {
+  flex-direction: row;
+  align-items: center;
+}
+
+.plant-list .plant-card .plant-photo {
+  width: 80px;
+  height: 80px;
+  margin-right: calc(var(--spacing) * 2);
+  margin-bottom: 0;
+}
+
+.plant-list .plant-summary {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 1.5);
+}
+
+.plant-list .actions {
+  margin-left: auto;
+}
+
 
 .plant-card {
   background: #ffffff;

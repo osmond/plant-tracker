@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "jsdom": "^21.1.2"
+  },
+  "scripts": {
+    "test": "node tests/loadPlants.test.js"
+  }
+}
