@@ -638,7 +638,7 @@ button:focus {
 
 @media (min-width: 1000px) {
   .plant-summary {
-    font-size: 1rem;
+    font-size: 0.9rem; /* 14.4px */
   }
 }
 
