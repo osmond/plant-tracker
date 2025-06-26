@@ -564,7 +564,7 @@ button:focus {
 @media (min-width: 1000px) {
   .plant-card .plant-photo {
     height: auto;
-    min-height: 400px;
+    max-height: 400px;
   }
 }
 
