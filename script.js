@@ -783,6 +783,10 @@ async function loadPlants() {
 
     const actionsDiv = document.createElement('div');
     actionsDiv.classList.add('actions');
+    const leftGroup = document.createElement('div');
+    leftGroup.classList.add('actions-left');
+    const rightGroup = document.createElement('div');
+    rightGroup.classList.add('actions-right');
 
     const waterDue = needsWatering(plant, today);
     const fertDue = needsFertilizing(plant, today);
@@ -791,12 +795,13 @@ async function loadPlants() {
       const btn = document.createElement('button');
       btn.classList.add('action-btn', 'due-task', 'water-due');
       btn.innerHTML = ICONS.water + '<span class="visually-hidden">Water</span>';
-      btn.title = 'Mark watered';
+      btn.title = 'Water Now';
       btn.onclick = () => markAction(plant.id, 'watered');
-      actionsDiv.appendChild(btn);
+      leftGroup.appendChild(btn);
 
       const snooze = document.createElement('select');
       snooze.classList.add('snooze-select');
+      snooze.title = 'Snooze';
       const placeholder = document.createElement('option');
       placeholder.textContent = '';
       placeholder.selected = true;
@@ -814,19 +819,20 @@ async function loadPlants() {
           snooze.selectedIndex = 0;
         }
       };
-      actionsDiv.appendChild(snooze);
+      leftGroup.appendChild(snooze);
     }
 
     if (fertDue) {
       const btn = document.createElement('button');
       btn.classList.add('action-btn', 'due-task', 'fert-due');
       btn.innerHTML = ICONS.fert + '<span class="visually-hidden">Fertilize</span>';
-      btn.title = 'Mark fertilized';
+      btn.title = 'Fertilize Now';
       btn.onclick = () => markAction(plant.id, 'fertilized');
-      actionsDiv.appendChild(btn);
+      leftGroup.appendChild(btn);
 
       const snooze = document.createElement('select');
       snooze.classList.add('snooze-select');
+      snooze.title = 'Snooze';
       const placeholder = document.createElement('option');
       placeholder.textContent = '';
       placeholder.selected = true;
@@ -844,12 +850,13 @@ async function loadPlants() {
           snooze.selectedIndex = 0;
         }
       };
-      actionsDiv.appendChild(snooze);
+      leftGroup.appendChild(snooze);
     }
 
     const editBtn = document.createElement('button');
     editBtn.classList.add('action-btn', 'edit-btn');
     editBtn.innerHTML = ICONS.edit + '<span class="visually-hidden">Edit</span>';
+    editBtn.title = 'Edit';
     editBtn.type = 'button';
       editBtn.onclick = () => {
         populateForm(plant);
@@ -860,13 +867,14 @@ async function loadPlants() {
         if (showBtn) showBtn.style.display = 'none';
         showFormStep(1);
       };
-    actionsDiv.appendChild(editBtn);
+    rightGroup.appendChild(editBtn);
 
     const delBtn = document.createElement('button');
     delBtn.classList.add('action-btn', 'delete-btn');
     delBtn.innerHTML = ICONS.trash + '<span class="visually-hidden">Delete</span>';
+    delBtn.title = 'Delete';
     delBtn.onclick = () => showUndoBanner(plant);
-    actionsDiv.appendChild(delBtn);
+    rightGroup.appendChild(delBtn);
 
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -881,8 +889,11 @@ async function loadPlants() {
     changeBtn.classList.add('action-btn', 'photo-btn');
     changeBtn.innerHTML = ICONS.photo + '<span class="visually-hidden">Change Photo</span>';
     changeBtn.type = 'button';
+    changeBtn.title = 'Add Image';
     changeBtn.onclick = () => fileInput.click();
-    actionsDiv.appendChild(changeBtn);
+    rightGroup.appendChild(changeBtn);
+    actionsDiv.appendChild(leftGroup);
+    actionsDiv.appendChild(rightGroup);
     actionsDiv.appendChild(fileInput);
     card.appendChild(actionsDiv);
 
