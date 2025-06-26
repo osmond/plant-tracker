@@ -668,8 +668,10 @@ button:focus {
 
 .plant-summary .summary-item {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 4px;
+  line-height: 1.4;
+  margin: 0;
 }
 
 .plant-summary .water-amount {
@@ -706,6 +708,7 @@ button:focus {
 .plant-summary .icon {
   width: 1em;
   height: 1em;
+  vertical-align: -0.125em;
 }
 
 #summary .icon {

@@ -729,14 +729,14 @@ async function loadPlants() {
     const summary = document.createElement('div');
     summary.classList.add('plant-summary');
 
-    const waterSummary = document.createElement('span');
+    const waterSummary = document.createElement('p');
     waterSummary.classList.add('summary-item');
     const waterNext = formatDateShort(getNextWaterDate(plant));
     waterSummary.innerHTML =
       ICONS.water +
-
-      ` Water every ${plant.watering_frequency} days. Last ${formatDateShort(plant.last_watered)}, next ${waterNext}.`;
-
+      `Water every ${plant.watering_frequency} days. Last ${formatDateShort(plant.last_watered)}, next ${waterNext}.`;
+    const fertSummary = document.createElement('p');
+      `Fertilize every ${fertFreq}. Last ${formatDateShort(plant.last_fertilized)}, next ${fertNext ? formatDateShort(fertNext) : 'N/A'}.`;
     summary.appendChild(waterSummary);
 
     const fertSummary = document.createElement('span');
