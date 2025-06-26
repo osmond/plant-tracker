@@ -3,19 +3,7 @@ $dbConfig = getenv('DB_CONFIG');
 if ($dbConfig && file_exists($dbConfig)) {
     include $dbConfig;
 } else {
-include '../db.php';
-}
-
-if (session_status() === PHP_SESSION_NONE) {
-    @session_start();
-}
-if (!isset($_SESSION['user_id'])) {
-    if (!headers_sent()) {
-        header('Content-Type: application/json');
-    }
-    http_response_code(401);
-    echo json_encode(['error' => 'Unauthorized']);
-    return;
+    include '../db.php';
 }
 
 if (!headers_sent()) {
@@ -134,3 +122,4 @@ $stmt->close();
 
 @http_response_code(201);
 echo json_encode(['status' => 'success']);
+?>

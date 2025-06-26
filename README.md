@@ -16,16 +16,9 @@ Plant Tracker is a lightweight PHP and JavaScript application for keeping tabs o
    ```bash
    mysql -u <user> -p <database> < migrations/001_add_water_amount.sql
    mysql -u <user> -p <database> < migrations/002_add_water_amount.sql
-   mysql -u <user> -p <database> < migrations/003_create_users.sql
    ```
    The first script adds the column if it does not exist. The second modifies it to DECIMAL(8,2) for consistent precision.
-4. Create a user account:
-   Generate a password hash and insert it into the `users` table:
-   ```bash
-   php -r "echo password_hash('yourpass', PASSWORD_DEFAULT);"
-   mysql -u <user> -p <database> -e "INSERT INTO users (username, password_hash) VALUES ('admin', '<hash>')"
-   ```
-5. Launch a local development server:
+4. Launch a local development server:
    ```bash
    php -S localhost:8000
    ```
@@ -69,5 +62,3 @@ If you want to use the weather lookup feature, edit `script.js` and replace the 
 Once the migration is applied, each plant entry includes a `water_amount` value that indicates how much water it typically receives. Enter the amount in fluid ounces and the UI shows the equivalent in milliliters. The value is stored in milliliters so you can work in either unit as needed.
 
 Uploaded photos are placed in the `uploads` directory. When a plant is updated with a new image or removed entirely, the previous photo is moved to `uploads/archive/` rather than deleted. If a name collision occurs, a timestamp is appended so the older file is preserved.
-
-Before adding or updating plants you must log in using the form at the top of the page. The credentials correspond to an entry in the `users` table created during setup.

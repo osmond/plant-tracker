@@ -17,3 +17,4 @@ if (!class_exists('MockMysqli')) {
 }
 
 $conn = new MockMysqli();
+?>
