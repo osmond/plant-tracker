@@ -100,27 +100,33 @@ function saveFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
   const df = document.getElementById('due-filter');
+  const vf = document.getElementById('view-toggle');
   if (rf) localStorage.setItem('roomFilter', rf.value);
   if (sf) localStorage.setItem('sortPref', sf.value);
   if (df) localStorage.setItem('dueFilter', df.value);
+  if (vf) localStorage.setItem('viewPref', vf.value);
 }
 
 function loadFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
   const df = document.getElementById('due-filter');
+  const vf = document.getElementById('view-toggle');
   const rVal = localStorage.getItem('roomFilter');
   const sVal = localStorage.getItem('sortPref');
   const dVal = localStorage.getItem('dueFilter');
+  const vVal = localStorage.getItem('viewPref');
   if (rf && rVal !== null) rf.value = rVal;
   if (sf && sVal !== null) sf.value = sVal;
   if (df && dVal !== null) df.value = dVal;
+  if (vf && vVal !== null) vf.value = vVal;
 }
 
 function clearFilterPrefs() {
   localStorage.removeItem('roomFilter');
   localStorage.removeItem('sortPref');
   localStorage.removeItem('dueFilter');
+  localStorage.removeItem('viewPref');
 }
 
 // expose so it can be called externally
@@ -590,6 +596,9 @@ async function loadPlants() {
   const res = await fetch('api/get_plants.php');
   const plants = await res.json();
   const list = document.getElementById('plant-grid');
+  const view = document.getElementById('view-toggle')
+    ? document.getElementById('view-toggle').value
+    : 'grid';
   const selectedRoom = document.getElementById('room-filter').value;
   const dueFilter = document.getElementById('due-filter')
     ? document.getElementById('due-filter').value
@@ -607,6 +616,11 @@ async function loadPlants() {
   const startOfDayAfterTomorrow = addDays(startOfTomorrow,1);
 
   list.innerHTML = '';
+  if (view === 'list') {
+    list.classList.add('plant-list');
+  } else {
+    list.classList.remove('plant-list');
+  }
   const filtered = plants.filter(plant => {
     if (selectedRoom !== 'all' && plant.room !== selectedRoom) return false;
     const haystack = (plant.name + ' ' + plant.species).toLowerCase();
@@ -942,6 +956,7 @@ function init(){
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
 
+  const viewToggle = document.getElementById("view-toggle");
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
 
@@ -1099,6 +1114,12 @@ function init(){
       loadPlants();
     });
   }
+  if (viewToggle) {
+    viewToggle.addEventListener("change", () => {
+      saveFilterPrefs();
+      loadPlants();
+    });
+  }
   if (prevBtn) {
     prevBtn.addEventListener('click', () => {
       calendarStartDate = addDays(calendarStartDate, -7);
@@ -1116,8 +1137,10 @@ function init(){
   fetchWeather();
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
+if (!window.__TESTING__) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 }
