@@ -633,6 +633,7 @@ button:focus {
   row-gap: calc(var(--spacing));
   font-size: var(--font-size-sm);
   margin-bottom: calc(var(--spacing));
+  text-transform: uppercase;
 }
 
 @media (min-width: 1000px) {
