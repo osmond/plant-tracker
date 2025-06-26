@@ -900,10 +900,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
 
-  const heatmap = document.getElementById('heatmap');
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
-  let showCalendar;
 
   const nextStepBtn = document.getElementById('next-step');
   const prevStepBtn = document.getElementById('prev-step');
@@ -917,17 +915,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   loadFilterPrefs();
   showFormStep(1);
 
-  if (calendarEl) calendarEl.classList.add('hidden');
-  if (calendarHeading) calendarHeading.classList.add('hidden');
-  if (heatmap) {
-    showCalendar = () => {
-      if (calendarEl) calendarEl.classList.remove('hidden');
-      if (calendarHeading) calendarHeading.classList.remove('hidden');
-      loadCalendar();
-    };
-    heatmap.addEventListener('click', showCalendar, { once: true });
-    heatmap.addEventListener('touchstart', showCalendar, { once: true });
-  }
+  loadCalendar();
 
   if (showBtn) {
     showBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add a Plant</span>';
