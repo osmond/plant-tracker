@@ -777,4 +777,19 @@ button:focus {
   background-color: var(--color-success);
 }
 
+/* simple forecast display */
+#forecast {
+  display: flex;
+  gap: calc(var(--spacing) * 2);
+  justify-content: center;
+}
+
+#forecast .forecast-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.9rem;
+}
+
 
