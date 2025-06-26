@@ -561,6 +561,13 @@ button:focus {
   border-radius: 12px;
 }
 
+@media (min-width: 1000px) {
+  .plant-card .plant-photo {
+    height: auto;
+    min-height: 400px;
+  }
+}
+
 .plant-card.due-overdue {
   background-color: var(--color-error-bg);
 }
