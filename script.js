@@ -713,7 +713,8 @@ async function loadPlants() {
 
     const waterSpan = document.createElement('span');
     waterSpan.classList.add('summary-item');
-    waterSpan.innerHTML = ICONS.water + ` ${plant.watering_frequency} days`;
+    waterSpan.innerHTML =
+      ICONS.water + ` water every ${plant.watering_frequency} days`;
     summary.appendChild(waterSpan);
 
     const fertSpan = document.createElement('span');
@@ -721,33 +722,35 @@ async function loadPlants() {
     const fertFreq = plant.fertilizing_frequency
       ? `${plant.fertilizing_frequency} days`
       : 'N/A';
-    fertSpan.innerHTML = ICONS.fert + ` ${fertFreq}`;
+    fertSpan.innerHTML = ICONS.fert + ` fertilize every ${fertFreq}`;
     summary.appendChild(fertSpan);
 
     const nextWaterSpan = document.createElement('span');
     nextWaterSpan.classList.add('summary-item');
     nextWaterSpan.innerHTML =
-      ICONS.water + ` next ${formatDateShort(getNextWaterDate(plant))}`;
+      ICONS.water +
+      ` next watering is ${formatDateShort(getNextWaterDate(plant))}`;
     summary.appendChild(nextWaterSpan);
 
     const nextFertSpan = document.createElement('span');
     nextFertSpan.classList.add('summary-item');
     const nextFert = getNextFertDate(plant);
     nextFertSpan.innerHTML =
-      ICONS.fert + ` next ${nextFert ? formatDateShort(nextFert) : 'N/A'}`;
+      ICONS.fert +
+      ` next fertilizing is ${nextFert ? formatDateShort(nextFert) : 'N/A'}`;
     summary.appendChild(nextFertSpan);
 
     const lastWaterSpan = document.createElement('span');
     lastWaterSpan.classList.add('summary-item');
     lastWaterSpan.innerHTML =
-      ICONS.water + ` last ${formatDateShort(plant.last_watered)}`;
+      ICONS.water + ` last watered ${formatDateShort(plant.last_watered)}`;
     summary.appendChild(lastWaterSpan);
 
 
     const lastFertSpan = document.createElement('span');
     lastFertSpan.classList.add('summary-item');
     lastFertSpan.innerHTML =
-      ICONS.fert + ` last ${formatDateShort(plant.last_fertilized)}`;
+      ICONS.fert + ` last fertilized ${formatDateShort(plant.last_fertilized)}`;
     summary.appendChild(lastFertSpan);
 
     card.appendChild(summary);
