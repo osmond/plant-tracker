@@ -1,4 +1,0 @@
-AuthType Basic
-AuthName "Restricted Access"
-AuthUserFile /workspace/plant-tracker/.htpasswd
-Require valid-user
