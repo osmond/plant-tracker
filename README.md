@@ -62,3 +62,16 @@ If you want to use the weather lookup feature, edit `script.js` and replace the 
 Once the migration is applied, each plant entry includes a `water_amount` value that indicates how much water it typically receives. Enter the amount in fluid ounces and the UI shows the equivalent in milliliters. The value is stored in milliliters so you can work in either unit as needed.
 
 Uploaded photos are placed in the `uploads` directory. When a plant is updated with a new image or removed entirely, the previous photo is moved to `uploads/archive/` rather than deleted. If a name collision occurs, a timestamp is appended so the older file is preserved.
+
+## Authentication
+
+This example repository uses a simple form of HTTP Basic Authentication. The `.htaccess` file at the project root points to an `.htpasswd` file that contains one username and a hashed password.
+
+1. Generate your own credentials using `htpasswd`:
+   ```bash
+   htpasswd -cbB /absolute/path/to/.htpasswd <username> <password>
+   ```
+2. Update `AuthUserFile` in `.htaccess` so it matches the path to your `.htpasswd` file.
+
+Once configured, accessing any page will prompt for the username and password you created.
+
