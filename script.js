@@ -9,11 +9,8 @@ let currentWeather = null;
 let currentWeatherIcon = null;
 let currentWeatherDesc = null;
 
-// runtime OpenWeather API key (from meta tag or window variable)
-function getWeatherApiKey() {
-  const meta = document.querySelector('meta[name="weather-api-key"]');
-  return (meta && meta.content) || window.WEATHER_API_KEY || '';
-}
+// public OpenWeather API key provided by user
+const WEATHER_API_KEY = '2aa3ade8428368a141f7951420570c16';
 
 // number of milliliters in one US fluid ounce
 const ML_PER_US_FL_OUNCE = 29.5735;
@@ -490,9 +487,7 @@ function fetchWeather() {
 
   const fetchByCoords = async (lat, lon) => {
     try {
-      const apiKey = getWeatherApiKey();
-      if (!apiKey) return;
-      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`);
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${WEATHER_API_KEY}`);
       if (!res.ok) return;
       const data = await res.json();
       addWeather(Math.round(data.main.temp), data.weather[0].main, data.weather[0].icon);

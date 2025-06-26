@@ -55,11 +55,7 @@ Set the following environment variables so `db.php` can establish the database c
 
 `db.php` reads these values using `getenv`. Alternatively you can set `DB_CONFIG` to the path of a PHP file that defines `$host`, `$user`, `$pass` and `$dbname`. Ensure these variables are available in your environment (or defined in a `.env` file loaded by your web server) before running the application so credentials are not stored in the codebase.
 
-To use the optional weather lookup feature, provide your OpenWeather API key at runtime.
-Add a meta tag such as `<meta name="weather-api-key" content="YOUR_KEY">` to
-`index.html` or set `window.WEATHER_API_KEY` before `script.js` loads. The
-script reads the value from either location so deployments can supply the key
-without modifying the source files.
+If you want to use the weather lookup feature, edit `script.js` and replace the `WEATHER_API_KEY` constant with your own OpenWeather API key.
 
 ## Usage
 
