@@ -760,13 +760,29 @@ async function loadPlants() {
       ? `${plant.fertilizing_frequency} days`
       : 'N/A';
     fertSpan.innerHTML = ICONS.fert + ` fertilize every ${fertFreq}`;
-    fertGroup.appendChild(fertSpan);
+<<<<<<< codex/compact-date-display-for-watering-and-fertilizing
+    summary.appendChild(fertSpan);
 
-    const nextFertSpan = document.createElement('span');
-    nextFertSpan.classList.add('summary-item');
+    const waterHistory = document.createElement('span');
+    waterHistory.classList.add('summary-item');
+    const nextWater = formatDateShort(getNextWaterDate(plant));
+    waterHistory.innerHTML =
+      ICONS.water +
+      ` Watering: ${formatDateShort(plant.last_watered)} \u2192 ${nextWater}`;
+    summary.appendChild(waterHistory);
+=======
+    fertGroup.appendChild(fertSpan);
+>>>>>>> main
+
+    const fertHistory = document.createElement('span');
+    fertHistory.classList.add('summary-item');
     const nextFert = getNextFertDate(plant);
-    nextFertSpan.innerHTML =
+    fertHistory.innerHTML =
       ICONS.fert +
+<<<<<<< codex/compact-date-display-for-watering-and-fertilizing
+      ` Fertilizing: ${formatDateShort(plant.last_fertilized)} \u2192 ${nextFert ? formatDateShort(nextFert) : 'N/A'}`;
+    summary.appendChild(fertHistory);
+=======
       ` next fertilizing is ${nextFert ? formatDateShort(nextFert) : 'N/A'}`;
     fertGroup.appendChild(nextFertSpan);
 
@@ -778,6 +794,7 @@ async function loadPlants() {
 
     summary.appendChild(waterGroup);
     summary.appendChild(fertGroup);
+>>>>>>> main
 
     card.appendChild(summary);
 
