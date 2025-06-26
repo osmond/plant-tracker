@@ -6,6 +6,12 @@ if ($dbConfig && file_exists($dbConfig)) {
     include '../db.php';
 }
 
+$debug = getenv('DEBUG');
+if ($debug) {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+}
+
 if (!headers_sent()) {
     header('Content-Type: application/json');
 }
@@ -124,7 +130,11 @@ $stmt->bind_param(
 
 if (!$stmt->execute()) {
     @http_response_code(500);
-    echo json_encode(['error' => 'Database error', 'details' => $stmt->error]);
+    $response = ['error' => 'Database error'];
+    if ($debug) {
+        $response['details'] = $stmt->error;
+    }
+    echo json_encode($response);
     exit;
 }
 
