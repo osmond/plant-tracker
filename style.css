@@ -511,6 +511,7 @@ button:focus {
   display: flex;
   flex-direction: column;
   overflow: hidden; /* clip photo when it extends to edges */
+  position: relative; /* allow urgency tag overlay */
 }
 
 .plant-card .actions {
@@ -568,14 +569,10 @@ button:focus {
   }
 }
 
-.plant-card.due-overdue {
-  background-color: var(--color-error-bg);
-}
-.plant-card.due-today {
-  background-color: var(--color-warning-bg);
-}
+.plant-card.due-overdue,
+.plant-card.due-today,
 .plant-card.due-future {
-  background-color: #ffffff;
+  background-color: #ffffff; /* urgency shown via overlay tag instead */
 }
 
 .plant-title {
@@ -715,6 +712,30 @@ button:focus {
   color: var(--color-error);
   font-weight: bold;
   margin-bottom: var(--spacing);
+}
+
+/* urgency tag overlaid on the plant photo */
+.urgency-tag {
+  position: absolute;
+  top: calc(var(--spacing) * 2);
+  left: calc(var(--spacing) * 2);
+  padding: 2px 6px;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 5;
+  color: var(--color-surface);
+}
+
+.urgency-overdue {
+  background-color: var(--color-error);
+}
+.urgency-today {
+  background-color: var(--color-warning);
+  color: var(--color-text);
+}
+.urgency-future {
+  background-color: var(--color-success);
 }
 
 
