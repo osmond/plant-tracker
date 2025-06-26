@@ -9,12 +9,6 @@ class ApiTest extends TestCase
         $this->dbConfig = __DIR__ . '/db_stub.php';
         putenv('DB_CONFIG=' . $this->dbConfig);
         putenv('TESTING=1');
-        $_SESSION = ['user_id' => 1];
-    }
-
-    protected function tearDown(): void
-    {
-        $_SESSION = [];
     }
 
     public function testAddPlantMissingName()
