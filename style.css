@@ -568,6 +568,19 @@ button:focus {
   transform: translateY(0);
 }
 
+/* color variants for snooze dropdowns */
+.water-snooze {
+  background-color: var(--color-water-bg);
+  color: var(--color-water);
+  border: 1px solid var(--color-water);
+}
+
+.fert-snooze {
+  background-color: var(--color-sprout-bg);
+  color: var(--color-plant);
+  border: 1px solid var(--color-plant);
+}
+
 .plant-card .plant-photo {
   width: 100%;
   height: 150px;
@@ -760,7 +773,7 @@ button:focus {
 }
 .urgency-today {
   background-color: #ff5722; /* more vivid red-orange */
-  color: var(--color-text);
+  color: #ffffff;
   animation: pulse 1.5s ease-in-out infinite;
   transform-origin: left top;
 }

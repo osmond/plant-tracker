@@ -825,7 +825,7 @@ async function loadPlants() {
       leftGroup.appendChild(btn);
 
       const snooze = document.createElement('select');
-      snooze.classList.add('snooze-select');
+      snooze.classList.add('snooze-select', 'water-snooze');
       snooze.title = 'Snooze';
       const placeholder = document.createElement('option');
       placeholder.textContent = '';
@@ -856,7 +856,7 @@ async function loadPlants() {
       leftGroup.appendChild(btn);
 
       const snooze = document.createElement('select');
-      snooze.classList.add('snooze-select');
+      snooze.classList.add('snooze-select', 'fert-snooze');
       snooze.title = 'Snooze';
       const placeholder = document.createElement('option');
       placeholder.textContent = '';
