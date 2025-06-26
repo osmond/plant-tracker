@@ -584,6 +584,7 @@ async function loadPlants() {
   const startOfToday = new Date(today);
   startOfToday.setHours(0,0,0,0);
   const startOfTomorrow = addDays(startOfToday,1);
+  const startOfDayAfterTomorrow = addDays(startOfTomorrow,1);
 
   list.innerHTML = '';
   const filtered = plants.filter(plant => {
@@ -675,16 +676,18 @@ async function loadPlants() {
       card.classList.add('due-today');
       urgencyClass = 'urgency-today';
       urgencyText = 'Due Today';
-    } else {
+    } else if (soonest < startOfDayAfterTomorrow) {
       card.classList.add('due-future');
       urgencyClass = 'urgency-future';
       urgencyText = 'Upcoming';
     }
 
-    const urgencyTag = document.createElement('span');
-    urgencyTag.classList.add('urgency-tag', urgencyClass);
-    urgencyTag.textContent = urgencyText;
-    card.appendChild(urgencyTag);
+    if (urgencyText) {
+      const urgencyTag = document.createElement('span');
+      urgencyTag.classList.add('urgency-tag', urgencyClass);
+      urgencyTag.textContent = urgencyText;
+      card.appendChild(urgencyTag);
+    }
 
     const img = document.createElement('img');
     img.src = plant.photo_url ||
