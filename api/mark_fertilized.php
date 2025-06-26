@@ -1,5 +1,6 @@
 <?php
-if (getenv('DEBUG')) {
+$debug = getenv('DEBUG');
+if ($debug) {
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 }
@@ -32,13 +33,21 @@ $today = $date->format('Y-m-d');
 $stmt = $conn->prepare("UPDATE plants SET last_fertilized = ? WHERE id = ?");
 if (!$stmt) {
     @http_response_code(500);
-    echo json_encode(['status' => 'error', 'error' => 'Database error', 'details' => $conn->error]);
+    $response = ['status' => 'error', 'error' => 'Database error'];
+    if ($debug) {
+        $response['details'] = $conn->error;
+    }
+    echo json_encode($response);
     return;
 }
 $stmt->bind_param("si", $today, $id);
 if (!$stmt->execute()) {
     @http_response_code(500);
-    echo json_encode(['status' => 'error', 'error' => 'Database error', 'details' => $stmt->error]);
+    $response = ['status' => 'error', 'error' => 'Database error'];
+    if ($debug) {
+        $response['details'] = $stmt->error;
+    }
+    echo json_encode($response);
     return;
 }
 

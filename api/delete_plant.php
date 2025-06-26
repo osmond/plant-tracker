@@ -6,6 +6,12 @@ if ($dbConfig && file_exists($dbConfig)) {
     include('../db.php');
 }
 
+$debug = getenv('DEBUG');
+if ($debug) {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+}
+
 if (!headers_sent()) {
     header('Content-Type: application/json');
 }
@@ -23,13 +29,21 @@ if ($id === false || $id <= 0) {
 $stmt = $conn->prepare("DELETE FROM plants WHERE id = ?");
 if (!$stmt) {
     @http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Database error', 'details' => $conn->error]);
+    $response = ['success' => false, 'error' => 'Database error'];
+    if ($debug) {
+        $response['details'] = $conn->error;
+    }
+    echo json_encode($response);
     return;
 }
 $stmt->bind_param("i", $id);
 if (!$stmt->execute()) {
     @http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Database error', 'details' => $stmt->error]);
+    $response = ['success' => false, 'error' => 'Database error'];
+    if ($debug) {
+        $response['details'] = $stmt->error;
+    }
+    echo json_encode($response);
     return;
 }
 
