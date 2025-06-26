@@ -654,13 +654,26 @@ async function loadPlants() {
       setTimeout(() => card.classList.remove('just-updated'), 2000);
     }
     const soonest = getSoonestDueDate(plant);
+    let urgencyClass = '';
+    let urgencyText = '';
     if (soonest < startOfToday) {
       card.classList.add('due-overdue');
+      urgencyClass = 'urgency-overdue';
+      urgencyText = 'Overdue';
     } else if (soonest < startOfTomorrow) {
       card.classList.add('due-today');
+      urgencyClass = 'urgency-today';
+      urgencyText = 'Due Today';
     } else {
       card.classList.add('due-future');
+      urgencyClass = 'urgency-future';
+      urgencyText = 'Upcoming';
     }
+
+    const urgencyTag = document.createElement('span');
+    urgencyTag.classList.add('urgency-tag', urgencyClass);
+    urgencyTag.textContent = urgencyText;
+    card.appendChild(urgencyTag);
 
     const img = document.createElement('img');
     img.src = plant.photo_url || 'https://jonosmond.com/plant-tracker/placeholder.png';
