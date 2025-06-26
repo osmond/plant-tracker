@@ -517,9 +517,7 @@ button:focus {
   color: var(--color-text);
 }
 #plant-grid.plant-list {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--spacing) * 2);
+  display: block;
 }
 
 .plant-list {
