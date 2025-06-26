@@ -905,7 +905,7 @@ async function loadPlants() {
 }
 
 // --- init ---
-document.addEventListener('DOMContentLoaded',()=>{
+function init(){
   const showBtn = document.getElementById('show-add-form');
   const form = document.getElementById('plant-form');
   const cancelBtn = document.getElementById('cancel-edit');
@@ -1088,4 +1088,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   loadPlants();
   loadHeatmap();
   fetchWeather();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
