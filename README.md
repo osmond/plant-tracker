@@ -62,3 +62,7 @@ If you want to use the weather lookup feature, edit `script.js` and replace the 
 Once the migration is applied, each plant entry includes a `water_amount` value that indicates how much water it typically receives. Enter the amount in fluid ounces and the UI shows the equivalent in milliliters. The value is stored in milliliters so you can work in either unit as needed.
 
 Uploaded photos are placed in the `uploads` directory. When a plant is updated with a new image or removed entirely, the previous photo is moved to `uploads/archive/` rather than deleted. If a name collision occurs, a timestamp is appended so the older file is preserved.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
