@@ -57,6 +57,20 @@ class ApiTest extends TestCase
         $this->assertEquals('success', $data['status']);
     }
 
+    public function testAddPlantWithDecimalWaterAmount()
+    {
+        $_POST = [
+            'name' => 'Decimal Plant',
+            'watering_frequency' => 5,
+            'water_amount' => 123.45
+        ];
+        ob_start();
+        include __DIR__ . '/../api/add_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertEquals('success', $data['status']);
+    }
+
     public function testUpdatePlantWithWaterAmount()
     {
         $_POST = [
