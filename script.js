@@ -956,14 +956,16 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   if (closeCal) {
     closeCal.innerHTML = ICONS.cancel + '<span class="visually-hidden">Close Calendar</span>';
-    closeCal.addEventListener('click', () => {
+    const hideCalendar = () => {
       if (calendarEl) calendarEl.classList.add('hidden');
       if (calendarHeading) calendarHeading.classList.add('hidden');
       if (heatmap) {
         heatmap.addEventListener('click', showCalendar, { once: true });
         heatmap.addEventListener('touchstart', showCalendar, { once: true });
       }
-    });
+    };
+    closeCal.addEventListener('click', hideCalendar);
+    closeCal.addEventListener('touchstart', hideCalendar);
   }
   if (submitBtn) {
     submitBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
