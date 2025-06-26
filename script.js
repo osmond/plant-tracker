@@ -512,7 +512,13 @@ function populateForm(plant) {
   form.species.value = plant.species;
   form.watering_frequency.value = plant.watering_frequency;
   if (form.water_amount) {
-    form.water_amount.value = plant.water_amount;
+    const ml = parseFloat(plant.water_amount);
+    if (!isNaN(ml)) {
+      const oz = ml / ML_PER_US_FL_OUNCE;
+      form.water_amount.value = oz.toFixed(1).replace(/\.0$/, '');
+    } else {
+      form.water_amount.value = '';
+    }
   }
   form.fertilizing_frequency.value = plant.fertilizing_frequency;
   form.room.value = plant.room;
