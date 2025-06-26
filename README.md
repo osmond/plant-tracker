@@ -64,7 +64,54 @@ Once the migration is applied, each plant entry includes a `water_amount` value 
 
 Uploaded photos are placed in the `uploads` directory. When a plant is updated with a new image or removed entirely, the previous photo is moved to `uploads/archive/` rather than deleted. If a name collision occurs, a timestamp is appended so the older file is preserved.
 If the Imagick extension is available, uploaded JPEG or PNG images are automatically converted to the WebP format to reduce file size.
+## Automated Daily JSON Backup
 
+To keep a day-by-day backup of your plant data, we use a simple cron job that runs every night, fetches the JSON from our API endpoint, and saves it into a timestamped file.
+
+### 1. Create a backup directory
+
+Make sure you have a folder to hold your dumps:
+
+```bash
+mkdir -p ~/backups/plants
+2. Write the cron command
+We use either curl or wget to pull down the JSON and name the file with the current date (YYYY-MM-DD). In crontab, percent signs (%) must be escaped as \%, so we do:
+
+With curl:
+
+bash
+Copy
+Edit
+/usr/bin/curl -s "https://your-domain.com/api/get_plants.php" \
+  -o "/home/u568785491/backups/plants/plants-$(date +\%Y-\%m-\%d).json"
+With wget:
+
+bash
+Copy
+Edit
+/usr/bin/wget -qO "/home/u568785491/backups/plants/plants-$(date +\%Y-\%m-\%d).json" \
+  "https://your-domain.com/api/get_plants.php"
+Flags explained:
+
+-s / -q – suppress progress output
+
+-O / -o <file> – write output to the given filename
+
+$(date +\%Y-\%m-\%d) – injects today’s date; the backslash escapes the % for cron
+
+3. Schedule it in cron
+In your host’s Cron Jobs UI (or in a crontab -e), set it to run at 2 AM every day:
+
+Minute	Hour	Day	Month	Weekday	Command
+0	2	*	*	*	your curl/wget line above
+
+That line is equivalent to:
+
+ruby
+Copy
+Edit
+0 2 * * * /usr/bin/curl -s "https://your-domain.com/api/get_plants.php" \
+  -o "/home/u568785491/backups/plants/plants-$(date +\%Y-\%m-\%d).json"
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
