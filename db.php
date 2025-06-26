@@ -1,8 +1,8 @@
 <?php
-$host = getenv('DB_HOST') ?: 'localhost';
-$user = getenv('DB_USER');
-$pass = getenv('DB_PASS');
-$dbname = getenv('DB_NAME');
+$host = "localhost"; // Leave this as isAdd commentMore actions
+$user = "u568785491_jon"; // Your actual DB user
+$pass = "yS+olgrwgD1";  // ✅ Your new password
+$dbname = "u568785491_plants"; // Your actual DB name
 
 $dbConfig = getenv('DB_CONFIG');
 if ($dbConfig && file_exists($dbConfig)) {
