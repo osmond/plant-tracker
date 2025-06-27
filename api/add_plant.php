@@ -86,6 +86,7 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
 
         if (move_uploaded_file($_FILES['photo']['tmp_name'], $dest)) {
             $converted = convert_to_webp($dest);
+            generate_responsive_variants($converted);
             $photo_url = 'uploads/' . basename($converted);
         }
     }

@@ -34,5 +34,6 @@ node_modules/
 *.tmp
 db.php
 uploads/
+!uploads/.htaccess
 plant-tracker-starter.code-workspace
 Archive.zip
