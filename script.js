@@ -989,25 +989,32 @@ async function loadPlants() {
   });
 
   // refresh room filter and datalist
-  const uniqueRooms = [...new Set(plants.map(p => p.room).filter(r => r))];
+  const roomSet = new Set();
+  plants.forEach(p => { if (p.room) roomSet.add(p.room); });
+  const rooms = Array.from(roomSet);
+
   const filter = document.getElementById('room-filter');
   if (filter) {
-    Array.from(filter.options)
-      .forEach((opt, idx) => { if (idx > 0) opt.remove(); });
-    uniqueRooms.forEach(r => {
+    const current = filter.value;
+    filter.innerHTML = '<option value="all">All Rooms</option>';
+    rooms.forEach(r => {
       const opt = document.createElement('option');
       opt.value = r;
       opt.textContent = r;
       filter.appendChild(opt);
     });
+    if (current && rooms.includes(current)) {
+      filter.value = current;
+    }
   }
-  const datalist = document.getElementById('room-options');
-  if (datalist) {
-    datalist.innerHTML = '';
-    uniqueRooms.forEach(r => {
+
+  const roomList = document.getElementById('room-options');
+  if (roomList) {
+    roomList.innerHTML = '';
+    rooms.forEach(r => {
       const opt = document.createElement('option');
       opt.value = r;
-      datalist.appendChild(opt);
+      roomList.appendChild(opt);
     });
   }
 }
