@@ -2,7 +2,6 @@ let editingPlantId = null;
 let lastDeletedPlant = null;
 let deleteTimer = null;
 
-let currentFormStep = 1;
 
 // track weather info so the summary can include current conditions
 let currentWeather = null;
@@ -233,23 +232,6 @@ function validateForm(form) {
   return valid;
 }
 
-function validateCurrentStep(step) {
-  const form = document.getElementById('plant-form');
-  if (!form) return false;
-  let valid = true;
-  document.querySelectorAll('.error').forEach(el => el.textContent = '');
-  const stepEl = form.querySelector(`.form-step[data-step="${step}"]`);
-  if (!stepEl) return true;
-  stepEl.querySelectorAll('input').forEach(inp => {
-    if (inp.name === 'watering_frequency' || inp.name === 'water_amount') return; // skip step2 fields in step1
-    if (inp.required && !inp.value.trim()) {
-      const err = document.getElementById(`${inp.name}-error`);
-      if (err) err.textContent = 'This field is required.';
-      valid = false;
-    }
-  });
-  return valid;
-}
 
 function parseLocalDate(date) {
   if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -607,23 +589,18 @@ function resetForm() {
   showFormStep(1);
 }
 
-function showFormStep(step) {
-  const form = document.getElementById('plant-form');
-  if (!form) return;
-  const steps = form.querySelectorAll('.form-step');
-  currentFormStep = Math.max(1, Math.min(step, steps.length));
-  steps.forEach((el, idx) => {
-    if (idx === currentFormStep - 1) el.classList.remove('hidden');
-    else el.classList.add('hidden');
-  });
-  const progress = document.getElementById('form-progress');
-  if (progress) progress.textContent = `Step ${currentFormStep} of ${steps.length}`;
-  const prev = document.getElementById('prev-step');
-  const next = document.getElementById('next-step');
-  const submit = document.getElementById('submit-btn');
-  if (prev) prev.style.display = currentFormStep === 1 ? 'none' : 'inline-block';
-  if (next) next.style.display = currentFormStep === steps.length ? 'none' : 'inline-block';
-  if (submit) submit.style.display = currentFormStep === steps.length ? 'inline-block' : 'none';
+function showFormStep(){
+  const form = document.getElementById("plant-form");
+  if(!form) return;
+  form.querySelectorAll(".form-step").forEach(el=>el.classList.remove("hidden"));
+  const progress=document.getElementById("form-progress");
+  if(progress) progress.style.display="none";
+  const prev=document.getElementById("prev-step");
+  const next=document.getElementById("next-step");
+  const submit=document.getElementById("submit-btn");
+  if(prev) prev.style.display="none";
+  if(next) next.style.display="none";
+  if(submit) submit.style.display="inline-block";
 }
 
 async function exportPlantsJSON() {
@@ -1005,8 +982,6 @@ function init(){
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
 
-  const nextStepBtn = document.getElementById('next-step');
-  const prevStepBtn = document.getElementById('prev-step');
   const photoDrop = document.getElementById('photo-drop');
   const photoInput = document.getElementById('photo');
   const waterFreqInput = document.getElementById('watering_frequency');
@@ -1082,12 +1057,6 @@ function init(){
 
   document.getElementById('search-input').addEventListener('input',loadPlants);
   document.getElementById('cancel-edit').onclick=resetForm;
-  if (nextStepBtn) nextStepBtn.addEventListener('click', () => {
-    if (validateCurrentStep(currentFormStep)) showFormStep(currentFormStep + 1);
-  });
-  if (prevStepBtn) prevStepBtn.addEventListener('click', () => {
-    showFormStep(currentFormStep - 1);
-  });
   if (photoDrop && photoInput) {
     photoDrop.addEventListener('click', () => photoInput.click());
     photoDrop.addEventListener('dragover', e => { e.preventDefault(); photoDrop.classList.add('dragover'); });
