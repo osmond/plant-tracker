@@ -1001,14 +1001,14 @@ async function loadPlants() {
   });
 
   // refresh datalist for room input
-  const roomList = document.getElementById('room-options');
-  if (roomList) {
-    roomList.innerHTML = '';
+  const list = document.getElementById('room-options');
+  if (list) {
+    list.innerHTML = '';
     const rooms = Array.from(new Set(plants.map(p => p.room).filter(r => r)));
     rooms.forEach(r => {
       const opt = document.createElement('option');
       opt.value = r;
-      roomList.appendChild(opt);
+      list.appendChild(opt);
     });
   }
 }
