@@ -958,17 +958,28 @@ async function loadPlants() {
     list.appendChild(card);
   });
 
-  // refresh room filter
+  // refresh room filter and datalist
+  const uniqueRooms = [...new Set(plants.map(p => p.room).filter(r => r))];
   const filter = document.getElementById('room-filter');
-  Array.from(filter.options).map(o => o.value);
-  plants.forEach(p => {
-    if (!Array.from(filter.options).map(o => o.value).includes(p.room)) {
+  if (filter) {
+    Array.from(filter.options)
+      .forEach((opt, idx) => { if (idx > 0) opt.remove(); });
+    uniqueRooms.forEach(r => {
       const opt = document.createElement('option');
-      opt.value = p.room;
-      opt.textContent = p.room;
+      opt.value = r;
+      opt.textContent = r;
       filter.appendChild(opt);
-    }
-  });
+    });
+  }
+  const datalist = document.getElementById('room-options');
+  if (datalist) {
+    datalist.innerHTML = '';
+    uniqueRooms.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r;
+      datalist.appendChild(opt);
+    });
+  }
 }
 
 // --- init ---
