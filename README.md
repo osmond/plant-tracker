@@ -36,6 +36,14 @@ Click **Add Plant** on the homepage to bring up the form. It is divided into a f
 
 Once you hit submit the plant appears in the grid and the upcoming calendar is updated. Any required fields are validated so you don't miss important info.
 
+## Water Calculation
+
+The form retrieves your local minimum and maximum temperatures from OpenWeather and calculates reference evapotranspiration (ET₀) using the Hargreaves equation:
+
+`ET₀ = 0.0023 × (Tavg + 17.8) × √(Tmax – Tmin) × RA`
+
+Coefficients for each plant type adjust ET₀ before estimating the daily water amount. The resulting values are auto-filled in the form but can always be overridden.
+
 ## Running Tests
 
 The project includes a minimal PHPUnit test suite for the API endpoints.
