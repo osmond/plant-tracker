@@ -506,12 +506,6 @@ function fetchWeather() {
     currentWeather = `${temp}°F ${desc}`;
     currentWeatherIcon = `https://openweathermap.org/img/wn/${icon}@2x.png`;
     currentWeatherDesc = desc;
-    const titleIcon = document.getElementById('title-weather-icon');
-    if (titleIcon) {
-      titleIcon.src = currentWeatherIcon;
-      titleIcon.alt = currentWeatherDesc;
-      titleIcon.style.display = '';
-    }
     loadPlants();
   };
 
@@ -703,17 +697,24 @@ async function loadPlants() {
 
   const row2 = document.createElement('div');
   row2.classList.add('summary-row');
-  const row2Items = [];
-  row2Items.push(`${ICONS.calendar} ${todayStr}`);
+
+  const dateSpan = document.createElement('span');
+  dateSpan.classList.add('summary-item');
+  dateSpan.innerHTML = `${ICONS.calendar} ${todayStr}`;
+  row2.appendChild(dateSpan);
+
   if (currentWeather) {
-    row2Items.push(`${currentWeather}`);
+    const weatherSpan = document.createElement('span');
+    weatherSpan.classList.add('summary-item');
+    const icon = document.createElement('img');
+    icon.id = 'weather-icon';
+    icon.classList.add('weather-icon');
+    icon.src = currentWeatherIcon;
+    icon.alt = currentWeatherDesc;
+    weatherSpan.appendChild(icon);
+    weatherSpan.insertAdjacentText('beforeend', ` ${currentWeather}`);
+    row2.appendChild(weatherSpan);
   }
-  row2Items.forEach(text => {
-    const span = document.createElement('span');
-    span.classList.add('summary-item');
-    span.innerHTML = text;
-    row2.appendChild(span);
-  });
 
   summaryEl.appendChild(row1);
   summaryEl.appendChild(row2);
