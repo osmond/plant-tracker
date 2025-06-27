@@ -43,6 +43,7 @@ function computeArea(float $diameter_cm): float {
 }
 
 $diam = null;
+$plant_type = null;
 $water_ml = null;
 $error = null;
 
@@ -52,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please provide a valid pot diameter.';
     } else {
         $diam = floatval($_POST['pot_diameter_cm']);
+        $plant_type = isset($_POST['plant_type']) ? strval($_POST['plant_type']) : null;
         $weather = fetchWeather($config);
         if (isset($weather['error'])) {
             $error = $weather['error'];
@@ -61,10 +63,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Convert temperatures from Kelvin to Celsius
             $tmin = $weather['main']['temp_min'] - 273.15;
             $tmax = $weather['main']['temp_max'] - 273.15;
-            
+
             // Calculate ET0 then adjust with crop coefficient
             $et0 = calculateET0($tmin, $tmax, $config['ra']);
-            $etc = $config['kc'] * $et0;
+            $kc = $config['kc'];
+            if ($plant_type !== null && isset($config['kc_map'][$plant_type])) {
+                $kc = $config['kc_map'][$plant_type];
+            }
+            $etc = $kc * $et0;
             
             // Determine pot surface area and convert ET to mL/day
             $area = computeArea($diam);
@@ -87,10 +93,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </p>
     <?php endif; ?>
 
-    <!-- Input form for pot diameter -->
+    <!-- Input form for pot diameter and plant type -->
     <form method="post">
         <label for="pot_diameter_cm">Pot diameter (cm):</label>
         <input type="number" step="0.1" name="pot_diameter_cm" id="pot_diameter_cm" required value="<?php echo $diam !== null ? htmlspecialchars($diam) : ''; ?>">
+
+        <label for="plant_type">Plant type:</label>
+        <select name="plant_type" id="plant_type">
+            <?php foreach ($config['kc_map'] as $type => $val): ?>
+                <option value="<?php echo htmlspecialchars($type); ?>" <?php if ($plant_type === $type) echo 'selected'; ?>><?php echo htmlspecialchars(ucfirst($type)); ?></option>
+            <?php endforeach; ?>
+        </select>
+
         <button type="submit">Calculate Water Need</button>
     </form>
 
