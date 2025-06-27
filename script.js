@@ -990,27 +990,15 @@ async function loadPlants() {
 
   // refresh room filter
   const filter = document.getElementById('room-filter');
-  const existing = Array.from(filter.options).map(o => o.value);
+  Array.from(filter.options).map(o => o.value);
   plants.forEach(p => {
-    if (!existing.includes(p.room)) {
+    if (!Array.from(filter.options).map(o => o.value).includes(p.room)) {
       const opt = document.createElement('option');
       opt.value = p.room;
       opt.textContent = p.room;
       filter.appendChild(opt);
     }
   });
-
-  // refresh datalist for room input
-  const list = document.getElementById('room-options');
-  if (list) {
-    list.innerHTML = '';
-    const rooms = Array.from(new Set(plants.map(p => p.room).filter(r => r)));
-    rooms.forEach(r => {
-      const opt = document.createElement('option');
-      opt.value = r;
-      list.appendChild(opt);
-    });
-  }
 }
 
 // --- init ---
