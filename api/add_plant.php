@@ -29,6 +29,15 @@ if (!isset($_POST['name']) || trim($_POST['name']) === '') {
 
 // Clean and trim inputs
 $name = trim($_POST['name']);
+$namePattern = '/^[A-Za-z0-9\s-]{1,100}$/';
+if (!preg_match($namePattern, $name)) {
+    @http_response_code(400);
+    echo json_encode(['error' => 'Invalid name']);
+    if (!getenv('TESTING')) {
+        exit;
+    }
+    return;
+}
 $species = trim($_POST['species'] ?? '');
 $room = trim($_POST['room'] ?? '');
 $watering_frequency = intval($_POST['watering_frequency'] ?? 0);
