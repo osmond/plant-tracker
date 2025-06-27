@@ -221,11 +221,14 @@ function validateForm(form) {
 
   const waterAmtField = form.water_amount;
   if (waterAmtField) {
-    const amt = parseWaterAmount(waterAmtField.value);
-    if (waterAmtField.value.trim() === '' || isNaN(amt) || amt <= 0) {
-      const errorDiv = document.getElementById('water_amount-error');
-      if (errorDiv) errorDiv.textContent = 'Enter a positive number.';
-      valid = false;
+    const val = waterAmtField.value.trim();
+    if (val !== '') {
+      const amt = parseWaterAmount(val);
+      if (isNaN(amt) || amt <= 0) {
+        const errorDiv = document.getElementById('water_amount-error');
+        if (errorDiv) errorDiv.textContent = 'Enter a positive number.';
+        valid = false;
+      }
     }
   }
 
@@ -1080,7 +1083,8 @@ function init(){
   });
   if (waterAmtInput) waterAmtInput.addEventListener('input', () => {
     const err = document.getElementById('water_amount-error');
-    if (parseFloat(waterAmtInput.value) > 0) err.textContent = '';
+    const val = waterAmtInput.value.trim();
+    if (val === '' || parseFloat(val) > 0) err.textContent = '';
     else err.textContent = 'Enter a positive number.';
   });
   const potDiamUnit = document.getElementById('pot_diameter_unit');
@@ -1091,8 +1095,10 @@ function init(){
     e.preventDefault(); const form=e.target;
     if (!validateForm(form)) return;
     const data=new FormData(form);
-    data.set('water_amount',
-      form.water_amount ? parseWaterAmount(form.water_amount.value) : '');
+    if (form.water_amount) {
+      const val = form.water_amount.value.trim();
+      data.set('water_amount', val === '' ? '' : parseWaterAmount(val));
+    }
     const btn=form.querySelector('button[type="submit"]');
     btn.disabled=true;
     btn.innerHTML=(editingPlantId?ICONS.check:ICONS.plus)+

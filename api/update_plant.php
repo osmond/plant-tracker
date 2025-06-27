@@ -55,8 +55,8 @@ if ($room !== '' && !preg_match('/^[A-Za-z0-9\s-]{1,50}$/', $room)) {
 if ($watering_frequency < 1 || $watering_frequency > 365) {
     $errors[] = 'Watering frequency must be 1-365';
 }
-if ($water_amount <= 0) {
-    $errors[] = 'Water amount must be positive';
+if ($water_amount < 0) {
+    $errors[] = 'Water amount must be non-negative';
 }
 
 if ($errors) {
@@ -111,7 +111,7 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
 
 // Basic validation
 
-if (!$id || $name === '' || $watering_frequency <= 0 || $water_amount <= 0) {
+if (!$id || $name === '' || $watering_frequency <= 0 || $water_amount < 0) {
     @http_response_code(400);
     echo json_encode(['error' => 'Missing or invalid fields']);
     exit;
