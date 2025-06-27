@@ -87,23 +87,26 @@ Make sure you have a folder to hold your dumps:
 
 ```bash
 mkdir -p ~/backups/plants
-2. Write the cron command
-We use either curl or wget to pull down the JSON and name the file with the current date (YYYY-MM-DD). In crontab, percent signs (%) must be escaped as \%, so we do:
+```
 
-With curl:
+### 2. Write the cron command
 
-bash
-Copy
-Edit
+We use either `curl` or `wget` to pull down the JSON and name the file with the current date (YYYY-MM-DD). In crontab, percent signs (%) must be escaped as `\%`.
+
+**With `curl`:**
+
+```bash
 /usr/bin/curl -s "https://your-domain.com/api/get_plants.php" \
   -o "/home/u568785491/backups/plants/plants-$(date +\%Y-\%m-\%d).json"
-With wget:
+```
 
-bash
-Copy
-Edit
+**With `wget`:**
+
+```bash
 /usr/bin/wget -qO "/home/u568785491/backups/plants/plants-$(date +\%Y-\%m-\%d).json" \
   "https://your-domain.com/api/get_plants.php"
+```
+
 Flags explained:
 
 -s / -q – suppress progress output
@@ -115,16 +118,15 @@ $(date +\%Y-\%m-\%d) – injects today’s date; the backslash escapes the % for
 3. Schedule it in cron
 In your host’s Cron Jobs UI (or in a crontab -e), set it to run at 2 AM every day:
 
-Minute	Hour	Day	Month	Weekday	Command
+Minute  Hour  Day  Month  Weekday  Command
 0	2	*	*	*	your curl/wget line above
 
 That line is equivalent to:
 
-ruby
-Copy
-Edit
+```bash
 0 2 * * * /usr/bin/curl -s "https://your-domain.com/api/get_plants.php" \
   -o "/home/u568785491/backups/plants/plants-$(date +\%Y-\%m-\%d).json"
+```
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
