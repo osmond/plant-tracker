@@ -990,25 +990,36 @@ async function loadPlants() {
 
   // refresh room filter
   const filter = document.getElementById('room-filter');
-  const existing = Array.from(filter.options).map(o => o.value);
-  plants.forEach(p => {
-    if (!existing.includes(p.room)) {
-      const opt = document.createElement('option');
-      opt.value = p.room;
-      opt.textContent = p.room;
-      filter.appendChild(opt);
-    }
-  });
-
-  // refresh datalist for room input
-  const list = document.getElementById('room-options');
-  if (list) {
-    list.innerHTML = '';
-    const rooms = Array.from(new Set(plants.map(p => p.room).filter(r => r)));
-    rooms.forEach(r => {
+  if (filter) {
+    const selected = filter.value;
+    filter.innerHTML = '<option value="all">All Rooms</option>';
+    const roomSet = new Set();
+    plants.forEach(p => {
+      const r = p.room;
+      if (!r || roomSet.has(r)) return;
+      roomSet.add(r);
       const opt = document.createElement('option');
       opt.value = r;
-      list.appendChild(opt);
+      opt.textContent = r;
+      filter.appendChild(opt);
+    });
+    if (selected && roomSet.has(selected)) {
+      filter.value = selected;
+    }
+  }
+
+  // refresh datalist for room input
+  const roomList = document.getElementById('room-options');
+  if (roomList) {
+    roomList.innerHTML = '';
+    const roomSet = new Set();
+    plants.forEach(p => {
+      const r = p.room;
+      if (!r || roomSet.has(r)) return;
+      roomSet.add(r);
+      const opt = document.createElement('option');
+      opt.value = r;
+      roomList.appendChild(opt);
     });
   }
 }
