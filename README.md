@@ -17,9 +17,9 @@ Plant Tracker is a lightweight PHP and JavaScript app that keeps all of your pla
 - [Roadmap](#roadmap)
 - [License](#license)
 
-## Demo
+## Screenshot
 [![Screenshot of Plant Tracker](https://github.com/osmond/plant-tracker/blob/main/screenshot.png?raw=true)](index.html)
-▶️ **[Live Demo](index.html)**
+
 
 ## Quickstart
 
