@@ -1,6 +1,6 @@
 # Plant Tracker
 
-Plant Tracker is a lightweight PHP and JavaScript application for keeping tabs on your plants. It lets you filter which ones need watering or fertilizing and provides a drag-and-drop calendar for rescheduling upcoming tasks. Room tags are color coded automatically so you can easily see where each plant lives.
+Plant Tracker grew out of my love of gardening. I used another app for a while but eventually decided to build my own so I could tailor it exactly to my collection. The result is a lightweight PHP and JavaScript tool that keeps all my plants in one place. It lets you filter which ones need watering or fertilizing and provides a drag-and-drop calendar for rescheduling upcoming tasks. Room tags are color coded automatically so you can quickly see where each plant lives.
 
 ## Requirements
 
@@ -24,6 +24,17 @@ Plant Tracker is a lightweight PHP and JavaScript application for keeping tabs o
    php -S localhost:8000
    ```
    Then open `http://localhost:8000/index.html` in your browser.
+
+## How the Plant Form Works
+
+Click **Add Plant** on the homepage to bring up the form. It is divided into a few short sections so it is easy for anyone to follow:
+
+* **Plant Identity** – Enter a friendly name, optional scientific name and drop a photo into the upload box.
+* **Location & Classification** – Record which room the plant lives in and pick a type such as houseplant or succulent.
+* **Pot Details** – Note the pot diameter so the app can estimate watering amounts. Units are provided for both inches and centimeters.
+* **Care Schedule** – Choose how often to water. You can also override the suggested amount and set fertilizer reminders.
+
+Once you hit submit the plant appears in the grid and the upcoming calendar is updated. Any required fields are validated so you don't miss important info.
 
 ## Running Tests
 
@@ -59,6 +70,8 @@ Set the following environment variables so `db.php` can establish the database c
 If you want to use the weather lookup feature, edit `script.js` and replace the `WEATHER_API_KEY` constant with your own OpenWeather API key.
 
 ## Usage
+
+Plant Tracker runs entirely in your browser once the PHP backend is set up. After signing in, use the **Add Plant** form to build your collection. The grid view lists everything and the calendar keeps track of upcoming tasks.
 
 Once the migration is applied, each plant entry includes a `water_amount` value that indicates how much water it typically receives. Enter the amount in fluid ounces and the UI shows the equivalent in milliliters. The value is stored in milliliters so you can work in either unit as needed.
 
