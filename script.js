@@ -962,17 +962,36 @@ async function loadPlants() {
   });
 
   // refresh room filter and datalist
-  const uniqueRooms = [...new Set(plants.map(p => p.room).filter(r => r))];
+
+  const roomSet = new Set();
+  plants.forEach(p => { if (p.room) roomSet.add(p.room); });
+  const rooms = Array.from(roomSet);
+
   const filter = document.getElementById('room-filter');
   if (filter) {
-    Array.from(filter.options)
-      .forEach((opt, idx) => { if (idx > 0) opt.remove(); });
-    uniqueRooms.forEach(r => {
+    const current = filter.value;
+    filter.innerHTML = '<option value="all">All Rooms</option>';
+    rooms.forEach(r => {
+
       const opt = document.createElement('option');
       opt.value = r;
       opt.textContent = r;
       filter.appendChild(opt);
     });
+
+    if (current && rooms.includes(current)) {
+      filter.value = current;
+    }
+  }
+
+  const roomList = document.getElementById('room-options');
+  if (roomList) {
+    roomList.innerHTML = '';
+    rooms.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r;
+      roomList.appendChild(opt);
+
   }
   const datalist = document.getElementById('room-options');
   if (datalist) {
@@ -981,6 +1000,7 @@ async function loadPlants() {
       const opt = document.createElement('option');
       opt.value = r;
       datalist.appendChild(opt);
+
     });
   }
 }
@@ -1013,6 +1033,7 @@ function init(){
   const plantTypeSelect = document.getElementById('plant_type');
   const overrideCheck = document.getElementById('override_water');
   const waterGroup = document.getElementById('water-amount-group');
+  const roomInput = document.getElementById('room');
 
 
   // apply saved preferences before initial load
@@ -1131,6 +1152,21 @@ function init(){
       waterGroup.classList.toggle('hidden', !overrideCheck.checked);
       if (!overrideCheck.checked && waterAmtInput) {
         waterAmtInput.value = '';
+      }
+    });
+  }
+  if (roomInput) {
+    let prevRoom = '';
+    roomInput.addEventListener('focus', () => {
+      prevRoom = roomInput.value;
+      roomInput.value = '';
+      if (typeof roomInput.showPicker === 'function') {
+        try { roomInput.showPicker(); } catch (e) {}
+      }
+    });
+    roomInput.addEventListener('blur', () => {
+      if (!roomInput.value) {
+        roomInput.value = prevRoom;
       }
     });
   }
