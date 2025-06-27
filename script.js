@@ -95,6 +95,12 @@ function showToast(msg, isError = false) {
   }, 3000);
 }
 
+function toggleLoading(show) {
+  const overlay = document.getElementById('loading-overlay');
+  if (!overlay) return;
+  overlay.classList.toggle('hidden', !show);
+}
+
 // --- filter preference helpers ---
 function saveFilterPrefs() {
   const rf = document.getElementById('room-filter');
@@ -461,12 +467,17 @@ async function updatePlantPhoto(plant, file) {
   data.append('last_fertilized', plant.last_fertilized || '');
   data.append('photo', file);
 
-  const resp = await fetch('api/update_plant.php', { method: 'POST', body: data });
-  if (!resp.ok) {
-    showToast('Failed to update photo', true);
-  } else {
-    window.lastUpdatedPlantId = plant.id;
-    loadPlants();
+  toggleLoading(true);
+  try {
+    const resp = await fetch('api/update_plant.php', { method: 'POST', body: data });
+    if (!resp.ok) {
+      showToast('Failed to update photo', true);
+    } else {
+      window.lastUpdatedPlantId = plant.id;
+      loadPlants();
+    }
+  } finally {
+    toggleLoading(false);
   }
 }
 
@@ -1062,6 +1073,7 @@ function init(){
     btn.disabled=true;
     btn.innerHTML=(editingPlantId?ICONS.check:ICONS.plus)+
                   (editingPlantId?' Updating...':' Adding...');
+    toggleLoading(true);
     try{
       let resp;
       if(editingPlantId){ data.append('id', editingPlantId); resp=await fetch('api/update_plant.php',{method:'POST',body:data}); }
@@ -1074,6 +1086,7 @@ function init(){
     }catch{
       showToast('An error occurred. Please try again.', true);
     }finally{
+      toggleLoading(false);
       btn.disabled=false;
       btn.innerHTML=editingPlantId
         ? ICONS.check + '<span class="visually-hidden">Update Plant</span>'
