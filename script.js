@@ -991,23 +991,13 @@ async function loadPlants() {
     }
   }
 
-  const roomList = document.getElementById('room-options');
-  if (roomList) {
-    roomList.innerHTML = '';
-    rooms.forEach(r => {
-      const opt = document.createElement('option');
-      opt.value = r;
-      roomList.appendChild(opt);
-
-  }
   const datalist = document.getElementById('room-options');
   if (datalist) {
     datalist.innerHTML = '';
-    uniqueRooms.forEach(r => {
+    rooms.forEach(r => {
       const opt = document.createElement('option');
       opt.value = r;
       datalist.appendChild(opt);
-
     });
   }
 }
