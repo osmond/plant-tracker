@@ -50,7 +50,7 @@
 
     <form id="plant-form" class="flex flex-col gap-6 p-4 bg-card rounded-lg shadow hidden" enctype="multipart/form-data">
 
-        <fieldset class="flex flex-col gap-4">
+        <fieldset class="form-section flex flex-col gap-4">
             <legend class="font-semibold">Plant Identity</legend>
             <div>
                 <label for="name" class="block mb-1">Plant Name</label>
@@ -69,44 +69,54 @@
             </div>
         </fieldset>
 
-        <fieldset class="flex flex-col gap-4">
+        <fieldset class="form-section flex flex-col gap-4">
             <legend class="font-semibold">Location &amp; Classification</legend>
-            <div>
-                <label for="room" class="block mb-1">Room</label>
-                <input type="text" name="room" id="room" placeholder="Room" class="w-full border rounded-md p-2" />
-                <div class="error" id="room-error"></div>
-            </div>
-            <div>
-                <label for="plant_type" class="block mb-1">Plant Type</label>
-                <select id="plant_type" class="w-full border rounded-md p-2">
-                    <option value="succulent">Succulent</option>
-                    <option value="houseplant">Houseplant</option>
-                    <option value="vegetable">Vegetable</option>
-                    <option value="cacti">Cacti</option>
-                </select>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label for="room" class="block mb-1">Room</label>
+                    <input type="text" name="room" id="room" placeholder="Room" class="w-full border rounded-md p-2" />
+                    <div class="error" id="room-error"></div>
+                </div>
+                <div>
+                    <label for="plant_type" class="block mb-1">Plant Type</label>
+                    <select id="plant_type" class="w-full border rounded-md p-2">
+                        <option value="succulent">Succulent</option>
+                        <option value="houseplant">Houseplant</option>
+                        <option value="vegetable">Vegetable</option>
+                        <option value="cacti">Cacti</option>
+                    </select>
+                </div>
             </div>
         </fieldset>
 
-        <fieldset class="flex flex-col gap-4">
+        <fieldset class="form-section flex flex-col gap-4">
             <legend class="font-semibold">Pot Details</legend>
             <div>
-                <label for="pot_diameter" class="block mb-1">Pot Diameter</label>
-                <div class="flex gap-2">
+                <label for="pot_diameter" class="block mb-1">Pot Diameter <span id="pot_diameter_help" class="help-icon" title="Measured across the top of the pot">?</span></label>
+                <div class="flex gap-2 items-center">
                     <input type="number" id="pot_diameter" step="0.1" class="w-full border rounded-md p-2" />
                     <select id="pot_diameter_unit" class="border rounded-md p-2">
                         <option value="cm">cm</option>
                         <option value="in">in</option>
                     </select>
                 </div>
+                <div class="error" id="pot_diameter-error"></div>
             </div>
         </fieldset>
 
-        <fieldset class="flex flex-col gap-4">
+        <fieldset class="form-section flex flex-col gap-4">
             <legend class="font-semibold">Care Schedule</legend>
-            <div>
+            <div class="flex items-center">
+                <input type="checkbox" id="override_water" class="mr-2" />
+                <label for="override_water">Override auto-calculate</label>
+            </div>
+            <div id="water-amount-group" class="hidden">
                 <label for="water_amount" class="block mb-1">Water Amount (oz)</label>
-                <input type="number" name="water_amount" id="water_amount" step="0.1" class="w-full border rounded-md p-2" />
-                <p class="helper">Enter ounces of water or leave blank to auto-calculate</p>
+                <div class="flex items-center gap-2">
+                    <input type="number" name="water_amount" id="water_amount" step="0.1" class="w-full border rounded-md p-2" />
+                    <span class="text-sm">oz</span>
+                </div>
+                <p class="helper">Enter ounces of water</p>
                 <div class="error" id="water_amount-error"></div>
             </div>
             <div>
@@ -115,14 +125,14 @@
                 <p class="helper">Days between waterings, e.g. 7 for weekly</p>
                 <div class="error" id="watering_frequency-error"></div>
             </div>
+        </fieldset>
+
+        <details id="advanced-settings" class="form-section flex flex-col gap-4">
+            <summary class="font-semibold cursor-pointer">Advanced</summary>
             <div>
                 <label for="fertilizing_frequency" class="block mb-1">Fertilizing Frequency (days)</label>
                 <input type="number" name="fertilizing_frequency" id="fertilizing_frequency" class="w-full border rounded-md p-2" />
             </div>
-        </fieldset>
-
-        <fieldset class="flex flex-col gap-4">
-            <legend class="font-semibold">History &amp; Tracking</legend>
             <div>
                 <label for="last_watered" class="block mb-1">Last Watered</label>
                 <input type="date" name="last_watered" id="last_watered" class="w-full border rounded-md p-2" />
@@ -131,9 +141,9 @@
                 <label for="last_fertilized" class="block mb-1">Last Fertilized</label>
                 <input type="date" name="last_fertilized" id="last_fertilized" class="w-full border rounded-md p-2" />
             </div>
-        </fieldset>
+        </details>
 
-        <div class="flex gap-2 justify-end mt-4">
+        <div class="flex gap-2 justify-end mt-4 sticky bottom-0 bg-card p-4">
             <button type="button" id="cancel-edit" class="bg-gray-200 rounded-md px-4 py-2 hidden"></button>
             <button type="submit" id="submit-btn" class="bg-primary text-white rounded-md px-4 py-2"></button>
         </div>

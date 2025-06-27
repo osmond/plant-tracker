@@ -219,6 +219,16 @@ function validateForm(form) {
     }
   }
 
+  const potDiam = form.querySelector('#pot_diameter');
+  if (potDiam) {
+    const val = parseFloat(potDiam.value);
+    if (isNaN(val) || val <= 0) {
+      const err = document.getElementById('pot_diameter-error');
+      if (err) err.textContent = 'Enter a positive number.';
+      valid = false;
+    }
+  }
+
   const waterAmtField = form.water_amount;
   if (waterAmtField) {
     const val = waterAmtField.value.trim();
@@ -562,8 +572,20 @@ function populateForm(plant) {
     if (!isNaN(ml)) {
       const oz = ml / ML_PER_US_FL_OUNCE;
       form.water_amount.value = oz.toFixed(1).replace(/\.0$/, '');
+      const oc = document.getElementById('override_water');
+      const wg = document.getElementById('water-amount-group');
+      if (oc && wg) {
+        oc.checked = true;
+        wg.classList.remove('hidden');
+      }
     } else {
       form.water_amount.value = '';
+      const oc = document.getElementById('override_water');
+      const wg = document.getElementById('water-amount-group');
+      if (oc && wg) {
+        oc.checked = false;
+        wg.classList.add('hidden');
+      }
     }
   }
   form.fertilizing_frequency.value = plant.fertilizing_frequency;
@@ -582,6 +604,12 @@ function resetForm() {
   const form = document.getElementById('plant-form');
   form.reset();
   if (form.water_amount) form.water_amount.value = '';
+  const oc = document.getElementById('override_water');
+  const wg = document.getElementById('water-amount-group');
+  if (oc && wg) {
+    oc.checked = false;
+    wg.classList.add('hidden');
+  }
   editingPlantId = null;
   form.querySelector('button[type="submit"]').innerHTML = ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
   document.getElementById('cancel-edit').style.display = 'none';
@@ -991,6 +1019,8 @@ function init(){
   const waterAmtInput = document.getElementById('water_amount');
   const potDiamInput = document.getElementById('pot_diameter');
   const plantTypeSelect = document.getElementById('plant_type');
+  const overrideCheck = document.getElementById('override_water');
+  const waterGroup = document.getElementById('water-amount-group');
 
 
   // apply saved preferences before initial load
@@ -1087,6 +1117,20 @@ function init(){
     if (val === '' || parseFloat(val) > 0) err.textContent = '';
     else err.textContent = 'Enter a positive number.';
   });
+  if (potDiamInput) potDiamInput.addEventListener('blur', () => {
+    const err = document.getElementById('pot_diameter-error');
+    const val = parseFloat(potDiamInput.value);
+    if (!isNaN(val) && val > 0) err.textContent = '';
+    else err.textContent = 'Enter a positive number.';
+  });
+  if (overrideCheck && waterGroup) {
+    overrideCheck.addEventListener('change', () => {
+      waterGroup.classList.toggle('hidden', !overrideCheck.checked);
+      if (!overrideCheck.checked && waterAmtInput) {
+        waterAmtInput.value = '';
+      }
+    });
+  }
   const potDiamUnit = document.getElementById('pot_diameter_unit');
   if (potDiamInput) potDiamInput.addEventListener('input', updateWaterAmount);
   if (potDiamUnit) potDiamUnit.addEventListener('change', updateWaterAmount);
