@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="plant_type">Plant type:</label>
         <select name="plant_type" id="plant_type">
             <?php foreach ($config['kc_map'] as $type => $val): ?>
-                <option value="<?php echo htmlspecialchars($type); ?>" <?php if ($plant_type === $type) echo 'selected'; ?>><?php echo htmlspecialchars(ucfirst($type)); ?></option>
+                <option value="<?php echo htmlspecialchars($type); ?>" <?php if ($plant_type === $type || ($plant_type === null && $type === 'houseplant')) echo 'selected'; ?>><?php echo htmlspecialchars(ucfirst($type)); ?></option>
             <?php endforeach; ?>
         </select>
 
