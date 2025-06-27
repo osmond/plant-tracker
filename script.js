@@ -220,13 +220,19 @@ function validateForm(form) {
   }
 
   const potDiam = form.querySelector('#pot_diameter');
-  if (potDiam) {
+  if (potDiam && potDiam.value.trim() !== '') {
     const val = parseFloat(potDiam.value);
     if (isNaN(val) || val <= 0) {
       const err = document.getElementById('pot_diameter-error');
       if (err) err.textContent = 'Enter a positive number.';
       valid = false;
+    } else {
+      const err = document.getElementById('pot_diameter-error');
+      if (err) err.textContent = '';
     }
+  } else {
+    const err = document.getElementById('pot_diameter-error');
+    if (err) err.textContent = '';
   }
 
   const waterAmtField = form.water_amount;
@@ -1121,7 +1127,12 @@ function init(){
   });
   if (potDiamInput) potDiamInput.addEventListener('blur', () => {
     const err = document.getElementById('pot_diameter-error');
-    const val = parseFloat(potDiamInput.value);
+    const valStr = potDiamInput.value.trim();
+    if (valStr === '') {
+      if (err) err.textContent = '';
+      return;
+    }
+    const val = parseFloat(valStr);
     if (!isNaN(val) && val > 0) err.textContent = '';
     else err.textContent = 'Enter a positive number.';
   });
