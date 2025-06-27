@@ -1012,11 +1012,16 @@ async function loadPlants() {
   const roomList = document.getElementById('room-options');
   if (roomList) {
     roomList.innerHTML = '';
+
     const roomSet = new Set();
     plants.forEach(p => {
       const r = p.room;
       if (!r || roomSet.has(r)) return;
       roomSet.add(r);
+
+    const rooms = Array.from(new Set(plants.map(p => p.room).filter(r => r)));
+    rooms.forEach(r => {
+
       const opt = document.createElement('option');
       opt.value = r;
       roomList.appendChild(opt);
