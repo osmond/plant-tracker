@@ -1168,6 +1168,9 @@ function init(){
     roomInput.addEventListener('focus', () => {
       prevRoom = roomInput.value;
       roomInput.value = '';
+      if (typeof roomInput.showPicker === 'function') {
+        try { roomInput.showPicker(); } catch (e) {}
+      }
     });
     roomInput.addEventListener('blur', () => {
       if (!roomInput.value) {
