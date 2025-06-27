@@ -592,6 +592,8 @@ function populateForm(plant) {
   form.room.value = plant.room;
   form.last_watered.value = plant.last_watered;
   form.last_fertilized.value = plant.last_fertilized;
+  const photoUrlInput = document.getElementById('photo_url');
+  if (photoUrlInput) photoUrlInput.value = plant.photo_url || '';
   editingPlantId = plant.id;
 
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -1139,6 +1141,7 @@ function init(){
     e.preventDefault(); const form=e.target;
     if (!validateForm(form)) return;
     const data=new FormData(form);
+    if(form.photo_url) data.set('photo_url', form.photo_url.value);
     if (form.water_amount) {
       const val = form.water_amount.value.trim();
       data.set('water_amount', val === '' ? '' : parseWaterAmount(val));
