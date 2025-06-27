@@ -14,6 +14,7 @@ const WEATHER_API_KEY = '2aa3ade8428368a141f7951420570c16';
 
 // number of milliliters in one US fluid ounce
 const ML_PER_US_FL_OUNCE = 29.5735;
+const CM_PER_INCH = 2.54;
 
 // configuration values mirrored from config.php
 const RA = 20.0;
@@ -89,17 +90,20 @@ function computeArea(diameterCm) {
 
 function updateWaterAmount() {
   const diamInput = document.getElementById('pot_diameter');
+  const unitSelect = document.getElementById('pot_diameter_unit');
   const typeSelect = document.getElementById('plant_type');
   const waterAmtInput = document.getElementById('water_amount');
   if (!diamInput || !waterAmtInput) return;
   const diam = parseFloat(diamInput.value);
   if (isNaN(diam) || weatherTminC === null || weatherTmaxC === null) return;
+  const unit = unitSelect ? unitSelect.value : 'cm';
+  const diamCm = unit === 'in' ? diam * CM_PER_INCH : diam;
   const plantType = typeSelect ? typeSelect.value : null;
   let kc = DEFAULT_KC;
   if (plantType && KC_MAP[plantType] !== undefined) kc = KC_MAP[plantType];
   const et0 = calculateET0(weatherTminC, weatherTmaxC);
   const etc = kc * et0;
-  const area = computeArea(diam);
+  const area = computeArea(diamCm);
   const waterMl = etc * area * 0.1;
   const oz = waterMl / ML_PER_US_FL_OUNCE;
   waterAmtInput.value = oz.toFixed(1);
@@ -1110,7 +1114,9 @@ function init(){
     if (parseFloat(waterAmtInput.value) > 0) err.textContent = '';
     else err.textContent = 'Enter a positive number.';
   });
+  const potDiamUnit = document.getElementById('pot_diameter_unit');
   if (potDiamInput) potDiamInput.addEventListener('input', updateWaterAmount);
+  if (potDiamUnit) potDiamUnit.addEventListener('change', updateWaterAmount);
   if (plantTypeSelect) plantTypeSelect.addEventListener('change', updateWaterAmount);
   document.getElementById('plant-form').addEventListener('submit',async e=>{
     e.preventDefault(); const form=e.target;

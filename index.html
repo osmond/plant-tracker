@@ -88,8 +88,14 @@
                 <div class="error" id="water_amount-error"></div>
             </div>
             <div>
-                <label for="pot_diameter" class="block mb-1">Pot Diameter (cm)</label>
-                <input type="number" id="pot_diameter" step="0.1" class="w-full border rounded-md p-2" />
+                <label for="pot_diameter" class="block mb-1">Pot Diameter</label>
+                <div class="flex gap-2">
+                    <input type="number" id="pot_diameter" step="0.1" class="w-full border rounded-md p-2" />
+                    <select id="pot_diameter_unit" class="border rounded-md p-2">
+                        <option value="cm">cm</option>
+                        <option value="in">in</option>
+                    </select>
+                </div>
             </div>
             <div>
                 <label for="plant_type" class="block mb-1">Plant Type</label>
