@@ -52,6 +52,15 @@ Database credentials are taken from the environment variables `DB_HOST`, `DB_USE
 
 Uploaded images are stored in `uploads/` and automatically converted to WebP when possible.
 
+## Water Calculators
+
+Two optional calculators help estimate daily watering needs based on local weather.
+
+- **Plant Water Calculator** (`calculator.php`) – Enter a pot diameter and choose a plant type. The tool fetches the day's minimum and maximum temperature from OpenWeather and applies the Hargreaves equation to compute reference evapotranspiration. This value is multiplied by the crop coefficient (`kc` or the value from `kc_map`) and the pot surface area to output an approximate mL/day requirement.
+- **Garden Bed Calculator** (`bed_calculator.php`) – For beds, supply soil parameters like field capacity and root depth. It uses FAO56 single crop coefficient formulas with soil evaporation terms to estimate irrigation in liters needed for the entire bed.
+
+Both calculators read settings from `config.php`, including your `openweather_key`, location and plant coefficients.
+
 ## FAQ
 
 **Where do I get my API key?** Sign up for a free account at [OpenWeather](https://openweathermap.org/api) and copy your key into `config.php`.
