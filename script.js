@@ -15,6 +15,19 @@ const WEATHER_API_KEY = '2aa3ade8428368a141f7951420570c16';
 // number of milliliters in one US fluid ounce
 const ML_PER_US_FL_OUNCE = 29.5735;
 
+// configuration values mirrored from config.php
+const RA = 20.0;
+const DEFAULT_KC = 0.8;
+const KC_MAP = {
+  succulent: 0.3,
+  houseplant: 0.8,
+  vegetable: 1.0,
+  cacti: 0.28,
+};
+
+let weatherTminC = null;
+let weatherTmaxC = null;
+
 // starting date for the calendar view
 let calendarStartDate = new Date();
 calendarStartDate.setHours(0, 0, 0, 0);
@@ -62,6 +75,35 @@ function formatWaterAmount(ml) {
   const ozDisplay = ounces.toFixed(1).replace(/\.0$/, '');
   return `<span class="oz-line">${ozDisplay}oz</span>` +
          `<span class="ml-line">(${mlDisplay} ml)</span>`;
+}
+
+function calculateET0(tmin, tmax) {
+  const tavg = (tmin + tmax) / 2;
+  return 0.0023 * (tavg + 17.8) * Math.sqrt(Math.max(0, tmax - tmin)) * RA;
+}
+
+function computeArea(diameterCm) {
+  const r = diameterCm / 2;
+  return Math.PI * r * r;
+}
+
+function updateWaterAmount() {
+  const diamInput = document.getElementById('pot_diameter');
+  const typeSelect = document.getElementById('plant_type');
+  const waterAmtInput = document.getElementById('water_amount');
+  if (!diamInput || !waterAmtInput) return;
+  const diam = parseFloat(diamInput.value);
+  if (isNaN(diam) || weatherTminC === null || weatherTmaxC === null) return;
+  const plantType = typeSelect ? typeSelect.value : null;
+  let kc = DEFAULT_KC;
+  if (plantType && KC_MAP[plantType] !== undefined) kc = KC_MAP[plantType];
+  const et0 = calculateET0(weatherTminC, weatherTmaxC);
+  const etc = kc * et0;
+  const area = computeArea(diam);
+  const waterMl = etc * area * 0.1;
+  const oz = waterMl / ML_PER_US_FL_OUNCE;
+  waterAmtInput.value = oz.toFixed(1);
+  waterAmtInput.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 const ICONS = {
@@ -501,7 +543,10 @@ function fetchWeather() {
       const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${WEATHER_API_KEY}`);
       if (!res.ok) return;
       const data = await res.json();
+      weatherTminC = (data.main.temp_min - 32) * 5/9;
+      weatherTmaxC = (data.main.temp_max - 32) * 5/9;
       addWeather(Math.round(data.main.temp), data.weather[0].main, data.weather[0].icon);
+      updateWaterAmount();
     } catch (e) {
       console.error('Weather fetch failed', e);
     }
@@ -962,6 +1007,8 @@ function init(){
   const photoInput = document.getElementById('photo');
   const waterFreqInput = document.getElementById('watering_frequency');
   const waterAmtInput = document.getElementById('water_amount');
+  const potDiamInput = document.getElementById('pot_diameter');
+  const plantTypeSelect = document.getElementById('plant_type');
 
 
   // apply saved preferences before initial load
@@ -1063,6 +1110,8 @@ function init(){
     if (parseFloat(waterAmtInput.value) > 0) err.textContent = '';
     else err.textContent = 'Enter a positive number.';
   });
+  if (potDiamInput) potDiamInput.addEventListener('input', updateWaterAmount);
+  if (plantTypeSelect) plantTypeSelect.addEventListener('change', updateWaterAmount);
   document.getElementById('plant-form').addEventListener('submit',async e=>{
     e.preventDefault(); const form=e.target;
     if (!validateForm(form)) return;
