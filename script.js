@@ -569,7 +569,7 @@ function populateForm(plant) {
   form.watering_frequency.value = plant.watering_frequency;
   if (form.water_amount) {
     const ml = parseFloat(plant.water_amount);
-    if (!isNaN(ml)) {
+    if (ml > 0) {
       const oz = ml / ML_PER_US_FL_OUNCE;
       form.water_amount.value = oz.toFixed(1).replace(/\.0$/, '');
       const oc = document.getElementById('override_water');
