@@ -51,7 +51,7 @@
     <form id="plant-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-card rounded-lg shadow hidden" enctype="multipart/form-data">
         <div id="form-progress" class="form-progress sm:col-span-2">Step 1 of 2</div>
 
-        <div class="form-step" data-step="1">
+        <div class="form-step sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4" data-step="1">
             <div>
                 <label for="name" class="block mb-1">Plant Name</label>
                 <input type="text" name="name" id="name" placeholder="Plant Name" class="w-full border rounded-md p-2" />
@@ -74,7 +74,7 @@
             </div>
         </div>
 
-        <div class="form-step hidden" data-step="2">
+        <div class="form-step hidden sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4" data-step="2">
             <div>
                 <label for="watering_frequency" class="block mb-1">Watering Frequency (days)</label>
                 <input type="number" name="watering_frequency" id="watering_frequency" class="w-full border rounded-md p-2" />
@@ -120,7 +120,7 @@
             </div>
         </div>
 
-        <div class="sm:col-span-2 flex gap-2 justify-end mt-4" id="step-nav">
+        <div class="sm:col-span-2 flex gap-2 justify-start mt-4" id="step-nav">
             <button type="button" id="prev-step" class="bg-gray-200 rounded-md px-4 py-2 hidden">Back</button>
             <button type="button" id="next-step" class="bg-primary text-white rounded-md px-4 py-2">Next</button>
             <button type="button" id="cancel-edit" class="bg-gray-200 rounded-md px-4 py-2 hidden"></button>
