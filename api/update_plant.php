@@ -29,6 +29,12 @@ $last_watered            = $_POST['last_watered'] ?? null;
 $last_fertilized         = $_POST['last_fertilized'] ?? null;
 $photo_url               = trim($_POST['photo_url'] ?? '');
 
+$errors = [];
+$namePattern = '/^[A-Za-z0-9\s-]{1,100}$/';
+if (!preg_match($namePattern, $name)) {
+    $errors[] = 'Invalid name';
+}
+
 // If no new photo or URL is provided, retain the existing one
 if ($photo_url === '' && (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== UPLOAD_ERR_OK)) {
     $stmt = $conn->prepare("SELECT photo_url FROM plants WHERE id = ?");
@@ -45,7 +51,6 @@ if ($photo_url === '' && (!isset($_FILES['photo']) || $_FILES['photo']['error'] 
 }
 
 // further validation
-$errors = [];
 if ($species !== '' && !preg_match('/^[A-Za-z0-9\s-]{1,100}$/', $species)) {
     $errors[] = 'Invalid species';
 }
@@ -60,9 +65,12 @@ if ($water_amount < 0) {
 }
 
 if ($errors) {
-    http_response_code(400);
+    @http_response_code(400);
     echo json_encode(['error' => implode('; ', $errors)]);
-    exit;
+    if (!getenv('TESTING')) {
+        exit;
+    }
+    return;
 }
 
 // Handle uploaded photo
@@ -111,10 +119,13 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
 
 // Basic validation
 
-if (!$id || $name === '' || $watering_frequency <= 0 || $water_amount < 0) {
+if (!$id) {
     @http_response_code(400);
     echo json_encode(['error' => 'Missing or invalid fields']);
-    exit;
+    if (!getenv('TESTING')) {
+        exit;
+    }
+    return;
 }
 
 // Prepare update statement
@@ -152,7 +163,10 @@ if (!$stmt->execute()) {
         $response['details'] = $stmt->error;
     }
     echo json_encode($response);
-    exit;
+    if (!getenv('TESTING')) {
+        exit;
+    }
+    return;
 }
 
 $stmt->close();

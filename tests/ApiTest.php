@@ -21,6 +21,19 @@ class ApiTest extends TestCase
         $this->assertArrayHasKey('error', $data);
     }
 
+    public function testAddPlantInvalidName()
+    {
+        $_POST = [
+            'name' => str_repeat('a', 101),
+            'watering_frequency' => 5
+        ];
+        ob_start();
+        include __DIR__ . '/../api/add_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertArrayHasKey('error', $data);
+    }
+
     public function testDeletePlantMissingId()
     {
         $_POST = [];
@@ -86,6 +99,21 @@ class ApiTest extends TestCase
         $output = ob_get_clean();
         $data = json_decode($output, true);
         $this->assertEquals('success', $data['status']);
+    }
+
+    public function testUpdatePlantInvalidName()
+    {
+        $_POST = [
+            'id' => 1,
+            'name' => str_repeat('b', 101),
+            'watering_frequency' => 7,
+            'water_amount' => 150
+        ];
+        ob_start();
+        include __DIR__ . '/../api/update_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertArrayHasKey('error', $data);
     }
 }
 ?>
