@@ -8,7 +8,6 @@
 Plant Tracker is a lightweight PHP and JavaScript app that keeps all of your plants in one place and helps you care for them at the right time. It fetches local weather conditions to fine‑tune watering reminders so your collection thrives.
 
 ## Table of Contents
-- [Demo](#demo)
 - [Quickstart](#quickstart)
 - [Configuration](#configuration)
 - [Usage](#usage)
