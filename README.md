@@ -19,7 +19,7 @@ Plant Tracker is a lightweight PHP and JavaScript app that keeps all of your pla
 
 ## Demo
 
-[![Screenshot of Plant Tracker](https://jonosmond.com/plant-tracker/screenshot.png)](index.html)
+**[![Screenshot of Plant Tracker](https://jonosmond.com/plant-tracker/screenshot.png)](index.html)**
 
 ▶️ **[Live Demo](index.html)**
 
