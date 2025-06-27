@@ -804,4 +804,17 @@ button:focus {
   to { transform: rotate(360deg); }
 }
 
+/* Ensure pot diameter unit dropdown text is readable */
+#pot_diameter_unit {
+  color: var(--color-text);
+}
+
+/* Restrict plant form width so inputs aren't overly wide */
+#plant-form {
+  width: 100%;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 
