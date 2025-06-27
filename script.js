@@ -768,6 +768,13 @@ async function loadPlants() {
       img.alt = 'No photo available for ' + plant.name;
     }
     img.loading = 'lazy';
+    img.width = 300;
+    img.height = 300;
+    if (plant.photo_url && plant.photo_url.endsWith('.webp')) {
+      const base = plant.photo_url.slice(0, -5);
+      img.srcset = `${base}-400.webp 400w, ${plant.photo_url} 800w`;
+      img.sizes = '(max-width: 640px) 100vw, 400px';
+    }
     img.classList.add('plant-photo');
     card.appendChild(img);
     const titleEl = document.createElement('h3');
