@@ -811,6 +811,7 @@ button:focus {
 
 /* Restrict plant form width so inputs aren't overly wide */
 #plant-form {
+  width: 100%;
   max-width: 700px;
   margin-left: auto;
   margin-right: auto;
