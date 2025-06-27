@@ -29,7 +29,6 @@
 </head>
 <body class="bg-bg text-text min-h-screen">
     <h1 class="app-title text font-bold px-4 py-0">
-        <img id="title-weather-icon" class="title-icon" alt="" style="display:none;">
         My Plant Tracker
         <button id="show-add-form" class="bg-primary text-white rounded-md px-4 py-2 ml-auto"></button>
         <button id="export-json" class="bg-primary text-white rounded-md px-4 py-2 ml-2"></button>
@@ -176,12 +175,11 @@
 
     <div id="plant-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4"></div>
 
-    <div id="heatmap" class="p-4"></div>
 
     <h2 id="calendar-heading" class="text-xl font-semibold p-4 flex items-center">Upcoming Tasks
         <span class="ml-auto flex gap-2">
-            <button id="prev-week" class="bg-primary text-white rounded-md px-4 py-2">Prev</button>
-            <button id="next-week" class="bg-primary text-white rounded-md px-4 py-2">Next</button>
+            <button id="prev-week" class="bg-primary text-white rounded-md px-4 py-2"></button>
+            <button id="next-week" class="bg-primary text-white rounded-md px-4 py-2"></button>
         </span>
     </h2>
     <div id="calendar" class="p-4"></div>

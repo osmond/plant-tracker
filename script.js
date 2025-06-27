@@ -126,6 +126,8 @@ const ICONS = {
   ,search: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
   ,calendar: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'
   ,download: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
+  ,left: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>'
+  ,right: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'
 };
 
 function showToast(msg, isError = false) {
@@ -376,38 +378,8 @@ async function loadCalendar() {
     if (f) addEvent(p,'fert',f);
   });
 
-  loadHeatmap(plants);
 }
 
-async function loadHeatmap(plantsData) {
-  const plants = plantsData || (await (await fetch('api/get_plants.php')).json());
-  const container = document.getElementById('heatmap');
-  if (!container) return;
-  const days = 28;
-  const start = new Date();
-  start.setHours(0,0,0,0);
-  const counts = new Array(days).fill(0);
-  plants.forEach(p => {
-    const w = getNextWaterDate(p);
-    let diff = Math.floor((w - start) / 86400000);
-    if (diff >= 0 && diff < days) counts[diff]++;
-    const f = getNextFertDate(p);
-    if (f) {
-      diff = Math.floor((f - start) / 86400000);
-      if (diff >= 0 && diff < days) counts[diff]++;
-    }
-  });
-  container.innerHTML = '';
-  for (let i=0;i<days;i++) {
-    const cell = document.createElement('div');
-    cell.classList.add('heat-cell');
-    const level = counts[i] >= 3 ? 3 : counts[i];
-    cell.classList.add(`level-${level}`);
-    const date = addDays(start,i);
-    cell.title = `${date.toLocaleDateString()} - ${counts[i]} task${counts[i]!==1?'s':''}`;
-    container.appendChild(cell);
-  }
-}
 
 async function handleDrop(e,newDate,plants) {
   e.preventDefault();
@@ -534,12 +506,6 @@ function fetchWeather() {
     currentWeather = `${temp}°F ${desc}`;
     currentWeatherIcon = `https://openweathermap.org/img/wn/${icon}@2x.png`;
     currentWeatherDesc = desc;
-    const titleIcon = document.getElementById('title-weather-icon');
-    if (titleIcon) {
-      titleIcon.src = currentWeatherIcon;
-      titleIcon.alt = currentWeatherDesc;
-      titleIcon.style.display = '';
-    }
     loadPlants();
   };
 
@@ -731,17 +697,24 @@ async function loadPlants() {
 
   const row2 = document.createElement('div');
   row2.classList.add('summary-row');
-  const row2Items = [];
-  row2Items.push(`${ICONS.calendar} ${todayStr}`);
+
+  const dateSpan = document.createElement('span');
+  dateSpan.classList.add('summary-item');
+  dateSpan.innerHTML = `${ICONS.calendar} ${todayStr}`;
+  row2.appendChild(dateSpan);
+
   if (currentWeather) {
-    row2Items.push(`${currentWeather}`);
+    const weatherSpan = document.createElement('span');
+    weatherSpan.classList.add('summary-item');
+    const icon = document.createElement('img');
+    icon.id = 'weather-icon';
+    icon.classList.add('weather-icon');
+    icon.src = currentWeatherIcon;
+    icon.alt = currentWeatherDesc;
+    weatherSpan.appendChild(icon);
+    weatherSpan.insertAdjacentText('beforeend', ` ${currentWeather}`);
+    row2.appendChild(weatherSpan);
   }
-  row2Items.forEach(text => {
-    const span = document.createElement('span');
-    span.classList.add('summary-item');
-    span.innerHTML = text;
-    row2.appendChild(span);
-  });
 
   summaryEl.appendChild(row1);
   summaryEl.appendChild(row2);
@@ -989,6 +962,7 @@ async function loadPlants() {
   });
 
   // refresh room filter and datalist
+
   const roomSet = new Set();
   plants.forEach(p => { if (p.room) roomSet.add(p.room); });
   const rooms = Array.from(roomSet);
@@ -998,11 +972,13 @@ async function loadPlants() {
     const current = filter.value;
     filter.innerHTML = '<option value="all">All Rooms</option>';
     rooms.forEach(r => {
+
       const opt = document.createElement('option');
       opt.value = r;
       opt.textContent = r;
       filter.appendChild(opt);
     });
+
     if (current && rooms.includes(current)) {
       filter.value = current;
     }
@@ -1015,6 +991,16 @@ async function loadPlants() {
       const opt = document.createElement('option');
       opt.value = r;
       roomList.appendChild(opt);
+
+  }
+  const datalist = document.getElementById('room-options');
+  if (datalist) {
+    datalist.innerHTML = '';
+    uniqueRooms.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r;
+      datalist.appendChild(opt);
+
     });
   }
 }
@@ -1095,6 +1081,12 @@ function init(){
   }
   if (submitBtn) {
     submitBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
+  }
+  if (prevBtn) {
+    prevBtn.innerHTML = ICONS.left + '<span class="visually-hidden">Previous Week</span>';
+  }
+  if (nextBtn) {
+    nextBtn.innerHTML = ICONS.right + '<span class="visually-hidden">Next Week</span>';
   }
   if (showBtn && form) {
     showBtn.addEventListener('click', () => {
@@ -1247,7 +1239,6 @@ function init(){
     });
   }
   loadPlants();
-  loadHeatmap();
   fetchWeather();
 }
 
