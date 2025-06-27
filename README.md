@@ -1,140 +1,77 @@
 # Plant Tracker
 
-Plant Tracker grew out of my love of gardening. I used another app for a while but eventually decided to build my own so I could tailor it exactly to my collection. The result is a lightweight PHP and JavaScript tool that keeps all my plants in one place. It lets you filter which ones need watering or fertilizing and provides a drag-and-drop calendar for rescheduling upcoming tasks. Room tags are color coded automatically so you can quickly see where each plant lives.
+**Plant-Tracker: Your automatic watering & fertilizing scheduler for every pot, powered by live weather data.**
 
-## Requirements
+![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-blue)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 
-- PHP 7.4+ with the `mysqli` extension
-- MySQL or MariaDB
-- (optional) the **Imagick** PHP extension to convert uploaded images to WebP
-- (optional) an OpenWeather API key if you want to display local weather
+Plant Tracker is a lightweight PHP and JavaScript app that keeps all of your plants in one place and helps you care for them at the right time. It fetches local weather conditions to fine‑tune watering reminders so your collection thrives.
 
-## Getting Started
+## Table of Contents
+- [Demo](#demo)
+- [Quickstart](#quickstart)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [FAQ](#faq)
+- [Contributing](#contributing)
+- [Roadmap](#roadmap)
+- [License](#license)
 
-1. Clone the repository and install any PHP dependencies you need for testing.
-2. Configure the database connection as described in **Configuration** below.
-3. Apply the migrations in the `migrations/` directory:
-   ```bash
-   mysql -u <user> -p <database> < migrations/001_add_water_amount.sql
-   mysql -u <user> -p <database> < migrations/002_add_water_amount.sql
-   ```
-   The first script adds the column if it does not exist. The second modifies it to DECIMAL(8,2) for consistent precision.
-4. Launch a local development server:
-   ```bash
-   php -S localhost:8000
-   ```
-   Then open `http://localhost:8000/index.html` in your browser.
+## Demo
 
-## How the Plant Form Works
+[![Screenshot of Plant Tracker](https://jonosmond.com/plant-tracker/docs/screenshot.png)](index.html)
 
-Click **Add Plant** on the homepage to bring up the form. It is divided into a few short sections so it is easy for anyone to follow:
+▶️ **[Live Demo](index.html)**
 
-* **Plant Identity** – Enter a friendly name, optional scientific name and drop a photo into the upload box.
-* **Location & Classification** – Record which room the plant lives in and pick a type such as houseplant or succulent.
-* **Pot Details** – Note the pot diameter so the app can estimate watering amounts. Units are provided for both inches and centimeters.
-* **Care Schedule** – Choose how often to water. You can also override the suggested amount and set fertilizer reminders.
+## Quickstart
 
-Once you hit submit the plant appears in the grid and the upcoming calendar is updated. Any required fields are validated so you don't miss important info.
+```bash
+# Clone the repo
+git clone https://github.com/osmond/plant-tracker.git
+cd plant-tracker
 
-## Water Calculation
+# Copy the sample config and add your OpenWeather key
+cp config.example.php config.php
 
-The form retrieves your local minimum and maximum temperatures from OpenWeather and calculates reference evapotranspiration (ET₀) using the Hargreaves equation:
-
-`ET₀ = 0.0023 × (Tavg + 17.8) × √(Tmax – Tmin) × RA`
-
-Coefficients for each plant type adjust ET₀ before estimating the daily water amount. The resulting values are auto-filled in the form but can always be overridden.
-
-## Running Tests
-
-The project includes a minimal PHPUnit test suite for the API endpoints.
-
-1. **Install PHPUnit.** The `phpunit` command must be available before running the tests.
-   On Ubuntu you can install it with:
-   ```bash
-   sudo apt-get update && sudo apt-get install -y phpunit
-   ```
-   Alternatively install it locally using Composer:
-   ```bash
-   composer require --dev phpunit/phpunit
-   ```
-2. Execute the tests from the repository root:
-   ```bash
-   phpunit --configuration phpunit.xml
-   ```
-
-The tests use a stub database connection and do not require a real database.
+# Start a local server
+php -S localhost:8000
+```
+Open `http://localhost:8000/index.html` in your browser to begin.
 
 ## Configuration
 
-Set the following environment variables so `db.php` can establish the database connection:
+Edit `config.php` and provide:
 
-- `DB_HOST` - database host, defaults to `localhost` if unset
-- `DB_USER` - database user
-- `DB_PASS` - user password
-- `DB_NAME` - name of the database
+- `openweather_key` – your OpenWeather API key
+- `location` – city name used for weather lookups
+- `ra`, `kc` and mapping values for water calculations
 
-`db.php` reads these values using `getenv`. Alternatively you can set `DB_CONFIG` to the path of a PHP file that defines `$host`, `$user`, `$pass` and `$dbname`. Ensure these variables are available in your environment (or defined in a `.env` file loaded by your web server) before running the application so credentials are not stored in the codebase.
-
-If you want to use the weather lookup feature, edit `script.js` and replace the `WEATHER_API_KEY` constant with your own OpenWeather API key.
+Database credentials are taken from the environment variables `DB_HOST`, `DB_USER`, `DB_PASS` and `DB_NAME`.
 
 ## Usage
 
-Plant Tracker runs entirely in your browser once the PHP backend is set up. After signing in, use the **Add Plant** form to build your collection. The grid view lists everything and the calendar keeps track of upcoming tasks.
+1. Click **Add Plant** to create a new entry.
+2. Upload a photo and fill out the care schedule.
+3. View upcoming tasks in the calendar and drag them to reschedule.
 
-Once the migration is applied, each plant entry includes a `water_amount` value that indicates how much water it typically receives. Enter the amount in fluid ounces and the UI shows the equivalent in milliliters. The value is stored in milliliters so you can work in either unit as needed.
+Uploaded images are stored in `uploads/` and automatically converted to WebP when possible.
 
-Uploaded photos are placed in the `uploads` directory. When a plant is updated with a new image or removed entirely, the previous photo is moved to `uploads/archive/` rather than deleted. If a name collision occurs, a timestamp is appended so the older file is preserved.
-If the Imagick extension is available, uploaded JPEG or PNG images are automatically converted to the WebP format to reduce file size.
-## Automated Daily JSON Backup
+## FAQ
 
-To keep a day-by-day backup of your plant data, we use a simple cron job that runs every night, fetches the JSON from our API endpoint, and saves it into a timestamped file.
+**Where do I get my API key?** Sign up for a free account at [OpenWeather](https://openweathermap.org/api) and copy your key into `config.php`.
 
-### 1. Create a backup directory
+**Do I need a database?** The app requires MySQL or MariaDB for storing plant data. The test suite uses a stub database so you can run the tests without one.
 
-Make sure you have a folder to hold your dumps:
+## Contributing
 
-```bash
-mkdir -p ~/backups/plants
-```
+Pull requests are welcome! Feel free to open an [issue](https://github.com/osmond/plant-tracker/issues) or start a [discussion](https://github.com/osmond/plant-tracker/discussions) if you have ideas.
 
-### 2. Write the cron command
+## Roadmap
 
-We use either `curl` or `wget` to pull down the JSON and name the file with the current date (YYYY-MM-DD). In crontab, percent signs (%) must be escaped as `\%`.
+- 🌱 Mobile-friendly layout
+- 📊 Stats dashboard
+- 🔔 Push notification reminders
 
-**With `curl`:**
-
-```bash
-/usr/bin/curl -s "https://your-domain.com/api/get_plants.php" \
-  -o "/home/u568785491/backups/plants/plants-$(date +\%Y-\%m-\%d).json"
-```
-
-**With `wget`:**
-
-```bash
-/usr/bin/wget -qO "/home/u568785491/backups/plants/plants-$(date +\%Y-\%m-\%d).json" \
-  "https://your-domain.com/api/get_plants.php"
-```
-
-Flags explained:
-
--s / -q – suppress progress output
-
--O / -o <file> – write output to the given filename
-
-$(date +\%Y-\%m-\%d) – injects today’s date; the backslash escapes the % for cron
-
-3. Schedule it in cron
-In your host’s Cron Jobs UI (or in a crontab -e), set it to run at 2 AM every day:
-
-Minute  Hour  Day  Month  Weekday  Command
-0	2	*	*	*	your curl/wget line above
-
-That line is equivalent to:
-
-```bash
-0 2 * * * /usr/bin/curl -s "https://your-domain.com/api/get_plants.php" \
-  -o "/home/u568785491/backups/plants/plants-$(date +\%Y-\%m-\%d).json"
-```
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
