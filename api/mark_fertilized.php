@@ -51,14 +51,25 @@ if (!$stmt->execute()) {
     return;
 }
 
-if ($stmt->affected_rows === 0) {
-    $stmt->close();
-    @http_response_code(404);
-    echo json_encode(['status' => 'error', 'error' => 'Plant not found']);
-    return;
-}
-
+$affected = $stmt->affected_rows;
 $stmt->close();
+
+if ($affected === 0) {
+    $check = $conn->prepare("SELECT id FROM plants WHERE id = ?");
+    if ($check) {
+        $check->bind_param("i", $id);
+        if ($check->execute()) {
+            $check->store_result();
+            if ($check->num_rows === 0) {
+                $check->close();
+                @http_response_code(404);
+                echo json_encode(['status' => 'error', 'error' => 'Plant not found']);
+                return;
+            }
+        }
+        $check->close();
+    }
+}
 
 @http_response_code(200);
 
