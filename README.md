@@ -7,6 +7,9 @@
 
 Plant Tracker is a lightweight PHP and JavaScript app that keeps all of your plants in one place and helps you care for them at the right time. It fetches local weather conditions to fine‑tune watering reminders so your collection thrives.
 
+## Screenshot
+[![Screenshot of Plant Tracker](https://github.com/osmond/plant-tracker/blob/main/screenshot.png?raw=true)](index.html)
+
 ## Table of Contents
 - [Quickstart](#quickstart)
 - [Configuration](#configuration)
@@ -15,10 +18,6 @@ Plant Tracker is a lightweight PHP and JavaScript app that keeps all of your pla
 - [Contributing](#contributing)
 - [Roadmap](#roadmap)
 - [License](#license)
-
-## Screenshot
-[![Screenshot of Plant Tracker](https://github.com/osmond/plant-tracker/blob/main/screenshot.png?raw=true)](index.html)
-
 
 ## Quickstart
 
