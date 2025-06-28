@@ -103,6 +103,89 @@ async function fetchScientificNames(query) {
   }
 }
 
+async function getSpeciesKey(name) {
+  if (!name) return null;
+  try {
+    const res = await fetch(
+      `https://api.gbif.org/v1/species/match?name=${encodeURIComponent(name)}`
+    );
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.usageKey || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function fetchClassification(key) {
+  if (!key) return '';
+  try {
+    const res = await fetch(`https://api.gbif.org/v1/species/${key}`);
+    if (!res.ok) return '';
+    const json = await res.json();
+    const parts = [
+      json.kingdom,
+      json.phylum,
+      json.class,
+      json.order,
+      json.family,
+      json.genus,
+      json.species,
+    ];
+    return parts.filter(Boolean).join(' \u203a ');
+  } catch (e) {
+    return '';
+  }
+}
+
+async function fetchCommonNames(key) {
+  if (!key) return [];
+  try {
+    const res = await fetch(`https://api.gbif.org/v1/species/${key}/vernacularNames`);
+    if (!res.ok) return [];
+    const json = await res.json();
+    return [...new Set((json.results || []).map(r => r.vernacularName).filter(Boolean))];
+  } catch (e) {
+    return [];
+  }
+}
+
+async function fetchSynonyms(key) {
+  if (!key) return [];
+  try {
+    const res = await fetch(`https://api.gbif.org/v1/species/${key}/synonyms`);
+    if (!res.ok) return [];
+    const json = await res.json();
+    return [...new Set((json || []).map(r => r.scientificName).filter(Boolean))];
+  } catch (e) {
+    return [];
+  }
+}
+
+async function showTaxonomyInfo(name) {
+  const infoEl = document.getElementById('taxonomy-info');
+  if (!infoEl) return;
+  infoEl.textContent = '';
+  const key = await getSpeciesKey(name);
+  if (!key) return;
+  const [classification, common, syn] = await Promise.all([
+    fetchClassification(key),
+    fetchCommonNames(key),
+    fetchSynonyms(key),
+  ]);
+  let html = '';
+  if (classification) {
+    html += `<div><strong>Classification:</strong> ${classification}</div>`;
+  }
+  if (common && common.length) {
+    html += `<div><strong>Common Names:</strong> ${common.join(', ')}</div>`;
+  }
+  if (syn && syn.length) {
+    html += `<div><strong>Synonyms:</strong> ${syn.join(', ')}</div>`;
+  }
+  infoEl.innerHTML = html;
+}
+
 function updateWaterAmount() {
   const diamInput = document.getElementById('pot_diameter');
   const unitSelect = document.getElementById('pot_diameter_unit');
@@ -554,6 +637,7 @@ function populateForm(plant) {
   const form = document.getElementById('plant-form');
   form.name.value = plant.name;
   form.species.value = plant.species;
+  showTaxonomyInfo(plant.species);
   form.watering_frequency.value = plant.watering_frequency;
   if (form.water_amount) {
     const ml = parseFloat(plant.water_amount);
@@ -600,6 +684,8 @@ function resetForm() {
     oc.checked = false;
     wg.classList.add('hidden');
   }
+  const taxInfo = document.getElementById('taxonomy-info');
+  if (taxInfo) taxInfo.innerHTML = '';
   editingPlantId = null;
   form.querySelector('button[type="submit"]').innerHTML = ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
   document.getElementById('cancel-edit').style.display = 'none';
@@ -1210,12 +1296,16 @@ function init(){
       lastQuery = query;
       if (!query) {
         speciesList.innerHTML = '';
+        showTaxonomyInfo('');
         return;
       }
       const names = await fetchScientificNames(query);
       speciesList.innerHTML = names
         .map(n => `<option value="${n}"></option>`)
         .join('');
+    });
+    speciesInput.addEventListener('change', () => {
+      showTaxonomyInfo(speciesInput.value.trim());
     });
   }
   const potDiamUnit = document.getElementById('pot_diameter_unit');
