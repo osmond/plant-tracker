@@ -50,7 +50,8 @@ Database credentials are taken from the environment variables `DB_HOST`, `DB_USE
 2. Upload a photo and fill out the care schedule.
 3. Type a plant name to automatically fetch matching scientific names from the GBIF Species API.
 4. Selecting a suggestion shows its classification, common names and synonyms beneath the field.
-5. View upcoming tasks in the calendar and drag them to reschedule.
+5. If available, specimen photos from GBIF appear as thumbnails for quick reference.
+6. View upcoming tasks in the calendar and drag them to reschedule.
 
 Uploaded images are stored in `uploads/` and automatically converted to WebP when possible.
 

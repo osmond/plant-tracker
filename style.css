@@ -141,6 +141,19 @@ form {
     margin-top: calc(var(--spacing) / 4);
 }
 
+.specimen-gallery {
+    display: flex;
+    gap: calc(var(--spacing) / 2);
+    margin-top: calc(var(--spacing) / 2);
+}
+
+.specimen-gallery img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: var(--radius);
+}
+
 .form-progress {
     font-size: 0.9em;
     margin-bottom: calc(var(--spacing));
