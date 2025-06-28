@@ -732,7 +732,7 @@ button:focus {
 .plant-card .actions {
   margin-top: calc(var(--spacing) * 2);
   display: flex;
-  justify-content: space-evenly;
+  justify-content: flex-end;
   gap: calc(var(--spacing) * 1.5);
   align-items: center;
   position: relative;
@@ -760,8 +760,7 @@ button:focus {
 }
 
 .plant-card .actions .action-btn {
-  width: 100%;
-  min-width: 2.5rem;
+  width: 2.5rem;
   height: 2.5rem;
 }
 
