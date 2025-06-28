@@ -398,14 +398,13 @@ function clearFilterPrefs() {
 window.clearFilterPrefs = clearFilterPrefs;
 
 function applyViewMode() {
-  const list = document.getElementById('plant-grid');
-  if (list) list.classList.toggle('list-view', viewMode === 'list');
-  const btn = document.getElementById('view-toggle');
-  if (btn) {
-    btn.innerHTML = viewMode === 'list'
-      ? ICONS.grid + '<span class="visually-hidden">Grid View</span>'
-      : ICONS.list + '<span class="visually-hidden">List View</span>';
+  const container = document.getElementById('plant-grid');
+  if (container) {
+    container.classList.remove('grid-view', 'list-view', 'text-view');
+    container.classList.add(`${viewMode}-view`);
   }
+  const toggle = document.getElementById('view-toggle');
+  if (toggle) toggle.value = viewMode;
   localStorage.setItem('viewMode', viewMode);
 }
 
@@ -1588,8 +1587,8 @@ function init(){
     });
   }
   if (viewToggle) {
-    viewToggle.addEventListener('click', () => {
-      viewMode = viewMode === 'list' ? 'grid' : 'list';
+    viewToggle.addEventListener('change', () => {
+      viewMode = viewToggle.value;
       applyViewMode();
     });
   }

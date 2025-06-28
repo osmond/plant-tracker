@@ -625,6 +625,27 @@ button:focus {
   text-overflow: ellipsis;
 }
 
+/* text only view */
+#plant-grid.text-view .plant-photo,
+#plant-grid.text-view .tag-list,
+#plant-grid.text-view .actions {
+  display: none !important;
+}
+
+#plant-grid.text-view .plant-card {
+  display: block;
+  padding: 1rem 1.5rem;
+}
+
+#plant-grid.text-view .plant-title {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+#plant-grid.text-view .plant-summary {
+  margin-left: 0;
+}
+
 #plant-grid .no-results {
   grid-column: 1 / -1;
   text-align: center;
