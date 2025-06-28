@@ -732,6 +732,8 @@ async function updatePlantPhoto(plant, file) {
 }
 
 // --- weather helper ---
+// Historical rainfall requires OpenWeather's paid tiers.
+// We skip past totals when the API key lacks that access.
 function daysAgoUnix(days) {
   const d = new Date();
   d.setUTCHours(0, 0, 0, 0);
@@ -739,32 +741,29 @@ function daysAgoUnix(days) {
   return Math.floor(d.getTime() / 1000);
 }
 
-async function fetchDailyRainHistoric(lat, lon, daysAgo) {
-  const dt = daysAgoUnix(daysAgo);
-  const url =
-    `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lon}&dt=${dt}&appid=${WEATHER_API_KEY}`;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) return 0;
-    const json = await res.json();
-    if (!json.hourly) return 0;
-    const totalMm = json.hourly.reduce((sum, h) => sum + (h.rain?.['1h'] || 0), 0);
-    return totalMm / 25.4;
-  } catch (e) {
-    return 0;
-  }
+async function fetchDailyRainHistoric() {
+  return 0; // placeholder when history API is unavailable
 }
 
 async function fetch3DayForecastRain(lat, lon) {
   const url =
-    `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}` +
-    `&exclude=current,minutely,hourly,alerts&appid=${WEATHER_API_KEY}`;
+    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}` +
+    `&appid=${WEATHER_API_KEY}`;
   try {
     const res = await fetch(url);
     if (!res.ok) return [0, 0, 0];
     const json = await res.json();
-    if (!json.daily) return [0, 0, 0];
-    return json.daily.slice(1, 4).map((d) => (d.rain || 0) / 25.4);
+    if (!json.list) return [0, 0, 0];
+    const daily = [0, 0, 0];
+    const now = new Date();
+    for (const entry of json.list) {
+      const t = new Date(entry.dt * 1000);
+      const diff = Math.floor((t - now) / 86400000);
+      if (diff >= 0 && diff < 3) {
+        daily[diff] += (entry.rain?.['3h'] || 0) / 25.4;
+      }
+    }
+    return daily;
   } catch (e) {
     return [0, 0, 0];
   }
@@ -772,9 +771,8 @@ async function fetch3DayForecastRain(lat, lon) {
 
 async function fetchRainData(lat, lon) {
   try {
-    const past = await Promise.all([1, 2, 3].map((d) => fetchDailyRainHistoric(lat, lon, d)));
     const next = await fetch3DayForecastRain(lat, lon);
-    rainPastInches = past.length === 3 ? past : [0, 0, 0];
+    rainPastInches = [0, 0, 0];
     rainForecastInches = next.length === 3 ? next : [0, 0, 0];
     loadPlants();
   } catch (e) {
@@ -939,41 +937,26 @@ async function loadPlants() {
 
   const rainEl = document.getElementById('rainfall-info');
   if (rainEl) {
-
     if (
       selectedRoom &&
       selectedRoom.toLowerCase() === 'outside' &&
-      rainPastInches.length === 3 &&
       rainForecastInches.length === 3
     ) {
+      const pastText =
+        rainPastInches.some(v => v !== 0)
+          ? `${rainPastInches.map(r => r.toFixed(2)).join(', ')} in`
+          : 'N/A';
+      const nextText = `${rainForecastInches.map(r => r.toFixed(2)).join(', ')} in`;
       rainEl.innerHTML =
         `<div class="summary-row">
-            <span class="summary-item">${ICONS.rain} Past 3d: ${rainPastInches.map(r => r.toFixed(2)).join(', ')} in</span>
-            <span class="summary-item">${ICONS.rain} Next 3d: ${rainForecastInches.map(r => r.toFixed(2)).join(', ')} in</span>
+            <span class="summary-item">${ICONS.rain} Past 3d: ${pastText}</span>
+            <span class="summary-item">${ICONS.rain} Next 3d: ${nextText}</span>
         </div>`;
       rainEl.classList.remove('hidden');
     } else {
       rainEl.classList.add('hidden');
       rainEl.innerHTML = '';
     }
-
-      if (
-          selectedRoom &&
-          selectedRoom.toLowerCase() === 'outside' &&
-          rainPastInches.length === 3 &&
-          rainForecastInches.length === 3
-      ) {
-          rainEl.innerHTML =
-              `<div class="summary-row">
-                   <span class="summary-item">${ICONS.rain} Past 3d: ${rainPastInches.map(r => r.toFixed(2)).join(', ')} in</span>
-                   <span class="summary-item">${ICONS.rain} Next 3d: ${rainForecastInches.map(r => r.toFixed(2)).join(', ')} in</span>
-               </div>`;
-          rainEl.classList.remove('hidden');
-      } else {
-          rainEl.classList.add('hidden');
-          rainEl.innerHTML = '';
-      }
-
   }
   const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
   const today = new Date();
