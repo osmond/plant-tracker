@@ -173,17 +173,30 @@ async function showTaxonomyInfo(name) {
     fetchCommonNames(key),
     fetchSynonyms(key),
   ]);
-  let html = '';
   if (classification) {
-    html += `<div><strong>Classification:</strong> ${classification}</div>`;
+    const div = document.createElement('div');
+    const strong = document.createElement('strong');
+    strong.textContent = 'Classification:';
+    div.appendChild(strong);
+    div.appendChild(document.createTextNode(' ' + classification));
+    infoEl.appendChild(div);
   }
   if (common && common.length) {
-    html += `<div><strong>Common Names:</strong> ${common.join(', ')}</div>`;
+    const div = document.createElement('div');
+    const strong = document.createElement('strong');
+    strong.textContent = 'Common Names:';
+    div.appendChild(strong);
+    div.appendChild(document.createTextNode(' ' + common.join(', ')));
+    infoEl.appendChild(div);
   }
   if (syn && syn.length) {
-    html += `<div><strong>Synonyms:</strong> ${syn.join(', ')}</div>`;
+    const div = document.createElement('div');
+    const strong = document.createElement('strong');
+    strong.textContent = 'Synonyms:';
+    div.appendChild(strong);
+    div.appendChild(document.createTextNode(' ' + syn.join(', ')));
+    infoEl.appendChild(div);
   }
-  infoEl.innerHTML = html;
 }
 
 function updateWaterAmount() {
