@@ -346,6 +346,7 @@ const ICONS = {
   ,right: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'
   ,list: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3" y2="6"/><line x1="3" y1="12" x2="3" y2="12"/><line x1="3" y1="18" x2="3" y2="18"/></svg>'
   ,grid: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>'
+  ,text: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>'
 };
 
 function showToast(msg, isError = false) {
@@ -403,8 +404,9 @@ function applyViewMode() {
     container.classList.remove('grid-view', 'list-view', 'text-view');
     container.classList.add(`${viewMode}-view`);
   }
-  const toggle = document.getElementById('view-toggle');
-  if (toggle) toggle.value = viewMode;
+  document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === viewMode);
+  });
   localStorage.setItem('viewMode', viewMode);
 }
 
@@ -912,7 +914,10 @@ async function loadPlants() {
   const res = await fetch('api/get_plants.php');
   const plants = await res.json();
   const list = document.getElementById('plant-grid');
-  if (list) list.classList.toggle('list-view', viewMode === 'list');
+  if (list) {
+    list.classList.toggle('list-view', viewMode === 'list');
+    list.classList.toggle('text-view', viewMode === 'text');
+  }
   const selectedRoom = document.getElementById('room-filter').value;
   const dueFilter = document.getElementById('due-filter')
     ? document.getElementById('due-filter').value
@@ -1330,7 +1335,7 @@ function init(){
   const roomFilter = document.getElementById('room-filter');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('due-filter');
-  const viewToggle = document.getElementById('view-toggle');
+  const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
 
@@ -1593,11 +1598,17 @@ function init(){
       loadPlants();
     });
   }
-  if (viewToggle) {
-    viewToggle.addEventListener('change', () => {
-      viewMode = viewToggle.value;
-      applyViewMode();
+  if (viewButtons.length) {
+    viewButtons.forEach(btn => {
+      if (!btn.innerHTML.trim()) {
+        btn.innerHTML = ICONS[btn.dataset.view] || '';
+      }
+      btn.addEventListener('click', () => {
+        viewMode = btn.dataset.view;
+        applyViewMode();
+      });
     });
+    applyViewMode();
   }
   if (prevBtn) {
     prevBtn.addEventListener('click', () => {

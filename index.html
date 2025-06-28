@@ -167,11 +167,11 @@
             <option value="fert">Needs Fertilizing</option>
             <option value="any" selected>Needs Care</option>
         </select>
-        <select id="view-toggle" class="border rounded-md px-3 py-2">
-            <option value="grid">Grid View</option>
-            <option value="list">List View</option>
-            <option value="text">Text Only</option>
-        </select>
+        <div class="view-toggle-group" id="view-toggle">
+            <button type="button" class="view-toggle-btn" data-view="grid"></button>
+            <button type="button" class="view-toggle-btn" data-view="list"></button>
+            <button type="button" class="view-toggle-btn" data-view="text"></button>
+        </div>
     </div>
     <div id="rainfall-info" class="p-4 bg-card rounded-lg mb-4 hidden"></div>
 
