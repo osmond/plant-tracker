@@ -33,9 +33,9 @@ const KC_MAP = {
 let weatherTminC = null;
 let weatherTmaxC = null;
 
-// rainfall totals in inches
-let rainPastInches = [];
-let rainForecastInches = [];
+// rainfall totals in inches (initialized to zeros in case fetch fails)
+let rainPastInches = [0, 0, 0];
+let rainForecastInches = [0, 0, 0];
 
 // starting date for the calendar view
 let calendarStartDate = new Date();
@@ -1018,16 +1018,17 @@ async function loadPlants() {
 
   summaryEl.appendChild(row1);
   summaryEl.appendChild(row2);
-  if (selectedRoom === 'outside' &&
-      rainPastInches.length === 3 && rainForecastInches.length === 3) {
+  if (selectedRoom === 'outside') {
+    const past = rainPastInches.length === 3 ? rainPastInches : [0, 0, 0];
+    const next = rainForecastInches.length === 3 ? rainForecastInches : [0, 0, 0];
     const row3 = document.createElement('div');
     row3.classList.add('summary-row');
     const pastSpan = document.createElement('span');
     pastSpan.classList.add('summary-item');
-    pastSpan.innerHTML = `${ICONS.rain} Past 3d: ${rainPastInches.map(r => r.toFixed(2)).join(', ')} in`;
+    pastSpan.innerHTML = `${ICONS.rain} Past 3d: ${past.map(r => r.toFixed(2)).join(', ')} in`;
     const nextSpan = document.createElement('span');
     nextSpan.classList.add('summary-item');
-    nextSpan.innerHTML = `${ICONS.rain} Next 3d: ${rainForecastInches.map(r => r.toFixed(2)).join(', ')} in`;
+    nextSpan.innerHTML = `${ICONS.rain} Next 3d: ${next.map(r => r.toFixed(2)).join(', ')} in`;
     row3.appendChild(pastSpan);
     row3.appendChild(nextSpan);
     summaryEl.appendChild(row3);
