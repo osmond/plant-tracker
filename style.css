@@ -278,6 +278,38 @@ button:focus {
 .action-btn:active {
     transform: translateY(0);
 }
+
+.view-toggle-group {
+    display: inline-flex;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.view-toggle-btn {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: none;
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.view-toggle-btn + .view-toggle-btn {
+    border-left: 1px solid var(--color-border);
+}
+
+.view-toggle-btn .icon {
+    width: 1em;
+    height: 1em;
+}
+
+.view-toggle-btn.active {
+    background: var(--color-primary);
+    color: var(--color-surface);
+}
 .visually-hidden {
     position: absolute !important;
     width: 1px;
