@@ -861,6 +861,19 @@ button:focus {
   gap: 4px;
 }
 
+#rainfall-info .summary-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#rainfall-info .icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  color: var(--color-success);
+}
+
 .plant-summary .icon {
   width: 1em;
   height: 1em;

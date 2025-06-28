@@ -936,6 +936,26 @@ async function loadPlants() {
   const dueFilter = document.getElementById('due-filter')
     ? document.getElementById('due-filter').value
     : 'all';
+
+  const rainEl = document.getElementById('rainfall-info');
+  if (rainEl) {
+      if (
+          selectedRoom &&
+          selectedRoom.toLowerCase() === 'outside' &&
+          rainPastInches.length === 3 &&
+          rainForecastInches.length === 3
+      ) {
+          rainEl.innerHTML =
+              `<div class="summary-row">
+                   <span class="summary-item">${ICONS.rain} Past 3d: ${rainPastInches.map(r => r.toFixed(2)).join(', ')} in</span>
+                   <span class="summary-item">${ICONS.rain} Next 3d: ${rainForecastInches.map(r => r.toFixed(2)).join(', ')} in</span>
+               </div>`;
+          rainEl.classList.remove('hidden');
+      } else {
+          rainEl.classList.add('hidden');
+          rainEl.innerHTML = '';
+      }
+  }
   const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
   const today = new Date();
   const todayStr = today.toLocaleDateString(undefined, {
@@ -1018,21 +1038,6 @@ async function loadPlants() {
 
   summaryEl.appendChild(row1);
   summaryEl.appendChild(row2);
-  if (selectedRoom === 'outside') {
-    const past = rainPastInches.length === 3 ? rainPastInches : [0, 0, 0];
-    const next = rainForecastInches.length === 3 ? rainForecastInches : [0, 0, 0];
-    const row3 = document.createElement('div');
-    row3.classList.add('summary-row');
-    const pastSpan = document.createElement('span');
-    pastSpan.classList.add('summary-item');
-    pastSpan.innerHTML = `${ICONS.rain} Past 3d: ${past.map(r => r.toFixed(2)).join(', ')} in`;
-    const nextSpan = document.createElement('span');
-    nextSpan.classList.add('summary-item');
-    nextSpan.innerHTML = `${ICONS.rain} Next 3d: ${next.map(r => r.toFixed(2)).join(', ')} in`;
-    row3.appendChild(pastSpan);
-    row3.appendChild(nextSpan);
-    summaryEl.appendChild(row3);
-  }
   summaryEl.classList.add('show');
 
   const sortBy = document.getElementById('sort-toggle').value || 'name';
