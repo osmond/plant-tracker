@@ -972,10 +972,6 @@ async function loadPlants() {
   const res = await fetch('api/get_plants.php');
   const plants = await res.json();
   const list = document.getElementById('plant-grid');
-  if (list) {
-    list.classList.toggle('list-view', viewMode === 'list');
-    list.classList.toggle('text-view', viewMode === 'text');
-  }
   const selectedRoom = document.getElementById('room-filter').value;
   const dueFilter = document.getElementById('due-filter')
     ? document.getElementById('due-filter').value
@@ -1336,6 +1332,36 @@ async function loadPlants() {
     rightGroup.appendChild(editBtn);
     rightGroup.appendChild(delBtn);
     rightGroup.appendChild(changeBtn);
+
+    const menu = document.createElement('div');
+    menu.classList.add('more-menu');
+    const editClone = editBtn.cloneNode(true);
+    editClone.onclick = editBtn.onclick;
+    const delClone = delBtn.cloneNode(true);
+    delClone.onclick = delBtn.onclick;
+    const changeClone = changeBtn.cloneNode(true);
+    changeClone.onclick = changeBtn.onclick;
+    menu.appendChild(editClone);
+    menu.appendChild(delClone);
+    menu.appendChild(changeClone);
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('more-wrapper');
+    const moreBtn = document.createElement('button');
+    moreBtn.classList.add('action-btn', 'more-btn');
+    moreBtn.innerHTML = ICONS.more + '<span class="visually-hidden">More</span>';
+    moreBtn.type = 'button';
+    moreBtn.onclick = (e) => {
+      e.stopPropagation();
+      menu.classList.toggle('show');
+    };
+    wrapper.appendChild(moreBtn);
+    wrapper.appendChild(menu);
+    document.addEventListener('click', (e) => {
+      if (!wrapper.contains(e.target)) menu.classList.remove('show');
+    });
+
+    rightGroup.appendChild(wrapper);
     actionsDiv.appendChild(leftGroup);
     actionsDiv.appendChild(rightGroup);
     actionsDiv.appendChild(fileInput);
