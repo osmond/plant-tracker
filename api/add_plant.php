@@ -29,7 +29,7 @@ if (!isset($_POST['name']) || trim($_POST['name']) === '') {
 
 // Clean and trim inputs
 $name = trim($_POST['name']);
-$namePattern = '/^[A-Za-z0-9\s-]{1,100}$/';
+$namePattern = "/^[\p{L}0-9\s'-]{1,100}$/u";
 if (!preg_match($namePattern, $name)) {
     @http_response_code(400);
     echo json_encode(['error' => 'Invalid name']);
@@ -49,10 +49,10 @@ $photo_url = trim($_POST['photo_url'] ?? '');
 
 // further validation
 $errors = [];
-if ($species !== '' && !preg_match('/^[A-Za-z0-9\s.-]{1,100}$/', $species)) {
+if ($species !== '' && !preg_match("/^[\p{L}0-9\s.'-]{1,100}$/u", $species)) {
     $errors[] = 'Invalid species';
 }
-if ($room !== '' && !preg_match('/^[A-Za-z0-9\s-]{1,50}$/', $room)) {
+if ($room !== '' && !preg_match('/^[\p{L}0-9\s-]{1,50}$/u', $room)) {
     $errors[] = 'Invalid room';
 }
 if ($watering_frequency < 1 || $watering_frequency > 365) {

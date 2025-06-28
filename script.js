@@ -36,6 +36,8 @@ let weatherTmaxC = null;
 // forecast rainfall totals in inches (initialized to zeros in case fetch fails)
 let rainForecastInches = [0, 0, 0];
 
+let userWaterFreqEdited = false;
+
 // starting date for the calendar view
 let calendarStartDate = new Date();
 calendarStartDate.setHours(0, 0, 0, 0);
@@ -238,7 +240,10 @@ async function showTaxonomyInfo(name) {
   if (!infoEl) return;
   infoEl.textContent = '';
   const key = await getSpeciesKey(name);
-  if (!key) return;
+  if (!key) {
+    showToast("Couldn't fetch taxonomy data", true);
+    return;
+  }
   const [classification, common, syn, photos] = await Promise.all([
     fetchClassification(key),
     fetchCommonNames(key),
@@ -324,6 +329,27 @@ function updateWaterAmount() {
   waterAmtInput.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
+function updateWateringFrequency() {
+  const freqInput = document.getElementById('watering_frequency');
+  if (!freqInput || userWaterFreqEdited) return;
+  const typeSelect = document.getElementById('plant_type');
+  const potInput = document.getElementById('pot_diameter');
+  const unitSelect = document.getElementById('pot_diameter_unit');
+  let base = 7;
+  const type = typeSelect ? typeSelect.value : 'houseplant';
+  if (type === 'succulent') base = 14;
+  else if (type === 'cacti') base = 21;
+  else if (type === 'vegetable') base = 3;
+  let diam = parseFloat(potInput ? potInput.value : '');
+  if (!isNaN(diam)) {
+    const unit = unitSelect ? unitSelect.value : 'cm';
+    if (unit === 'in') diam *= CM_PER_INCH;
+    if (diam > 25) base += 3;
+    else if (diam < 10) base -= 1;
+  }
+  freqInput.value = Math.max(1, base);
+}
+
 const ICONS = {
   trash: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
   water: '<svg class="icon icon-water" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>',
@@ -396,6 +422,23 @@ function clearFilterPrefs() {
   localStorage.removeItem('dueFilter');
 }
 
+function saveHistoryValue(key, value) {
+  if (!value) return;
+  const arr = JSON.parse(localStorage.getItem(key) || '[]');
+  if (!arr.includes(value)) {
+    arr.push(value);
+    localStorage.setItem(key, JSON.stringify(arr));
+  }
+}
+
+function loadHistoryValues(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || '[]');
+  } catch {
+    return [];
+  }
+}
+
 // expose so it can be called externally
 window.clearFilterPrefs = clearFilterPrefs;
 
@@ -427,9 +470,17 @@ function validateForm(form) {
   });
 
   // additional constraints
+  const nameField = form.querySelector('[name="name"]');
+  if (nameField && nameField.value.trim() &&
+      !/^[\p{L}0-9\s'-]{1,100}$/u.test(nameField.value.trim())) {
+    document.getElementById('name-error').textContent =
+      'Invalid characters or too long.';
+    valid = false;
+  }
+
   const species = form.querySelector('[name="species"]');
   if (species && species.value.trim() &&
-      !/^[A-Za-z0-9\s.-]{1,100}$/.test(species.value.trim())) {
+      !/^[\p{L}0-9\s.'-]{1,100}$/u.test(species.value.trim())) {
     document.getElementById('species-error').textContent =
       'Invalid characters or too long.';
     valid = false;
@@ -437,7 +488,7 @@ function validateForm(form) {
 
   const room = form.querySelector('[name="room"]');
   if (room && room.value.trim() &&
-      !/^[A-Za-z0-9\s-]{1,50}$/.test(room.value.trim())) {
+      !/^[\p{L}0-9\s-]{1,50}$/u.test(room.value.trim())) {
     document.getElementById('room-error').textContent =
       'Invalid characters or too long.';
     valid = false;
@@ -753,6 +804,7 @@ async function fetch3DayForecastRain(lat, lon) {
     }
     return daily;
   } catch (e) {
+    showToast("Couldn't fetch rainfall forecast", true);
     return [0, 0, 0];
   }
 }
@@ -765,6 +817,7 @@ async function fetchRainData(lat, lon) {
   } catch (e) {
     console.error('Rain fetch failed', e);
     rainForecastInches = [0, 0, 0];
+    showToast("Couldn't fetch rainfall forecast", true);
     loadPlants();
   }
 }
@@ -778,7 +831,7 @@ function fetchWeather() {
   };
 
   const fetchByCoords = async (lat, lon) => {
-    try {
+  try {
       const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${WEATHER_API_KEY}`);
       if (!res.ok) return;
       const data = await res.json();
@@ -789,6 +842,7 @@ function fetchWeather() {
       fetchRainData(lat, lon);
     } catch (e) {
       console.error('Weather fetch failed', e);
+      showToast("Couldn't fetch weather data; water amounts may be off", true);
     }
   };
 
@@ -867,6 +921,9 @@ function resetForm() {
     photoDrop.style.backgroundSize = '';
     photoDrop.style.color = '';
   }
+  const lw = document.getElementById('last_watered');
+  if (lw) lw.value = new Date().toISOString().split('T')[0];
+  userWaterFreqEdited = false;
   editingPlantId = null;
   form.querySelector('button[type="submit"]').innerHTML = ICONS.plus + ' Add Plant';
   document.getElementById('cancel-edit').style.display = 'none';
@@ -1375,8 +1432,29 @@ function init(){
   const roomInput = document.getElementById('room');
   const nameInput = document.getElementById('name');
   const speciesInput = document.getElementById('species');
+  const potHelp = document.getElementById('pot_diameter_help');
   const speciesList = document.getElementById('species-list');
   const commonList = document.getElementById('common-list');
+
+  // populate datalists from saved history
+  const savedRooms = loadHistoryValues('rooms');
+  const roomDatalist = document.getElementById('room-options');
+  if (roomDatalist && savedRooms.length) {
+    savedRooms.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r;
+      roomDatalist.appendChild(opt);
+    });
+  }
+
+  const savedNames = loadHistoryValues('plantNames');
+  if (commonList && savedNames.length) {
+    savedNames.forEach(n => {
+      const opt = document.createElement('option');
+      opt.value = n;
+      commonList.appendChild(opt);
+    });
+  }
 
 
   // apply saved preferences before initial load
@@ -1443,6 +1521,10 @@ function init(){
       showBtn.style.display = 'none';
       const cancel = document.getElementById('cancel-edit');
       if (cancel) cancel.style.display = 'inline-block';
+      const lw = document.getElementById('last_watered');
+      if (lw && !editingPlantId) lw.value = new Date().toISOString().split('T')[0];
+      userWaterFreqEdited = false;
+      updateWateringFrequency();
       showFormStep(1);
     });
   }
@@ -1455,6 +1537,16 @@ function init(){
   document.getElementById('search-input').addEventListener('input',loadPlants);
   document.getElementById('cancel-edit').onclick=resetForm;
   if (photoDrop && photoInput) {
+    function previewFile(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        photoDrop.style.backgroundImage = `url(${reader.result})`;
+        photoDrop.style.backgroundSize = 'cover';
+        photoDrop.style.color = 'white';
+        photoDrop.textContent = '';
+      };
+      reader.readAsDataURL(file);
+    }
     photoDrop.addEventListener('click', () => photoInput.click());
     photoDrop.addEventListener('dragover', e => { e.preventDefault(); photoDrop.classList.add('dragover'); });
     photoDrop.addEventListener('dragleave', () => photoDrop.classList.remove('dragover'));
@@ -1462,18 +1554,19 @@ function init(){
       e.preventDefault();
       if (e.dataTransfer.files[0]) {
         photoInput.files = e.dataTransfer.files;
-        photoDrop.textContent = e.dataTransfer.files[0].name;
+        previewFile(e.dataTransfer.files[0]);
       }
       photoDrop.classList.remove('dragover');
     });
     photoInput.addEventListener('change', () => {
-      if (photoInput.files[0]) photoDrop.textContent = photoInput.files[0].name;
+      if (photoInput.files[0]) previewFile(photoInput.files[0]);
     });
   }
   if (waterFreqInput) waterFreqInput.addEventListener('input', () => {
     const err = document.getElementById('watering_frequency-error');
     if (parseInt(waterFreqInput.value,10) > 0) err.textContent = '';
     else err.textContent = 'Watering Frequency must be > 0';
+    userWaterFreqEdited = true;
   });
   if (waterAmtInput) waterAmtInput.addEventListener('input', () => {
     const err = document.getElementById('water_amount-error');
@@ -1491,6 +1584,7 @@ function init(){
     const val = parseFloat(valStr);
     if (!isNaN(val) && val > 0) err.textContent = '';
     else err.textContent = 'Enter a positive number.';
+    updateWateringFrequency();
   });
   if (overrideCheck && waterGroup) {
     overrideCheck.addEventListener('change', () => {
@@ -1499,6 +1593,18 @@ function init(){
         waterAmtInput.value = '';
       }
     });
+  }
+  if (potHelp) {
+    const tip = document.createElement('div');
+    tip.className = 'tooltip hidden';
+    tip.textContent = 'Measure across the top rim of your pot.';
+    potHelp.appendChild(tip);
+    const show = () => tip.classList.remove('hidden');
+    const hide = () => tip.classList.add('hidden');
+    potHelp.addEventListener('click', show);
+    potHelp.addEventListener('mouseenter', show);
+    potHelp.addEventListener('mouseleave', hide);
+    potHelp.addEventListener('blur', hide);
   }
   if (roomInput) {
     let prevRoom = '';
@@ -1565,9 +1671,9 @@ function init(){
     });
   }
   const potDiamUnit = document.getElementById('pot_diameter_unit');
-  if (potDiamInput) potDiamInput.addEventListener('input', updateWaterAmount);
-  if (potDiamUnit) potDiamUnit.addEventListener('change', updateWaterAmount);
-  if (plantTypeSelect) plantTypeSelect.addEventListener('change', updateWaterAmount);
+  if (potDiamInput) potDiamInput.addEventListener('input', () => {updateWaterAmount(); updateWateringFrequency();});
+  if (potDiamUnit) potDiamUnit.addEventListener('change', () => {updateWaterAmount(); updateWateringFrequency();});
+  if (plantTypeSelect) plantTypeSelect.addEventListener('change', () => {updateWaterAmount(); updateWateringFrequency();});
   document.getElementById('plant-form').addEventListener('submit',async e=>{
     e.preventDefault(); const form=e.target;
     if (!validateForm(form)) return;
@@ -1587,6 +1693,23 @@ function init(){
       if(editingPlantId){ data.append('id', editingPlantId); resp=await fetch('api/update_plant.php',{method:'POST',body:data}); }
       else{ resp=await fetch('api/add_plant.php',{method:'POST',body:data}); }
       if(!resp.ok) throw new Error();
+      if (!editingPlantId) {
+        const nameVal = form.name.value.trim();
+        const roomVal = form.room.value.trim();
+        saveHistoryValue('plantNames', nameVal);
+        saveHistoryValue('rooms', roomVal);
+        if (commonList && nameVal) {
+          const opt = document.createElement('option');
+          opt.value = nameVal;
+          commonList.appendChild(opt);
+        }
+        const roomList = document.getElementById('room-options');
+        if (roomList && roomVal) {
+          const opt = document.createElement('option');
+          opt.value = roomVal;
+          roomList.appendChild(opt);
+        }
+      }
       showToast(editingPlantId?'Plant updated!':'Plant added!');
       resetForm();
       loadPlants();

@@ -188,6 +188,10 @@ form {
   color: var(--color-primary);
   font-weight: bold;
 }
+.required-star {
+  color: var(--color-error);
+  margin-left: 0.25rem;
+}
 
 .photo-drop-zone {
     display: flex;
@@ -204,6 +208,17 @@ form {
 
 .photo-drop-zone.dragover {
     background: var(--color-surface);
+}
+
+.tooltip {
+  position: absolute;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: calc(var(--spacing) / 2);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-size: var(--font-size-sm);
+  z-index: 10;
 }
 
 button {
