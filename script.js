@@ -1158,6 +1158,7 @@ async function loadPlants() {
     const speciesEl = document.createElement('div');
     speciesEl.classList.add('plant-species');
     speciesEl.textContent = plant.species;
+    speciesEl.title = plant.species;
     infoWrap.appendChild(speciesEl);
 
     const tagList = document.createElement('div');
@@ -1170,24 +1171,27 @@ async function loadPlants() {
       roomTag.style.borderColor = borderColorForRoom(plant.room);
       tagList.appendChild(roomTag);
     }
+
     const ml = parseFloat(plant.water_amount);
     if (!isNaN(ml) && ml > 0) {
-        const ozTag = document.createElement('span');
-        ozTag.classList.add('tag', 'oz-tag');
-        ozTag.textContent = `${(ml / ML_PER_US_FL_OUNCE).toFixed(1).replace(/\.0$/, '')}oz`;
-        tagList.appendChild(ozTag);
+      const amtTag = document.createElement('span');
+      amtTag.classList.add('tag', 'amt-tag');
+      amtTag.textContent = `${(ml / ML_PER_US_FL_OUNCE).toFixed(1).replace(/\.0$/, '')} oz / ${Math.round(ml)} ml`;
+      amtTag.title = amtTag.textContent;
+      tagList.appendChild(amtTag);
+    }
 
-        const mlTag = document.createElement('span');
-        mlTag.classList.add('tag', 'ml-tag');
-        mlTag.textContent = `${Math.round(ml)} ml`;
-        tagList.appendChild(mlTag);
-      }
     if (tagList.childElementCount > 0) {
       infoWrap.appendChild(tagList);
     }
 
     const summary = document.createElement('div');
     summary.classList.add('plant-summary');
+
+    const heading = document.createElement('div');
+    heading.classList.add('schedule-heading');
+    heading.textContent = 'Care Schedule';
+    summary.appendChild(heading);
 
     const waterSummary = document.createElement('span');
     waterSummary.classList.add('summary-item');
