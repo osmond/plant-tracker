@@ -780,11 +780,8 @@ button:focus {
   gap: var(--spacing);
 }
 
-#plant-grid.grid-view .actions-left {
-  display: none;
-}
-
-#plant-grid.grid-view .actions-right > :not(.more-wrapper) {
+#plant-grid.grid-view .actions-left,
+#plant-grid.grid-view .actions-right {
   display: none;
 }
 
