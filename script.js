@@ -30,8 +30,6 @@ const KC_MAP = {
   houseplant: 0.8,
   vegetable: 1.0,
   cacti: 0.28,
-  flower: 0.9,
-  citrus: 0.7,
 };
 
 let weatherTminC = null;
@@ -344,8 +342,6 @@ function updateWateringFrequency() {
   if (type === 'succulent') base = 14;
   else if (type === 'cacti') base = 21;
   else if (type === 'vegetable') base = 3;
-  else if (type === 'flower') base = 5;
-  else if (type === 'citrus') base = 6;
   let diam = parseFloat(potInput ? potInput.value : '');
   if (!isNaN(diam)) {
     const unit = unitSelect ? unitSelect.value : 'cm';
