@@ -188,16 +188,34 @@ async function fetchSynonyms(key) {
   }
 }
 
+async function fetchSpecimenPhotos(key) {
+  if (!key) return [];
+  try {
+    const imgRes = await fetch(
+      `https://api.gbif.org/v1/occurrence/search?taxonKey=${key}&mediaType=StillImage&limit=5`
+    );
+    if (!imgRes.ok) return [];
+    const data = await imgRes.json();
+    return (data.results || [])
+      .flatMap(o => o.media || [])
+      .map(m => m.identifier)
+      .filter(Boolean);
+  } catch (e) {
+    return [];
+  }
+}
+
 async function showTaxonomyInfo(name) {
   const infoEl = document.getElementById('taxonomy-info');
   if (!infoEl) return;
   infoEl.textContent = '';
   const key = await getSpeciesKey(name);
   if (!key) return;
-  const [classification, common, syn] = await Promise.all([
+  const [classification, common, syn, photos] = await Promise.all([
     fetchClassification(key),
     fetchCommonNames(key),
     fetchSynonyms(key),
+    fetchSpecimenPhotos(key),
   ]);
   if (classification) {
     const div = document.createElement('div');
@@ -222,6 +240,18 @@ async function showTaxonomyInfo(name) {
     div.appendChild(strong);
     div.appendChild(document.createTextNode(' ' + syn.join(', ')));
     infoEl.appendChild(div);
+  }
+  if (photos && photos.length) {
+    const gallery = document.createElement('div');
+    gallery.classList.add('specimen-gallery');
+    photos.forEach(url => {
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = name + ' specimen';
+      img.loading = 'lazy';
+      gallery.appendChild(img);
+    });
+    infoEl.appendChild(gallery);
   }
 }
 
