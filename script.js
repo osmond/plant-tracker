@@ -37,6 +37,21 @@ let weatherTmaxC = null;
 let calendarStartDate = new Date();
 calendarStartDate.setHours(0, 0, 0, 0);
 
+// simple in-memory caches for taxonomy lookups
+const classificationCache = new Map();
+const commonNamesCache = new Map();
+const synonymsCache = new Map();
+const specimenPhotosCache = new Map();
+const speciesKeyCache = new Map();
+
+function debounce(fn, delay = 300) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
 // map room names to generated colors so tags remain consistent
 const roomColors = {};
 function colorForRoom(room) {
@@ -94,6 +109,7 @@ function computeArea(diameterCm) {
 
 async function fetchScientificNames(query) {
   if (!query) return [];
+  if (speciesKeyCache.has(`s:${query}`)) return speciesKeyCache.get(`s:${query}`);
   try {
     const params = new URLSearchParams({
       q: query,
@@ -105,9 +121,11 @@ async function fetchScientificNames(query) {
     const res = await fetch(`https://api.gbif.org/v1/species/search?${params}`);
     if (!res.ok) return [];
     const json = await res.json();
-    return (json.results || [])
+    const names = (json.results || [])
       .map(r => r.scientificName)
       .filter(Boolean);
+    speciesKeyCache.set(`s:${query}`, names);
+    return names;
   } catch (e) {
     return [];
   }
@@ -115,41 +133,23 @@ async function fetchScientificNames(query) {
 
 async function fetchCommonNameSuggestions(query) {
   if (!query) return [];
-  try {
-    const params = new URLSearchParams({
-      q: query,
-      limit: '10',
-      kingdomKey: PLANTAE_KEY,
-      rank: 'SPECIES',
-      status: 'ACCEPTED'
-    });
-    const res = await fetch(`https://api.gbif.org/v1/species/search?${params}`);
-    if (!res.ok) return [];
-    const json = await res.json();
-    const seen = new Set();
-    const names = [];
-    for (const r of json.results || []) {
-      const name = r.vernacularName;
-      if (name && !seen.has(name)) {
-        names.push(name);
-        seen.add(name);
-      }
-    }
-    return names;
-  } catch (e) {
-    return [];
-  }
+  const key = await getSpeciesKey(query);
+  if (!key) return [];
+  return fetchCommonNames(key);
 }
 
 async function getSpeciesKey(name) {
   if (!name) return null;
+  if (speciesKeyCache.has(name)) return speciesKeyCache.get(name);
   try {
     const res = await fetch(
       `https://api.gbif.org/v1/species/match?name=${encodeURIComponent(name)}`
     );
     if (!res.ok) return null;
     const json = await res.json();
-    return json.usageKey || null;
+    const key = json.usageKey || null;
+    speciesKeyCache.set(name, key);
+    return key;
   } catch (e) {
     return null;
   }
@@ -157,6 +157,7 @@ async function getSpeciesKey(name) {
 
 async function fetchClassification(key) {
   if (!key) return '';
+  if (classificationCache.has(key)) return classificationCache.get(key);
   try {
     const res = await fetch(`https://api.gbif.org/v1/species/${key}`);
     if (!res.ok) return '';
@@ -170,7 +171,9 @@ async function fetchClassification(key) {
       json.genus,
       json.species,
     ];
-    return parts.filter(Boolean).join(' \u203a ');
+    const out = parts.filter(Boolean).join(' \u203a ');
+    classificationCache.set(key, out);
+    return out;
   } catch (e) {
     return '';
   }
@@ -178,11 +181,14 @@ async function fetchClassification(key) {
 
 async function fetchCommonNames(key) {
   if (!key) return [];
+  if (commonNamesCache.has(key)) return commonNamesCache.get(key);
   try {
     const res = await fetch(`https://api.gbif.org/v1/species/${key}/vernacularNames`);
     if (!res.ok) return [];
     const json = await res.json();
-    return [...new Set((json.results || []).map(r => r.vernacularName).filter(Boolean))];
+    const names = [...new Set((json.results || []).map(r => r.vernacularName).filter(Boolean))];
+    commonNamesCache.set(key, names);
+    return names;
   } catch (e) {
     return [];
   }
@@ -190,11 +196,15 @@ async function fetchCommonNames(key) {
 
 async function fetchSynonyms(key) {
   if (!key) return [];
+  if (synonymsCache.has(key)) return synonymsCache.get(key);
   try {
     const res = await fetch(`https://api.gbif.org/v1/species/${key}/synonyms`);
     if (!res.ok) return [];
     const json = await res.json();
-    return [...new Set((json || []).map(r => r.scientificName).filter(Boolean))];
+    const arr = Array.isArray(json) ? json : json.results || [];
+    const names = [...new Set(arr.map(r => r.scientificName).filter(Boolean))];
+    synonymsCache.set(key, names);
+    return names;
   } catch (e) {
     return [];
   }
@@ -202,16 +212,19 @@ async function fetchSynonyms(key) {
 
 async function fetchSpecimenPhotos(key) {
   if (!key) return [];
+  if (specimenPhotosCache.has(key)) return specimenPhotosCache.get(key);
   try {
     const imgRes = await fetch(
       `https://api.gbif.org/v1/occurrence/search?taxonKey=${key}&mediaType=StillImage&limit=5`
     );
     if (!imgRes.ok) return [];
     const data = await imgRes.json();
-    return (data.results || [])
+    const photos = (data.results || [])
       .flatMap(o => o.media || [])
       .map(m => m.identifier)
       .filter(Boolean);
+    specimenPhotosCache.set(key, photos);
+    return photos;
   } catch (e) {
     return [];
   }
@@ -1382,7 +1395,7 @@ function init(){
   }
   if (nameInput && commonList) {
     let lastQueryName = '';
-    nameInput.addEventListener('input', async () => {
+    nameInput.addEventListener('input', debounce(async () => {
       const query = nameInput.value.trim();
       if (query === lastQueryName) return;
       lastQueryName = query;
@@ -1407,11 +1420,11 @@ function init(){
           showTaxonomyInfo(scientificNames[0]);
         }
       }
-    });
+    }, 300));
   }
   if (speciesInput && speciesList) {
     let lastQuery = '';
-    speciesInput.addEventListener('input', async () => {
+    speciesInput.addEventListener('input', debounce(async () => {
       const query = speciesInput.value.trim();
       if (query === lastQuery) return;
       lastQuery = query;
@@ -1424,7 +1437,7 @@ function init(){
       speciesList.innerHTML = names
         .map(n => `<option value="${n}"></option>`)
         .join('');
-    });
+    }, 300));
     speciesInput.addEventListener('change', () => {
       showTaxonomyInfo(speciesInput.value.trim());
     });
