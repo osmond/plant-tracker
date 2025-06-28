@@ -939,6 +939,7 @@ async function loadPlants() {
 
   const rainEl = document.getElementById('rainfall-info');
   if (rainEl) {
+
     if (
       selectedRoom &&
       selectedRoom.toLowerCase() === 'outside' &&
@@ -955,6 +956,24 @@ async function loadPlants() {
       rainEl.classList.add('hidden');
       rainEl.innerHTML = '';
     }
+
+      if (
+          selectedRoom &&
+          selectedRoom.toLowerCase() === 'outside' &&
+          rainPastInches.length === 3 &&
+          rainForecastInches.length === 3
+      ) {
+          rainEl.innerHTML =
+              `<div class="summary-row">
+                   <span class="summary-item">${ICONS.rain} Past 3d: ${rainPastInches.map(r => r.toFixed(2)).join(', ')} in</span>
+                   <span class="summary-item">${ICONS.rain} Next 3d: ${rainForecastInches.map(r => r.toFixed(2)).join(', ')} in</span>
+               </div>`;
+          rainEl.classList.remove('hidden');
+      } else {
+          rainEl.classList.add('hidden');
+          rainEl.innerHTML = '';
+      }
+
   }
   const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
   const today = new Date();
