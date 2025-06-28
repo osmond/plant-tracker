@@ -29,6 +29,11 @@ cd plant-tracker
 # Copy the sample config and add your OpenWeather key
 cp config.example.php config.php
 
+# Run the database migrations
+mysql -u <user> -p <db> < migrations/001_add_water_amount.sql
+mysql -u <user> -p <db> < migrations/002_add_water_amount.sql
+mysql -u <user> -p <db> < migrations/003_add_plant_type.sql
+
 # Start a local server
 php -S localhost:8000
 ```
