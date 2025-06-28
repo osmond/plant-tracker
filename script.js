@@ -347,6 +347,7 @@ const ICONS = {
   ,list: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3" y2="6"/><line x1="3" y1="12" x2="3" y2="12"/><line x1="3" y1="18" x2="3" y2="18"/></svg>'
   ,grid: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>'
   ,text: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>'
+  ,more: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>'
 };
 
 function showToast(msg, isError = false) {
@@ -1243,23 +1244,21 @@ async function loadPlants() {
     editBtn.innerHTML = ICONS.edit + '<span class="visually-hidden">Edit</span>';
     editBtn.title = 'Edit';
     editBtn.type = 'button';
-      editBtn.onclick = () => {
-        populateForm(plant);
-        const form = document.getElementById('plant-form');
-        form.style.display = 'block';
-        form.scrollIntoView({ behavior: 'smooth' });
-        const showBtn = document.getElementById('show-add-form');
-        if (showBtn) showBtn.style.display = 'none';
-        showFormStep(1);
-      };
-    rightGroup.appendChild(editBtn);
+    editBtn.onclick = () => {
+      populateForm(plant);
+      const form = document.getElementById('plant-form');
+      form.style.display = 'block';
+      form.scrollIntoView({ behavior: 'smooth' });
+      const showBtn = document.getElementById('show-add-form');
+      if (showBtn) showBtn.style.display = 'none';
+      showFormStep(1);
+    };
 
     const delBtn = document.createElement('button');
     delBtn.classList.add('action-btn', 'delete-btn');
     delBtn.innerHTML = ICONS.trash + '<span class="visually-hidden">Delete</span>';
     delBtn.title = 'Delete';
     delBtn.onclick = () => showUndoBanner(plant);
-    rightGroup.appendChild(delBtn);
 
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -1276,7 +1275,30 @@ async function loadPlants() {
     changeBtn.type = 'button';
     changeBtn.title = 'Add Image';
     changeBtn.onclick = () => fileInput.click();
-    rightGroup.appendChild(changeBtn);
+
+    const menu = document.createElement('div');
+    menu.classList.add('more-menu');
+    menu.appendChild(editBtn);
+    menu.appendChild(delBtn);
+    menu.appendChild(changeBtn);
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('more-wrapper');
+    const moreBtn = document.createElement('button');
+    moreBtn.classList.add('action-btn', 'more-btn');
+    moreBtn.innerHTML = ICONS.more + '<span class="visually-hidden">More</span>';
+    moreBtn.type = 'button';
+    moreBtn.onclick = (e) => {
+      e.stopPropagation();
+      menu.classList.toggle('show');
+    };
+    wrapper.appendChild(moreBtn);
+    wrapper.appendChild(menu);
+    document.addEventListener('click', (e) => {
+      if (!wrapper.contains(e.target)) menu.classList.remove('show');
+    });
+
+    rightGroup.appendChild(wrapper);
     actionsDiv.appendChild(leftGroup);
     actionsDiv.appendChild(rightGroup);
     actionsDiv.appendChild(fileInput);

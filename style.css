@@ -279,6 +279,28 @@ button:focus {
     transform: translateY(0);
 }
 
+.more-wrapper {
+  position: relative;
+}
+
+.more-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: var(--color-surface);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border-radius: var(--radius);
+  padding: calc(var(--spacing) / 2);
+  z-index: 10;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+
+.more-menu.show {
+  display: flex;
+}
+
 .view-toggle-group {
     display: inline-flex;
     border: 1px solid var(--color-border);
@@ -707,11 +729,13 @@ button:focus {
   overflow: hidden; /* clip photo when it extends to edges */
   position: relative; /* allow urgency tag overlay */
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  transition: box-shadow 0.2s;
+  border: 1px solid #e5e7eb;
+  transition: box-shadow 0.2s, transform 0.1s;
 }
 
 .plant-card:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
 }
 
 .plant-card .actions {
@@ -807,19 +831,13 @@ button:focus {
 
 .plant-card .plant-photo {
   width: 100%;
-  height: 150px;
+  aspect-ratio: 1;
   object-fit: cover;
   display: block;
   margin-bottom: calc(var(--spacing) * 1.5);
   border-radius: 12px;
 }
 
-@media (min-width: 1000px) {
-  .plant-card .plant-photo {
-    height: auto;
-    max-height: 400px;
-  }
-}
 
 .plant-card.due-overdue,
 .plant-card.due-today,
@@ -844,16 +862,16 @@ button:focus {
   align-self: flex-start;
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--spacing) / 2);
-  margin-bottom: calc(var(--spacing));
+  gap: calc(var(--spacing) / 4);
+  margin-bottom: calc(var(--spacing) / 2);
 }
 
 .tag {
   background-color: var(--color-accent);
   color: var(--color-surface);
-  padding: 2px 6px;
+  padding: 1px 4px;
   border-radius: var(--radius);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
 }
 
@@ -881,6 +899,8 @@ button:focus {
   gap: calc(var(--spacing) * 0.75);
   font-size: var(--font-size-sm);
   margin-bottom: calc(var(--spacing));
+  color: var(--color-text);
+  opacity: 0.7;
 }
 
 @media (min-width: 1000px) {
@@ -1060,6 +1080,17 @@ button:focus {
 /* Ensure pot diameter unit dropdown text is readable */
 #pot_diameter_unit {
   color: var(--color-text);
+}
+
+/* toolbar containing filters and view toggle */
+#filter-bar {
+  background: var(--color-surface);
+  padding: calc(var(--spacing) * 1.5);
+  border-radius: var(--radius);
+  margin-bottom: calc(var(--spacing) * 2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing);
 }
 
 
