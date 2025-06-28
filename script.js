@@ -1018,7 +1018,8 @@ async function loadPlants() {
 
   summaryEl.appendChild(row1);
   summaryEl.appendChild(row2);
-  if (rainPastInches.length === 3 && rainForecastInches.length === 3) {
+  if (selectedRoom === 'outside' &&
+      rainPastInches.length === 3 && rainForecastInches.length === 3) {
     const row3 = document.createElement('div');
     row3.classList.add('summary-row');
     const pastSpan = document.createElement('span');
