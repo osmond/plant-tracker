@@ -926,5 +926,23 @@ button:focus {
   color: var(--color-text);
 }
 
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: none;
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 1.25rem;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.back-to-top.show {
+  display: inline-block;
+}
+
 
 
