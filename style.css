@@ -857,14 +857,18 @@ button:focus {
   background-color: #ffffff; /* urgency shown via overlay tag instead */
 }
 
+
 .plant-title {
-  font-size: 1.25rem;
-  font-weight: 600;
+
+  font-size: 1.125rem; /* ~18px */
+  font-weight: 700;
+
   margin-bottom: calc(var(--spacing) * 1.5);
 }
 
 .plant-species {
-  font-size: 0.9rem;
+  font-size: 0.875rem; /* ~14px */
+  font-style: italic;
   opacity: 0.8;
   margin-bottom: calc(var(--spacing) * 1.5);
 }
@@ -888,13 +892,7 @@ button:focus {
 }
 
 /* water amount tags use the blue palette */
-.oz-tag {
-  background-color: var(--color-water-bg);
-  color: var(--color-water-hover);
-  border: 1px solid var(--color-water);
-}
-
-.ml-tag {
+.amt-tag {
   background-color: var(--color-water-bg);
   color: var(--color-water-hover);
   border: 1px solid var(--color-water);
@@ -908,14 +906,21 @@ button:focus {
 .plant-summary {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--spacing) * 1.25);
-  font-size: var(--font-size-sm);
+
+  gap: calc(var(--spacing) * 0.75);
+  font-size: var(--font-size-base);
   margin-bottom: calc(var(--spacing) * 1.5);
+}
+
+.schedule-heading {
+  font-weight: 600;
+  margin-bottom: calc(var(--spacing) / 2);
+
 }
 
 @media (min-width: 1000px) {
   .plant-summary {
-    font-size: 0.9rem; /* 14.4px */
+    font-size: 1rem;
   }
 }
 
@@ -1051,10 +1056,13 @@ button:focus {
   transform-origin: left top;
 }
 .urgency-today {
-  background-color: #ff5722; /* more vivid red-orange */
+  top: calc(var(--spacing) * 2);
+  right: calc(var(--spacing) * 2);
+  left: auto;
+  background-color: rgba(255, 87, 34, 0.9);
   color: #ffffff;
   animation: pulse 1.5s ease-in-out infinite;
-  transform-origin: left top;
+  transform-origin: right top;
 }
 .urgency-future {
   background-color: var(--color-success);
@@ -1090,6 +1098,13 @@ button:focus {
 /* Ensure pot diameter unit dropdown text is readable */
 #pot_diameter_unit {
   color: var(--color-text);
+}
+
+@media (max-width: 500px) {
+  .plant-card .plant-species,
+  .plant-card .amt-tag {
+    display: none;
+  }
 }
 
 
