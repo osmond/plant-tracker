@@ -28,6 +28,7 @@
     </script>
 </head>
 <body class="bg-bg text-text min-h-screen">
+  <div class="main-container">
     <h1 class="app-title text font-bold px-4 py-0">
         My Plant Tracker
         <button id="show-add-form" class="bg-primary text-white rounded-md px-4 py-2 ml-auto"></button>
@@ -153,7 +154,7 @@
         </div>
     </form>
 
-    <div class="my-4 flex flex-wrap gap-2 p-4">
+    <div class="filter-bar">
         <select id="room-filter" class="border rounded-md">
             <option value="all" selected>All Rooms</option>
         </select>
@@ -192,6 +193,8 @@
         </span>
     </h2>
     <div id="calendar" class="p-4"></div>
+
+    </div> <!-- /.main-container -->
 
     <script>
       const script = document.createElement('script');
