@@ -1194,26 +1194,34 @@ async function loadPlants() {
     heading.textContent = 'Care Schedule';
     summary.appendChild(heading);
 
-    const waterSummary = document.createElement('span');
+    const waterSummary = document.createElement('div');
     waterSummary.classList.add('summary-item');
+    const waterIconWrap = document.createElement('span');
+    waterIconWrap.innerHTML = ICONS.water;
     const waterNext = formatDateShort(getNextWaterDate(plant));
-    waterSummary.innerHTML =
-      ICONS.water +
-
-      ` Water every ${plant.watering_frequency} days. Last ${formatDateShort(plant.last_watered)}, next ${waterNext}.`;
+    const waterText = document.createElement('span');
+    waterText.textContent =
+      `Water every ${plant.watering_frequency} days. ` +
+      `Last ${formatDateShort(plant.last_watered)}, next ${waterNext}.`;
+    waterSummary.appendChild(waterIconWrap);
+    waterSummary.appendChild(waterText);
 
     summary.appendChild(waterSummary);
 
-    const fertSummary = document.createElement('span');
+    const fertSummary = document.createElement('div');
     fertSummary.classList.add('summary-item');
+    const fertIconWrap = document.createElement('span');
+    fertIconWrap.innerHTML = ICONS.fert;
     const fertFreq = plant.fertilizing_frequency
       ? `${plant.fertilizing_frequency} days`
       : 'N/A';
     const fertNext = getNextFertDate(plant);
-    fertSummary.innerHTML =
-      ICONS.fert +
-
-      ` Fertilize every ${fertFreq}. Last ${formatDateShort(plant.last_fertilized)}, next ${fertNext ? formatDateShort(fertNext) : 'N/A'}.`;
+    const fertText = document.createElement('span');
+    fertText.textContent =
+      `Fertilize every ${fertFreq}. ` +
+      `Last ${formatDateShort(plant.last_fertilized)}, next ${fertNext ? formatDateShort(fertNext) : 'N/A'}.`;
+    fertSummary.appendChild(fertIconWrap);
+    fertSummary.appendChild(fertText);
 
     summary.appendChild(fertSummary);
 

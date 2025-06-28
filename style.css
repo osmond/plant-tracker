@@ -922,9 +922,10 @@ button:focus {
 
 
 .plant-summary .summary-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  display: grid;
+  grid-template-columns: 1.25em 1fr;
+  column-gap: 4px;
+  align-items: start;
 }
 
 .plant-summary .water-amount {
