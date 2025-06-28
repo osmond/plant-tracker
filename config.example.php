@@ -11,6 +11,7 @@ return [
         'cacti'      => 0.28,
         'flower'     => 0.9,
         'citrus'     => 0.7,
+        'cannabis sativa' => 0.9,
     ],
     'bed_map' => [
         'vegetable' => [
@@ -26,6 +27,14 @@ return [
                 'ini' => 0.35,
                 'mid' => 1.1,
                 'end' => 1.0,
+            ],
+            'kc_soil' => 1.05,
+        ],
+        'cannabis sativa' => [
+            'kcb' => [
+                'ini' => 0.5,
+                'mid' => 0.9,
+                'end' => 1.1,
             ],
             'kc_soil' => 1.05,
         ],

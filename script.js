@@ -32,6 +32,7 @@ const KC_MAP = {
   cacti: 0.28,
   flower: 0.9,
   citrus: 0.7,
+  'cannabis sativa': 0.9,
 };
 
 let weatherTminC = null;
@@ -346,6 +347,7 @@ function updateWateringFrequency() {
   else if (type === 'vegetable') base = 3;
   else if (type === 'flower') base = 5;
   else if (type === 'citrus') base = 6;
+  else if (type === 'cannabis sativa') base = 3;
   let diam = parseFloat(potInput ? potInput.value : '');
   if (!isNaN(diam)) {
     const unit = unitSelect ? unitSelect.value : 'cm';
