@@ -318,6 +318,8 @@ button:focus {
 
 .view-toggle-btn.active:hover,
 .view-toggle-btn.active:focus {
+    background: var(--color-primary);
+    color: var(--color-surface);
     filter: brightness(90%);
     transform: none;
 }
