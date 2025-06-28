@@ -21,6 +21,8 @@ const CM_PER_INCH = 2.54;
 // configuration values mirrored from config.php
 const RA = 20.0;
 const DEFAULT_KC = 0.8;
+// GBIF backbone usageKey for Plantae
+const PLANTAE_KEY = 6;
 const KC_MAP = {
   succulent: 0.3,
   houseplant: 0.8,
@@ -93,9 +95,14 @@ function computeArea(diameterCm) {
 async function fetchScientificNames(query) {
   if (!query) return [];
   try {
-    const res = await fetch(
-      `https://api.gbif.org/v1/species/search?q=${encodeURIComponent(query)}&kingdomKey=6&rank=species&limit=10`
-    );
+    const params = new URLSearchParams({
+      q: query,
+      limit: '10',
+      kingdomKey: PLANTAE_KEY,
+      rank: 'SPECIES',
+      status: 'ACCEPTED'
+    });
+    const res = await fetch(`https://api.gbif.org/v1/species/search?${params}`);
     if (!res.ok) return [];
     const json = await res.json();
     return (json.results || [])
@@ -109,9 +116,14 @@ async function fetchScientificNames(query) {
 async function fetchCommonNameSuggestions(query) {
   if (!query) return [];
   try {
-    const res = await fetch(
-      `https://api.gbif.org/v1/species/search?q=${encodeURIComponent(query)}&limit=10`
-    );
+    const params = new URLSearchParams({
+      q: query,
+      limit: '10',
+      kingdomKey: PLANTAE_KEY,
+      rank: 'SPECIES',
+      status: 'ACCEPTED'
+    });
+    const res = await fetch(`https://api.gbif.org/v1/species/search?${params}`);
     if (!res.ok) return [];
     const json = await res.json();
     const seen = new Set();
