@@ -1601,7 +1601,8 @@ function init(){
   if (viewButtons.length) {
     viewButtons.forEach(btn => {
       if (!btn.innerHTML.trim()) {
-        btn.innerHTML = ICONS[btn.dataset.view] || '';
+        const label = btn.dataset.view.charAt(0).toUpperCase() + btn.dataset.view.slice(1);
+        btn.innerHTML = `${ICONS[btn.dataset.view] || ''}<span class="visually-hidden">${label}</span>`;
       }
       btn.addEventListener('click', () => {
         viewMode = btn.dataset.view;
