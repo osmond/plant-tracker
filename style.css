@@ -310,8 +310,16 @@ button:focus {
     background: var(--color-primary);
     color: var(--color-surface);
 }
-.view-toggle-btn.active:hover {
+.view-toggle-btn:hover,
+.view-toggle-btn:focus {
+    filter: brightness(95%);
+    transform: none;
+}
+
+.view-toggle-btn.active:hover,
+.view-toggle-btn.active:focus {
     filter: brightness(90%);
+    transform: none;
 }
 .visually-hidden {
     position: absolute !important;
