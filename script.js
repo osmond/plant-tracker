@@ -1272,10 +1272,15 @@ function init(){
       }
     });
   }
-  if (nameInput && speciesList) {
+  if (nameInput && speciesList && speciesInput) {
     let lastQueryName = '';
+    let typedName = '';
     nameInput.addEventListener('input', async () => {
       const query = nameInput.value.trim();
+      const opts = Array.from(speciesList.options).map(o => o.value);
+      if (!opts.includes(query)) {
+        typedName = nameInput.value;
+      }
       if (query === lastQueryName) return;
       lastQueryName = query;
       if (!query) {
@@ -1286,6 +1291,15 @@ function init(){
       speciesList.innerHTML = names
         .map(n => `<option value="${n}"></option>`)
         .join('');
+    });
+    nameInput.addEventListener('change', () => {
+      const selected = nameInput.value.trim();
+      const opts = Array.from(speciesList.options).map(o => o.value);
+      if (opts.includes(selected)) {
+        speciesInput.value = selected;
+        nameInput.value = typedName;
+        speciesInput.dispatchEvent(new Event('change'));
+      }
     });
   }
   if (speciesInput && speciesList) {
