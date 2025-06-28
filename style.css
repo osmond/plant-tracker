@@ -885,6 +885,10 @@ button:focus {
   fill: var(--color-water-bg);
 }
 
+.icon-rain {
+  color: var(--color-water);
+}
+
 .icon-sprout {
   color: var(--color-success);
 }

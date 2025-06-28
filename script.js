@@ -33,6 +33,10 @@ const KC_MAP = {
 let weatherTminC = null;
 let weatherTmaxC = null;
 
+// rainfall totals in inches
+let rainPastInches = [];
+let rainForecastInches = [];
+
 // starting date for the calendar view
 let calendarStartDate = new Date();
 calendarStartDate.setHours(0, 0, 0, 0);
@@ -337,6 +341,7 @@ const ICONS = {
   ,sun: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
   ,search: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
   ,calendar: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'
+  ,rain: '<svg class="icon icon-rain" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16" y1="13" x2="16" y2="21"/><line x1="8" y1="13" x2="8" y2="21"/><line x1="12" y1="15" x2="12" y2="23"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>'
   ,download: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
   ,left: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>'
   ,right: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'
@@ -727,6 +732,44 @@ async function updatePlantPhoto(plant, file) {
 }
 
 // --- weather helper ---
+function daysAgoUnix(days) {
+  const d = new Date();
+  d.setUTCHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - days);
+  return Math.floor(d.getTime() / 1000);
+}
+
+async function fetchDailyRainHistoric(lat, lon, daysAgo) {
+  const dt = daysAgoUnix(daysAgo);
+  const url =
+    `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lon}&dt=${dt}&appid=${WEATHER_API_KEY}`;
+  const res = await fetch(url);
+  const json = await res.json();
+  const totalMm = json.hourly.reduce((sum, h) => sum + (h.rain?.['1h'] || 0), 0);
+  return totalMm / 25.4;
+}
+
+async function fetch3DayForecastRain(lat, lon) {
+  const url =
+    `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}` +
+    `&exclude=current,minutely,hourly,alerts&appid=${WEATHER_API_KEY}`;
+  const res = await fetch(url);
+  const json = await res.json();
+  return json.daily.slice(1, 4).map((d) => (d.rain || 0) / 25.4);
+}
+
+async function fetchRainData(lat, lon) {
+  try {
+    const past = await Promise.all([1, 2, 3].map((d) => fetchDailyRainHistoric(lat, lon, d)));
+    const next = await fetch3DayForecastRain(lat, lon);
+    rainPastInches = past;
+    rainForecastInches = next;
+    loadPlants();
+  } catch (e) {
+    console.error('Rain fetch failed', e);
+  }
+}
+
 function fetchWeather() {
   const addWeather = (temp, desc, icon) => {
     currentWeather = `${temp}°F ${desc}`;
@@ -744,6 +787,7 @@ function fetchWeather() {
       weatherTmaxC = (data.main.temp_max - 32) * 5/9;
       addWeather(Math.round(data.main.temp), data.weather[0].main, data.weather[0].icon);
       updateWaterAmount();
+      fetchRainData(lat, lon);
     } catch (e) {
       console.error('Weather fetch failed', e);
     }
@@ -959,6 +1003,19 @@ async function loadPlants() {
 
   summaryEl.appendChild(row1);
   summaryEl.appendChild(row2);
+  if (rainPastInches.length === 3 && rainForecastInches.length === 3) {
+    const row3 = document.createElement('div');
+    row3.classList.add('summary-row');
+    const pastSpan = document.createElement('span');
+    pastSpan.classList.add('summary-item');
+    pastSpan.innerHTML = `${ICONS.rain} Past 3d: ${rainPastInches.map(r => r.toFixed(2)).join(', ')} in`;
+    const nextSpan = document.createElement('span');
+    nextSpan.classList.add('summary-item');
+    nextSpan.innerHTML = `${ICONS.rain} Next 3d: ${rainForecastInches.map(r => r.toFixed(2)).join(', ')} in`;
+    row3.appendChild(pastSpan);
+    row3.appendChild(nextSpan);
+    summaryEl.appendChild(row3);
+  }
   summaryEl.classList.add('show');
 
   const sortBy = document.getElementById('sort-toggle').value || 'name';
