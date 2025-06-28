@@ -29,6 +29,11 @@ cd plant-tracker
 # Copy the sample config and add your OpenWeather key
 cp config.example.php config.php
 
+# Run the database migrations
+mysql -u <user> -p <db> < migrations/001_add_water_amount.sql
+mysql -u <user> -p <db> < migrations/002_add_water_amount.sql
+mysql -u <user> -p <db> < migrations/003_add_plant_type.sql
+
 # Start a local server
 php -S localhost:8000
 ```
@@ -41,6 +46,7 @@ Edit `config.php` and provide:
 - `openweather_key` – your OpenWeather API key
 - `location` – city name used for weather lookups
 - `ra`, `kc` and mapping values for water calculations
+- `kc_map` defines coefficients for each `plant_type`
 
 The app fetches rainfall using OpenWeather's **forecast** endpoint.
 
@@ -49,7 +55,7 @@ Database credentials are taken from the environment variables `DB_HOST`, `DB_USE
 ## Usage
 
 1. Click **Add Plant** to create a new entry.
-2. Upload a photo and fill out the care schedule.
+2. Choose a plant type, upload a photo and fill out the care schedule.
 3. Type a plant name to automatically fetch matching scientific names from the GBIF Species API.
 4. Selecting a suggestion shows its classification, common names and synonyms beneath the field.
 5. If available, specimen photos from GBIF appear as thumbnails for quick reference.

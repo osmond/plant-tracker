@@ -869,6 +869,9 @@ function populateForm(plant) {
   form.species.value = plant.species;
   showTaxonomyInfo(plant.species);
   form.watering_frequency.value = plant.watering_frequency;
+  if (form.plant_type) {
+    form.plant_type.value = plant.plant_type;
+  }
   if (form.water_amount) {
     const ml = parseFloat(plant.water_amount);
     if (ml > 0) {
