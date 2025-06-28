@@ -384,9 +384,9 @@ function loadFilterPrefs() {
   const rVal = localStorage.getItem('roomFilter');
   const sVal = localStorage.getItem('sortPref');
   const dVal = localStorage.getItem('dueFilter');
-  if (rf && rVal !== null) rf.value = rVal;
-  if (sf && sVal !== null) sf.value = sVal;
-  if (df && dVal !== null) df.value = dVal;
+  if (rf) rf.value = rVal !== null ? rVal : 'all';
+  if (sf) sf.value = sVal !== null ? sVal : 'due';
+  if (df) df.value = dVal !== null ? dVal : 'any';
 }
 
 function clearFilterPrefs() {
