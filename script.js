@@ -1110,7 +1110,9 @@ async function loadPlants() {
 
   const roomSet = new Set();
   plants.forEach(p => { if (p.room) roomSet.add(p.room); });
-  const rooms = Array.from(roomSet);
+  const rooms = Array.from(roomSet).sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: 'base' })
+  );
 
   const filter = document.getElementById('room-filter');
   if (filter) {
