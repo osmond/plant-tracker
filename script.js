@@ -743,30 +743,45 @@ async function fetchDailyRainHistoric(lat, lon, daysAgo) {
   const dt = daysAgoUnix(daysAgo);
   const url =
     `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lon}&dt=${dt}&appid=${WEATHER_API_KEY}`;
-  const res = await fetch(url);
-  const json = await res.json();
-  const totalMm = json.hourly.reduce((sum, h) => sum + (h.rain?.['1h'] || 0), 0);
-  return totalMm / 25.4;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return 0;
+    const json = await res.json();
+    if (!json.hourly) return 0;
+    const totalMm = json.hourly.reduce((sum, h) => sum + (h.rain?.['1h'] || 0), 0);
+    return totalMm / 25.4;
+  } catch (e) {
+    return 0;
+  }
 }
 
 async function fetch3DayForecastRain(lat, lon) {
   const url =
     `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}` +
     `&exclude=current,minutely,hourly,alerts&appid=${WEATHER_API_KEY}`;
-  const res = await fetch(url);
-  const json = await res.json();
-  return json.daily.slice(1, 4).map((d) => (d.rain || 0) / 25.4);
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return [0, 0, 0];
+    const json = await res.json();
+    if (!json.daily) return [0, 0, 0];
+    return json.daily.slice(1, 4).map((d) => (d.rain || 0) / 25.4);
+  } catch (e) {
+    return [0, 0, 0];
+  }
 }
 
 async function fetchRainData(lat, lon) {
   try {
     const past = await Promise.all([1, 2, 3].map((d) => fetchDailyRainHistoric(lat, lon, d)));
     const next = await fetch3DayForecastRain(lat, lon);
-    rainPastInches = past;
-    rainForecastInches = next;
+    rainPastInches = past.length === 3 ? past : [0, 0, 0];
+    rainForecastInches = next.length === 3 ? next : [0, 0, 0];
     loadPlants();
   } catch (e) {
     console.error('Rain fetch failed', e);
+    rainPastInches = [0, 0, 0];
+    rainForecastInches = [0, 0, 0];
+    loadPlants();
   }
 }
 
