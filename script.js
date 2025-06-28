@@ -1276,29 +1276,9 @@ async function loadPlants() {
     changeBtn.title = 'Add Image';
     changeBtn.onclick = () => fileInput.click();
 
-    const menu = document.createElement('div');
-    menu.classList.add('more-menu');
-    menu.appendChild(editBtn);
-    menu.appendChild(delBtn);
-    menu.appendChild(changeBtn);
-
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('more-wrapper');
-    const moreBtn = document.createElement('button');
-    moreBtn.classList.add('action-btn', 'more-btn');
-    moreBtn.innerHTML = ICONS.more + '<span class="visually-hidden">More</span>';
-    moreBtn.type = 'button';
-    moreBtn.onclick = (e) => {
-      e.stopPropagation();
-      menu.classList.toggle('show');
-    };
-    wrapper.appendChild(moreBtn);
-    wrapper.appendChild(menu);
-    document.addEventListener('click', (e) => {
-      if (!wrapper.contains(e.target)) menu.classList.remove('show');
-    });
-
-    rightGroup.appendChild(wrapper);
+    rightGroup.appendChild(editBtn);
+    rightGroup.appendChild(delBtn);
+    rightGroup.appendChild(changeBtn);
     actionsDiv.appendChild(leftGroup);
     actionsDiv.appendChild(rightGroup);
     actionsDiv.appendChild(fileInput);
