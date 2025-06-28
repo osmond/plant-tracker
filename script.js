@@ -809,11 +809,11 @@ async function loadPlants() {
   const totalPlants = filtered.length;
   filtered.forEach(p => {
     if (p.last_watered) {
-      const nxt = addDays(new Date(p.last_watered), p.watering_frequency);
+      const nxt = addDays(parseLocalDate(p.last_watered), p.watering_frequency);
       if (nxt <= today) wateringDue++;
     }
     if (p.last_fertilized && p.fertilizing_frequency) {
-      const nxt = addDays(new Date(p.last_fertilized), p.fertilizing_frequency);
+      const nxt = addDays(parseLocalDate(p.last_fertilized), p.fertilizing_frequency);
       if (nxt <= today) fertilizingDue++;
     }
   });
