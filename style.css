@@ -1101,7 +1101,6 @@ button:focus {
 }
 
 @media (max-width: 500px) {
-  .plant-card .plant-species,
   .plant-card .amt-tag {
     display: none;
   }
