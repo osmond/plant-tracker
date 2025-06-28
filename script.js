@@ -94,7 +94,7 @@ async function fetchScientificNames(query) {
   if (!query) return [];
   try {
     const res = await fetch(
-      `https://api.gbif.org/v1/species/search?q=${encodeURIComponent(query)}&limit=10`
+      `https://api.gbif.org/v1/species/search?q=${encodeURIComponent(query)}&kingdomKey=6&rank=species&limit=10`
     );
     if (!res.ok) return [];
     const json = await res.json();
