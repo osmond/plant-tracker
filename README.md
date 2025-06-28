@@ -41,7 +41,6 @@ Edit `config.php` and provide:
 - `openweather_key` – your OpenWeather API key
 - `location` – city name used for weather lookups
 - `ra`, `kc` and mapping values for water calculations
-- `kc_map` defines coefficients for each `plant_type`
 
 The app fetches rainfall using OpenWeather's **forecast** endpoint.
 
@@ -50,7 +49,7 @@ Database credentials are taken from the environment variables `DB_HOST`, `DB_USE
 ## Usage
 
 1. Click **Add Plant** to create a new entry.
-2. Choose a plant type, upload a photo and fill out the care schedule.
+2. Upload a photo and fill out the care schedule.
 3. Type a plant name to automatically fetch matching scientific names from the GBIF Species API.
 4. Selecting a suggestion shows its classification, common names and synonyms beneath the field.
 5. If available, specimen photos from GBIF appear as thumbnails for quick reference.

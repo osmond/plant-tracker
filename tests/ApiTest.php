@@ -84,44 +84,12 @@ class ApiTest extends TestCase
         $this->assertEquals('success', $data['status']);
     }
 
-    public function testAddPlantWithPlantType()
-    {
-        $_POST = [
-            'name' => 'Typed Plant',
-            'watering_frequency' => 5,
-            'plant_type' => 'cacti'
-        ];
-        ob_start();
-        include __DIR__ . '/../api/add_plant.php';
-        $output = ob_get_clean();
-        $data = json_decode($output, true);
-        $this->assertEquals('success', $data['status']);
-    }
-
     public function testUpdatePlantWithWaterAmount()
     {
         $_POST = [
             'id' => 1,
             'name' => 'Updated',
             'watering_frequency' => 7,
-            'water_amount' => 150,
-            'last_watered' => '',
-            'last_fertilized' => ''
-        ];
-        ob_start();
-        include __DIR__ . '/../api/update_plant.php';
-        $output = ob_get_clean();
-        $data = json_decode($output, true);
-        $this->assertEquals('success', $data['status']);
-    }
-
-    public function testUpdatePlantWithPlantType()
-    {
-        $_POST = [
-            'id' => 1,
-            'name' => 'Updated',
-            'watering_frequency' => 7,
-            'plant_type' => 'succulent',
             'water_amount' => 150,
             'last_watered' => '',
             'last_fertilized' => ''
@@ -178,31 +146,6 @@ class ApiTest extends TestCase
         $output = ob_get_clean();
         $data = json_decode($output, true);
         $this->assertEquals('success', $data['status']);
-    }
-
-    public function testGetPlantsIncludesPlantType()
-    {
-        global $mockQueryData;
-        $mockQueryData = [
-            [
-                'id' => 1,
-                'name' => 'Plant',
-                'species' => 'Plantus',
-                'watering_frequency' => 5,
-                'fertilizing_frequency' => 2,
-                'plant_type' => 'houseplant',
-                'room' => 'Kitchen',
-                'last_watered' => '2023-01-01',
-                'last_fertilized' => '2023-01-02',
-                'photo_url' => '',
-                'water_amount' => 0
-            ]
-        ];
-        ob_start();
-        include __DIR__ . '/../api/get_plants.php';
-        $output = ob_get_clean();
-        $data = json_decode($output, true);
-        $this->assertEquals('houseplant', $data[0]['plant_type']);
     }
 }
 ?>
