@@ -2,6 +2,9 @@ let editingPlantId = null;
 let lastDeletedPlant = null;
 let deleteTimer = null;
 
+// preferred layout for plant cards
+let viewMode = localStorage.getItem('viewMode') || 'grid';
+
 
 // track weather info so the summary can include current conditions
 let currentWeather = null;
@@ -263,6 +266,8 @@ const ICONS = {
   ,download: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
   ,left: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>'
   ,right: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'
+  ,list: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3" y2="6"/><line x1="3" y1="12" x2="3" y2="12"/><line x1="3" y1="18" x2="3" y2="18"/></svg>'
+  ,grid: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>'
 };
 
 function showToast(msg, isError = false) {
@@ -313,6 +318,18 @@ function clearFilterPrefs() {
 
 // expose so it can be called externally
 window.clearFilterPrefs = clearFilterPrefs;
+
+function applyViewMode() {
+  const list = document.getElementById('plant-grid');
+  if (list) list.classList.toggle('list-view', viewMode === 'list');
+  const btn = document.getElementById('view-toggle');
+  if (btn) {
+    btn.innerHTML = viewMode === 'list'
+      ? ICONS.grid + '<span class="visually-hidden">Grid View</span>'
+      : ICONS.list + '<span class="visually-hidden">List View</span>';
+  }
+  localStorage.setItem('viewMode', viewMode);
+}
 
 // --- validation, date math, due-date helpers ---
 function validateForm(form) {
@@ -770,6 +787,7 @@ async function loadPlants() {
   const res = await fetch('api/get_plants.php');
   const plants = await res.json();
   const list = document.getElementById('plant-grid');
+  if (list) list.classList.toggle('list-view', viewMode === 'list');
   const selectedRoom = document.getElementById('room-filter').value;
   const dueFilter = document.getElementById('due-filter')
     ? document.getElementById('due-filter').value
@@ -1156,6 +1174,7 @@ function init(){
   const roomFilter = document.getElementById('room-filter');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('due-filter');
+  const viewToggle = document.getElementById('view-toggle');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
 
@@ -1180,6 +1199,8 @@ function init(){
   // apply saved preferences before initial load
   loadFilterPrefs();
   showFormStep(1);
+
+  applyViewMode();
 
   loadCalendar();
 
@@ -1414,6 +1435,12 @@ function init(){
     dueFilterEl.addEventListener('change', () => {
       saveFilterPrefs();
       loadPlants();
+    });
+  }
+  if (viewToggle) {
+    viewToggle.addEventListener('click', () => {
+      viewMode = viewMode === 'list' ? 'grid' : 'list';
+      applyViewMode();
     });
   }
   if (prevBtn) {
