@@ -730,41 +730,32 @@ button:focus {
 }
 
 .plant-card .actions {
-  margin-top: calc(var(--spacing) * 1.5);
+  margin-top: calc(var(--spacing) * 2);
   display: flex;
-  justify-content: space-between;
-  gap: var(--spacing);
+  justify-content: space-evenly;
+  gap: calc(var(--spacing) * 1.5);
+  align-items: center;
+  position: relative;
 }
 
 .plant-card .actions-left,
 .plant-card .actions-right {
-  display: grid;
-  gap: var(--spacing);
-  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
-  flex: 1;
+  display: none;
 }
 
 #plant-grid.list-view .actions {
   margin-top: calc(var(--spacing) * 2);
-  justify-content: flex-end;
 }
 
 #plant-grid.list-view .actions-left,
 #plant-grid.list-view .actions-right {
-  display: flex;
-  gap: var(--spacing);
+  display: none;
 }
 
 @media (min-width: 640px) {
   #plant-grid.list-view .actions {
     margin-top: 0;
     margin-left: calc(var(--spacing) * 1.5);
-    flex-direction: column;
-  }
-
-  #plant-grid.list-view .actions-left,
-  #plant-grid.list-view .actions-right {
-    flex-direction: column;
   }
 }
 
@@ -772,6 +763,29 @@ button:focus {
   width: 100%;
   min-width: 2.5rem;
   height: 2.5rem;
+}
+
+.overflow-container {
+  position: relative;
+}
+
+.overflow-menu {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + var(--spacing));
+  right: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  padding: calc(var(--spacing));
+  z-index: 10;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+
+.overflow-menu.show {
+  display: flex;
 }
 
 .plant-info {
@@ -845,13 +859,13 @@ button:focus {
 .plant-title {
   font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: calc(var(--spacing) / 2);
+  margin-bottom: calc(var(--spacing) * 1.5);
 }
 
 .plant-species {
   font-size: 0.9rem;
   opacity: 0.8;
-  margin-bottom: calc(var(--spacing));
+  margin-bottom: calc(var(--spacing) * 1.5);
 }
 
 /* container for small tags like room and water amount */
@@ -860,7 +874,7 @@ button:focus {
   display: flex;
   flex-wrap: wrap;
   gap: calc(var(--spacing) / 2);
-  margin-bottom: calc(var(--spacing));
+  margin-bottom: calc(var(--spacing) * 1.5);
 }
 
 .tag {
@@ -893,9 +907,9 @@ button:focus {
 .plant-summary {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--spacing) * 0.75);
+  gap: calc(var(--spacing) * 1.25);
   font-size: var(--font-size-sm);
-  margin-bottom: calc(var(--spacing));
+  margin-bottom: calc(var(--spacing) * 1.5);
 }
 
 @media (min-width: 1000px) {

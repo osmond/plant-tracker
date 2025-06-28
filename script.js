@@ -373,6 +373,7 @@ const ICONS = {
   ,list: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3" y2="6"/><line x1="3" y1="12" x2="3" y2="12"/><line x1="3" y1="18" x2="3" y2="18"/></svg>'
   ,grid: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>'
   ,text: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>'
+  ,menu: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>'
 };
 
 function showToast(msg, isError = false) {
@@ -1225,10 +1226,6 @@ async function loadPlants() {
 
     const actionsDiv = document.createElement('div');
     actionsDiv.classList.add('actions');
-    const leftGroup = document.createElement('div');
-    leftGroup.classList.add('actions-left');
-    const rightGroup = document.createElement('div');
-    rightGroup.classList.add('actions-right');
 
     const waterDue = needsWatering(plant, today);
     const fertDue = needsFertilizing(plant, today);
@@ -1239,7 +1236,7 @@ async function loadPlants() {
       btn.innerHTML = ICONS.water + '<span class="visually-hidden">Water</span>';
       btn.title = 'Water Now';
       btn.onclick = () => markAction(plant.id, 'watered');
-      leftGroup.appendChild(btn);
+      actionsDiv.appendChild(btn);
 
       const snooze = document.createElement('select');
       snooze.classList.add('snooze-select', 'water-snooze');
@@ -1261,7 +1258,7 @@ async function loadPlants() {
           snooze.selectedIndex = 0;
         }
       };
-      leftGroup.appendChild(snooze);
+      actionsDiv.appendChild(snooze);
     }
 
     if (fertDue) {
@@ -1270,7 +1267,7 @@ async function loadPlants() {
       btn.innerHTML = ICONS.fert + '<span class="visually-hidden">Fertilize</span>';
       btn.title = 'Fertilize Now';
       btn.onclick = () => markAction(plant.id, 'fertilized');
-      leftGroup.appendChild(btn);
+      actionsDiv.appendChild(btn);
 
       const snooze = document.createElement('select');
       snooze.classList.add('snooze-select', 'fert-snooze');
@@ -1292,31 +1289,8 @@ async function loadPlants() {
           snooze.selectedIndex = 0;
         }
       };
-      leftGroup.appendChild(snooze);
+      actionsDiv.appendChild(snooze);
     }
-
-    const editBtn = document.createElement('button');
-    editBtn.classList.add('action-btn', 'edit-btn');
-    editBtn.innerHTML = ICONS.edit + '<span class="visually-hidden">Edit</span>';
-    editBtn.title = 'Edit';
-    editBtn.type = 'button';
-      editBtn.onclick = () => {
-        populateForm(plant);
-        const form = document.getElementById('plant-form');
-        form.style.display = 'block';
-        form.scrollIntoView({ behavior: 'smooth' });
-        const showBtn = document.getElementById('show-add-form');
-        if (showBtn) showBtn.style.display = 'none';
-        showFormStep(1);
-      };
-    rightGroup.appendChild(editBtn);
-
-    const delBtn = document.createElement('button');
-    delBtn.classList.add('action-btn', 'delete-btn');
-    delBtn.innerHTML = ICONS.trash + '<span class="visually-hidden">Delete</span>';
-    delBtn.title = 'Delete';
-    delBtn.onclick = () => showUndoBanner(plant);
-    rightGroup.appendChild(delBtn);
 
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -1327,15 +1301,62 @@ async function loadPlants() {
         updatePlantPhoto(plant, fileInput.files[0]);
       }
     };
+
+    const overflow = document.createElement('div');
+    overflow.classList.add('overflow-container');
+
+    const menuBtn = document.createElement('button');
+    menuBtn.classList.add('action-btn', 'menu-btn');
+    menuBtn.innerHTML = ICONS.menu + '<span class="visually-hidden">More</span>';
+    overflow.appendChild(menuBtn);
+
+    const menu = document.createElement('div');
+    menu.classList.add('overflow-menu');
+    overflow.appendChild(menu);
+
+    const editBtn = document.createElement('button');
+    editBtn.classList.add('action-btn', 'edit-btn');
+    editBtn.innerHTML = ICONS.edit + '<span class="visually-hidden">Edit</span>';
+    editBtn.title = 'Edit';
+    editBtn.type = 'button';
+    editBtn.onclick = () => {
+      populateForm(plant);
+      const form = document.getElementById('plant-form');
+      form.style.display = 'block';
+      form.scrollIntoView({ behavior: 'smooth' });
+      const showBtn = document.getElementById('show-add-form');
+      if (showBtn) showBtn.style.display = 'none';
+      showFormStep(1);
+    };
+    menu.appendChild(editBtn);
+
+    const delBtn = document.createElement('button');
+    delBtn.classList.add('action-btn', 'delete-btn');
+    delBtn.innerHTML = ICONS.trash + '<span class="visually-hidden">Delete</span>';
+    delBtn.title = 'Delete';
+    delBtn.onclick = () => showUndoBanner(plant);
+    menu.appendChild(delBtn);
+
     const changeBtn = document.createElement('button');
     changeBtn.classList.add('action-btn', 'photo-btn');
     changeBtn.innerHTML = ICONS.photo + '<span class="visually-hidden">Change Photo</span>';
     changeBtn.type = 'button';
     changeBtn.title = 'Add Image';
     changeBtn.onclick = () => fileInput.click();
-    rightGroup.appendChild(changeBtn);
-    actionsDiv.appendChild(leftGroup);
-    actionsDiv.appendChild(rightGroup);
+    menu.appendChild(changeBtn);
+
+    menuBtn.onclick = (e) => {
+      e.stopPropagation();
+      menu.classList.toggle('show');
+    };
+
+    document.addEventListener('click', (e) => {
+      if (!overflow.contains(e.target)) {
+        menu.classList.remove('show');
+      }
+    });
+
+    actionsDiv.appendChild(overflow);
     actionsDiv.appendChild(fileInput);
     card.appendChild(actionsDiv);
 
