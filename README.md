@@ -39,6 +39,17 @@ php -S localhost:8000
 ```
 Open `http://localhost:8000/index.html` in your browser to begin.
 
+## Building Tailwind Locally
+
+For production deployments you may prefer bundling Tailwind instead of loading it from the CDN. You can generate a minified build using the Tailwind CLI:
+
+```bash
+npm install -D tailwindcss @tailwindcss/forms
+npx tailwindcss -i ./style.css -o ./public/build/tailwind.css --minify
+```
+
+After generating the CSS, reference `public/build/tailwind.css` in `index.html` and remove the CDN script.
+
 ## Configuration
 
 Edit `config.php` and provide:
