@@ -1317,12 +1317,25 @@ function init(){
       lastQueryName = query;
       if (!query) {
         commonList.innerHTML = '';
+        if (speciesList) speciesList.innerHTML = '';
         return;
       }
-      const names = await fetchCommonNameSuggestions(query);
-      commonList.innerHTML = names
+      const [commonNames, scientificNames] = await Promise.all([
+        fetchCommonNameSuggestions(query),
+        fetchScientificNames(query)
+      ]);
+      commonList.innerHTML = commonNames
         .map(n => `<option value="${n}"></option>`)
         .join('');
+      if (speciesList) {
+        speciesList.innerHTML = scientificNames
+          .map(n => `<option value="${n}"></option>`)
+          .join('');
+        if (scientificNames.length && speciesInput && !speciesInput.value) {
+          speciesInput.value = scientificNames[0];
+          showTaxonomyInfo(scientificNames[0]);
+        }
+      }
     });
   }
   if (speciesInput && speciesList) {
