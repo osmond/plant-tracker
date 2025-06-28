@@ -87,6 +87,22 @@ function computeArea(diameterCm) {
   return Math.PI * r * r;
 }
 
+async function fetchScientificNames(query) {
+  if (!query) return [];
+  try {
+    const res = await fetch(
+      `https://api.gbif.org/v1/species/search?q=${encodeURIComponent(query)}&limit=10`
+    );
+    if (!res.ok) return [];
+    const json = await res.json();
+    return (json.results || [])
+      .map(r => r.scientificName)
+      .filter(Boolean);
+  } catch (e) {
+    return [];
+  }
+}
+
 function updateWaterAmount() {
   const diamInput = document.getElementById('pot_diameter');
   const unitSelect = document.getElementById('pot_diameter_unit');
@@ -1031,6 +1047,9 @@ function init(){
   const overrideCheck = document.getElementById('override_water');
   const waterGroup = document.getElementById('water-amount-group');
   const roomInput = document.getElementById('room');
+  const nameInput = document.getElementById('name');
+  const speciesInput = document.getElementById('species');
+  const speciesList = document.getElementById('species-list');
 
 
   // apply saved preferences before initial load
@@ -1165,6 +1184,38 @@ function init(){
       if (!roomInput.value) {
         roomInput.value = prevRoom;
       }
+    });
+  }
+  if (nameInput && speciesList) {
+    let lastQueryName = '';
+    nameInput.addEventListener('input', async () => {
+      const query = nameInput.value.trim();
+      if (query === lastQueryName) return;
+      lastQueryName = query;
+      if (!query) {
+        speciesList.innerHTML = '';
+        return;
+      }
+      const names = await fetchScientificNames(query);
+      speciesList.innerHTML = names
+        .map(n => `<option value="${n}"></option>`)
+        .join('');
+    });
+  }
+  if (speciesInput && speciesList) {
+    let lastQuery = '';
+    speciesInput.addEventListener('input', async () => {
+      const query = speciesInput.value.trim();
+      if (query === lastQuery) return;
+      lastQuery = query;
+      if (!query) {
+        speciesList.innerHTML = '';
+        return;
+      }
+      const names = await fetchScientificNames(query);
+      speciesList.innerHTML = names
+        .map(n => `<option value="${n}"></option>`)
+        .join('');
     });
   }
   const potDiamUnit = document.getElementById('pot_diameter_unit');
