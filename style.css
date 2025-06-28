@@ -1037,7 +1037,7 @@ button:focus {
 .urgency-tag {
   position: absolute;
   top: calc(var(--spacing) * 2);
-  left: calc(var(--spacing) * 2);
+  right: calc(var(--spacing) * 2);
   padding: 2px 6px;
   border-radius: var(--radius);
   font-size: 0.75rem;
@@ -1047,21 +1047,19 @@ button:focus {
 }
 
 .urgency-overdue {
-  background-color: var(--color-error);
+  background-color: rgba(229, 62, 62, 0.9);
   animation: pulse 1.5s ease-in-out infinite;
-  transform-origin: left top;
+  transform-origin: right top;
 }
 .urgency-today {
-  top: calc(var(--spacing) * 2);
-  right: calc(var(--spacing) * 2);
-  left: auto;
   background-color: rgba(255, 87, 34, 0.9);
   color: #ffffff;
   animation: pulse 1.5s ease-in-out infinite;
   transform-origin: right top;
 }
 .urgency-future {
-  background-color: var(--color-success);
+  background-color: rgba(56, 161, 105, 0.9);
+  transform-origin: right top;
 }
 
 .loading-overlay {
