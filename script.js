@@ -813,6 +813,17 @@ function resetForm() {
   }
   const taxInfo = document.getElementById('taxonomy-info');
   if (taxInfo) taxInfo.innerHTML = '';
+  const photoInput = document.getElementById('photo');
+  if (photoInput) photoInput.value = '';
+  const photoUrlInput = document.getElementById('photo_url');
+  if (photoUrlInput) photoUrlInput.value = '';
+  const photoDrop = document.getElementById('photo-drop');
+  if (photoDrop) {
+    photoDrop.textContent = 'Drop image or click to upload';
+    photoDrop.style.backgroundImage = '';
+    photoDrop.style.backgroundSize = '';
+    photoDrop.style.color = '';
+  }
   editingPlantId = null;
   form.querySelector('button[type="submit"]').innerHTML = ICONS.plus + ' Add Plant';
   document.getElementById('cancel-edit').style.display = 'none';
