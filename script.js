@@ -274,6 +274,25 @@ async function showTaxonomyInfo(name) {
       img.src = url;
       img.alt = name + ' specimen';
       img.loading = 'lazy';
+
+      // allow user to select a specimen photo
+      img.addEventListener('click', () => {
+        // remove previous selection
+        gallery.querySelectorAll('img').forEach(i => i.classList.remove('selected'));
+        img.classList.add('selected');
+
+        const photoUrlInput = document.getElementById('photo_url');
+        if (photoUrlInput) photoUrlInput.value = url;
+
+        const drop = document.getElementById('photo-drop');
+        if (drop) {
+          drop.textContent = 'Using specimen photo';
+          drop.style.backgroundImage = `url(${url})`;
+          drop.style.backgroundSize = 'cover';
+          drop.style.color = 'white';
+        }
+      });
+
       gallery.appendChild(img);
     });
     infoEl.appendChild(gallery);
