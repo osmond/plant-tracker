@@ -143,6 +143,7 @@ form {
 
 .specimen-gallery {
     display: flex;
+    flex-wrap: wrap;
     gap: calc(var(--spacing) / 2);
     margin-top: calc(var(--spacing) / 2);
 }

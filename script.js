@@ -23,6 +23,8 @@ const RA = 20.0;
 const DEFAULT_KC = 0.8;
 // GBIF backbone usageKey for Plantae
 const PLANTAE_KEY = 6;
+// number of specimen photos to show for taxonomy lookup
+const SPECIMEN_PHOTO_LIMIT = 8;
 const KC_MAP = {
   succulent: 0.3,
   houseplant: 0.8,
@@ -220,7 +222,7 @@ async function fetchSpecimenPhotos(key) {
   if (specimenPhotosCache.has(key)) return specimenPhotosCache.get(key);
   try {
     const imgRes = await fetch(
-      `https://api.gbif.org/v1/occurrence/search?taxonKey=${key}&mediaType=StillImage&limit=5`
+      `https://api.gbif.org/v1/occurrence/search?taxonKey=${key}&mediaType=StillImage&limit=${SPECIMEN_PHOTO_LIMIT}`
     );
     if (!imgRes.ok) return [];
     const data = await imgRes.json();
