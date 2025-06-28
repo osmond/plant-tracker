@@ -152,6 +152,12 @@ form {
     height: 60px;
     object-fit: cover;
     border-radius: var(--radius);
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.specimen-gallery img.selected {
+    border-color: #34d399; /* Tailwind green-300 */
 }
 
 .form-progress {
