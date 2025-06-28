@@ -134,6 +134,13 @@ form {
     margin-top: calc(var(--spacing) / 4);
 }
 
+.taxonomy-info {
+    font-size: 0.85em;
+    color: var(--color-text);
+    opacity: 0.8;
+    margin-top: calc(var(--spacing) / 4);
+}
+
 .form-progress {
     font-size: 0.9em;
     margin-bottom: calc(var(--spacing));
