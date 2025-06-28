@@ -1224,7 +1224,6 @@ function init(){
   const viewToggle = document.getElementById('view-toggle');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
-  const backToTop = document.getElementById('back-to-top');
 
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
@@ -1501,16 +1500,6 @@ function init(){
     nextBtn.addEventListener('click', () => {
       calendarStartDate = addDays(calendarStartDate, 7);
       loadCalendar();
-    });
-  }
-  if (backToTop) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 300) backToTop.classList.add('show');
-      else backToTop.classList.remove('show');
-    });
-    backToTop.addEventListener('click', e => {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
   loadPlants();
