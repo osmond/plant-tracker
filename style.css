@@ -278,6 +278,12 @@ button:focus {
 .error:empty {
     display: none;
 }
+
+#taxonomy-info {
+  font-size: var(--font-size-sm);
+  color: #555;
+  margin-top: calc(var(--spacing) / 2);
+}
 .due-task {
     padding: calc(var(--spacing) / 2) var(--spacing);
     border-radius: var(--radius);

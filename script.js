@@ -87,6 +87,7 @@ function computeArea(diameterCm) {
   return Math.PI * r * r;
 }
 
+let gbifNameMap = {};
 async function fetchScientificNames(query) {
   if (!query) return [];
   try {
@@ -96,9 +97,51 @@ async function fetchScientificNames(query) {
     if (!res.ok) return [];
     const json = await res.json();
     return (json.results || [])
-      .map(r => r.scientificName)
-      .filter(Boolean);
+      .filter(r => r.scientificName)
+      .map(r => ({ name: r.scientificName, key: r.key }));
   } catch (e) {
+    return [];
+  }
+}
+
+async function fetchClassification(key) {
+  try {
+    const res = await fetch(`https://api.gbif.org/v1/species/${key}`);
+    const data = await res.json();
+    return {
+      kingdom: data.kingdom,
+      family: data.family,
+      genus: data.genus,
+      species: data.scientificName,
+      rank: data.rank
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchCommonNames(key) {
+  try {
+    const res = await fetch(`https://api.gbif.org/v1/species/${key}/vernacularNames`);
+    const json = await res.json();
+    return (json.results || [])
+      .filter(n => n.vernacularName)
+      .slice(0, 3)
+      .map(n => `${n.vernacularName} (${n.language})`);
+  } catch {
+    return [];
+  }
+}
+
+async function fetchSynonyms(key) {
+  try {
+    const res = await fetch(`https://api.gbif.org/v1/species/${key}/synonyms`);
+    const json = await res.json();
+    return (json.results || [])
+      .map(s => s.scientificName)
+      .filter(Boolean)
+      .slice(0, 3);
+  } catch {
     return [];
   }
 }
@@ -1050,6 +1093,7 @@ function init(){
   const nameInput = document.getElementById('name');
   const speciesInput = document.getElementById('species');
   const speciesList = document.getElementById('species-list');
+  const taxonomyInfo = document.getElementById('taxonomy-info');
 
 
   // apply saved preferences before initial load
@@ -1194,11 +1238,16 @@ function init(){
       lastQueryName = query;
       if (!query) {
         speciesList.innerHTML = '';
+        gbifNameMap = {};
         return;
       }
-      const names = await fetchScientificNames(query);
-      speciesList.innerHTML = names
-        .map(n => `<option value="${n}"></option>`)
+      const results = await fetchScientificNames(query);
+      gbifNameMap = {};
+      speciesList.innerHTML = results
+        .map(r => {
+          gbifNameMap[r.name] = r.key;
+          return `<option value="${r.name}"></option>`;
+        })
         .join('');
     });
   }
@@ -1210,12 +1259,43 @@ function init(){
       lastQuery = query;
       if (!query) {
         speciesList.innerHTML = '';
+        gbifNameMap = {};
+        if (taxonomyInfo) taxonomyInfo.textContent = '';
         return;
       }
-      const names = await fetchScientificNames(query);
-      speciesList.innerHTML = names
-        .map(n => `<option value="${n}"></option>`)
+      const results = await fetchScientificNames(query);
+      gbifNameMap = {};
+      speciesList.innerHTML = results
+        .map(r => {
+          gbifNameMap[r.name] = r.key;
+          return `<option value="${r.name}"></option>`;
+        })
         .join('');
+    });
+    speciesInput.addEventListener('change', async () => {
+      const key = gbifNameMap[speciesInput.value.trim()];
+      if (!key) {
+        if (taxonomyInfo) taxonomyInfo.textContent = '';
+        return;
+      }
+      if (taxonomyInfo) taxonomyInfo.textContent = 'Loading classification...';
+      const [cls, commons, syns] = await Promise.all([
+        fetchClassification(key),
+        fetchCommonNames(key),
+        fetchSynonyms(key)
+      ]);
+      let html = '';
+      if (cls) {
+        const crumb = [cls.family, cls.genus, cls.species].filter(Boolean).join(' \u2192 ');
+        html += `<div>${crumb}</div>`;
+      }
+      if (commons.length) {
+        html += `<div>Common: ${commons.join(', ')}</div>`;
+      }
+      if (syns.length) {
+        html += `<div>Synonyms: ${syns.join(', ')}</div>`;
+      }
+      if (taxonomyInfo) taxonomyInfo.innerHTML = html;
     });
   }
   const potDiamUnit = document.getElementById('pot_diameter_unit');
