@@ -15,6 +15,9 @@ const WEATHER_API_KEY = '2aa3ade8428368a141f7951420570c16';
 const ML_PER_US_FL_OUNCE = 29.5735;
 const CM_PER_INCH = 2.54;
 
+// map common name suggestions to scientific names
+const commonNameMap = new Map();
+
 // configuration values mirrored from config.php
 const RA = 20.0;
 const DEFAULT_KC = 0.8;
@@ -107,17 +110,20 @@ async function fetchCommonNameSuggestions(query) {
   if (!query) return [];
   try {
     const res = await fetch(
-      `https://api.gbif.org/v1/species/search?q=${encodeURIComponent(query)}&limit=10`
+      `https://api.gbif.org/v1/species/search?vernacularName=${encodeURIComponent(query)}&limit=10`
     );
     if (!res.ok) return [];
     const json = await res.json();
     const seen = new Set();
     const names = [];
+    commonNameMap.clear();
     for (const r of json.results || []) {
-      const name = r.vernacularName;
-      if (name && !seen.has(name)) {
-        names.push(name);
-        seen.add(name);
+      const common = r.vernacularName;
+      const sci = r.scientificName;
+      if (common && sci && !seen.has(common)) {
+        names.push(common);
+        seen.add(common);
+        commonNameMap.set(common, sci);
       }
     }
     return names;
@@ -1309,7 +1315,7 @@ function init(){
       }
     });
   }
-  if (nameInput && commonList) {
+  if (nameInput && commonList && speciesInput) {
     let lastQueryName = '';
     nameInput.addEventListener('input', async () => {
       const query = nameInput.value.trim();
@@ -1323,6 +1329,13 @@ function init(){
       commonList.innerHTML = names
         .map(n => `<option value="${n}"></option>`)
         .join('');
+    });
+    nameInput.addEventListener('change', () => {
+      const selected = nameInput.value.trim();
+      if (commonNameMap.has(selected)) {
+        speciesInput.value = commonNameMap.get(selected);
+        speciesInput.dispatchEvent(new Event('change'));
+      }
     });
   }
   if (speciesInput && speciesList) {
