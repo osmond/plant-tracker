@@ -9,6 +9,8 @@ return [
         'houseplant' => 0.8,
         'vegetable'  => 1.0,
         'cacti'      => 0.28,
+        'flower'     => 0.9,
+        'citrus'     => 0.7,
     ],
     'bed_map' => [
         'vegetable' => [
