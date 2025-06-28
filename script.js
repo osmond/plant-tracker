@@ -103,6 +103,29 @@ async function fetchScientificNames(query) {
   }
 }
 
+async function fetchCommonNameSuggestions(query) {
+  if (!query) return [];
+  try {
+    const res = await fetch(
+      `https://api.gbif.org/v1/species/search?q=${encodeURIComponent(query)}&limit=10`
+    );
+    if (!res.ok) return [];
+    const json = await res.json();
+    const seen = new Set();
+    const names = [];
+    for (const r of json.results || []) {
+      const name = r.vernacularName;
+      if (name && !seen.has(name)) {
+        names.push(name);
+        seen.add(name);
+      }
+    }
+    return names;
+  } catch (e) {
+    return [];
+  }
+}
+
 async function getSpeciesKey(name) {
   if (!name) return null;
   try {
@@ -1149,6 +1172,7 @@ function init(){
   const nameInput = document.getElementById('name');
   const speciesInput = document.getElementById('species');
   const speciesList = document.getElementById('species-list');
+  const commonList = document.getElementById('common-list');
 
 
   // apply saved preferences before initial load
@@ -1285,34 +1309,20 @@ function init(){
       }
     });
   }
-  if (nameInput && speciesList && speciesInput) {
+  if (nameInput && commonList) {
     let lastQueryName = '';
-    let typedName = '';
     nameInput.addEventListener('input', async () => {
       const query = nameInput.value.trim();
-      const opts = Array.from(speciesList.options).map(o => o.value);
-      if (!opts.includes(query)) {
-        typedName = nameInput.value;
-      }
       if (query === lastQueryName) return;
       lastQueryName = query;
       if (!query) {
-        speciesList.innerHTML = '';
+        commonList.innerHTML = '';
         return;
       }
-      const names = await fetchScientificNames(query);
-      speciesList.innerHTML = names
+      const names = await fetchCommonNameSuggestions(query);
+      commonList.innerHTML = names
         .map(n => `<option value="${n}"></option>`)
         .join('');
-    });
-    nameInput.addEventListener('change', () => {
-      const selected = nameInput.value.trim();
-      const opts = Array.from(speciesList.options).map(o => o.value);
-      if (opts.includes(selected)) {
-        speciesInput.value = selected;
-        nameInput.value = typedName;
-        speciesInput.dispatchEvent(new Event('change'));
-      }
     });
   }
   if (speciesInput && speciesList) {
