@@ -315,6 +315,8 @@ button:focus {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transition: background-color 0.2s;
+    transform: none !important;
 }
 
 .view-toggle-btn + .view-toggle-btn {
@@ -329,11 +331,11 @@ button:focus {
 .view-toggle-btn.active {
     background: var(--color-primary);
     color: var(--color-surface);
+    box-shadow: inset 0 0 0 2px var(--color-surface);
 }
-.view-toggle-btn:hover,
-.view-toggle-btn:focus {
+.view-toggle-btn:hover:not(.active),
+.view-toggle-btn:focus:not(.active) {
     filter: brightness(95%);
-    transform: none;
 }
 
 .view-toggle-btn.active:hover,
@@ -341,7 +343,14 @@ button:focus {
     background: var(--color-primary);
     color: var(--color-surface);
     filter: brightness(90%);
-    transform: none;
+}
+
+.view-toggle-btn[data-view="list"] .icon {
+    stroke: var(--color-border);
+}
+
+.view-toggle-btn[data-view="text"] .icon {
+    stroke: currentColor;
 }
 .visually-hidden {
     position: absolute !important;
@@ -604,40 +613,31 @@ button:focus {
 }
 
 
-/* ---- grid view ---- */
 #plant-grid {
   display: grid;
   gap: calc(var(--spacing) * 2);
-  grid-template-columns: repeat(1, 1fr);
 }
 
-@media (min-width: 640px) {
-  #plant-grid { grid-template-columns: repeat(2, 1fr); }
+/* ---- grid view ---- */
+#plant-grid.grid-view {
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-auto-rows: 1fr;
 }
-@media (min-width: 768px) {
-  #plant-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (min-width: 1024px) {
-  #plant-grid { grid-template-columns: repeat(4, 1fr); }
-}
+
+
 
 /* ---- list view overrides ---- */
 #plant-grid.list-view {
-  display: grid;
-  gap: calc(var(--spacing) * 1.5);
-  grid-template-columns: 1fr;
   max-width: 48rem;
   margin: 0 auto;
-  padding: 0 var(--spacing);
+  padding: var(--spacing);
 }
 
 #plant-grid.list-view .plant-card {
   display: flex;
   align-items: center;
   gap: var(--spacing);
-  padding: calc(var(--spacing) * 1.5);
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: none;
+  border-bottom: 1px solid var(--color-border);
 }
 
 #plant-grid.list-view .plant-photo {
@@ -661,13 +661,18 @@ button:focus {
 }
 
 #plant-grid.list-view .actions {
-  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: var(--spacing);
 }
 
 /* text only view */
+#plant-grid.text-view {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: var(--spacing);
+}
+
 #plant-grid.text-view .plant-photo,
 #plant-grid.text-view .tag-list,
 #plant-grid.text-view .actions {
@@ -676,16 +681,18 @@ button:focus {
 
 #plant-grid.text-view .plant-card {
   display: block;
-  padding: 1rem 1.5rem;
+  padding: calc(var(--spacing) * 0.75) 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 #plant-grid.text-view .plant-title {
-  font-size: 1.25rem;
-  margin-bottom: 0.5rem;
+  font-size: var(--font-size-lg);
+  margin-bottom: calc(var(--spacing) / 4);
 }
 
 #plant-grid.text-view .plant-summary {
   margin-left: 0;
+  opacity: 0.8;
 }
 
 #plant-grid .no-results {
@@ -696,35 +703,34 @@ button:focus {
 }
 
 .plant-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: calc(var(--spacing) * 2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--spacing);
+  background: var(--color-surface);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden; /* clip photo when it extends to edges */
   position: relative; /* allow urgency tag overlay */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, background 0.2s;
 }
 
 .plant-card:hover {
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  background: var(--color-success-bg, #f0fff4);
 }
 
 .plant-card .actions {
   margin-top: calc(var(--spacing) * 1.5);
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--spacing);
 }
 
 .plant-card .actions-left,
 .plant-card .actions-right {
-  display: grid;
-  gap: var(--spacing);
-  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
-  flex: 1;
+  display: contents;
 }
 
 #plant-grid.list-view .actions {
