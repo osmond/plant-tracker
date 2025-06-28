@@ -963,15 +963,19 @@ async function loadPlants() {
     }
     img.classList.add('plant-photo');
     card.appendChild(img);
+
+    const infoWrap = document.createElement('div');
+    infoWrap.classList.add('plant-info');
+
     const titleEl = document.createElement('h3');
     titleEl.classList.add('plant-title');
     titleEl.textContent = plant.name;
-    card.appendChild(titleEl);
+    infoWrap.appendChild(titleEl);
 
     const speciesEl = document.createElement('div');
     speciesEl.classList.add('plant-species');
     speciesEl.textContent = plant.species;
-    card.appendChild(speciesEl);
+    infoWrap.appendChild(speciesEl);
 
     const tagList = document.createElement('div');
     tagList.classList.add('tag-list');
@@ -996,7 +1000,7 @@ async function loadPlants() {
         tagList.appendChild(mlTag);
       }
     if (tagList.childElementCount > 0) {
-      card.appendChild(tagList);
+      infoWrap.appendChild(tagList);
     }
 
     const summary = document.createElement('div');
@@ -1025,7 +1029,8 @@ async function loadPlants() {
 
     summary.appendChild(fertSummary);
 
-    card.appendChild(summary);
+    infoWrap.appendChild(summary);
+    card.appendChild(infoWrap);
 
     const overdue = waterOverdueDays(plant, today);
     if (overdue > 2) {
