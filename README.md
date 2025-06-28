@@ -42,6 +42,10 @@ Edit `config.php` and provide:
 - `location` – city name used for weather lookups
 - `ra`, `kc` and mapping values for water calculations
 
+The app fetches rainfall using OpenWeather's **forecast** endpoint, which is
+available to free API keys. Historical rainfall totals will show `N/A` unless
+you provide a key with access to the paid history features.
+
 Database credentials are taken from the environment variables `DB_HOST`, `DB_USER`, `DB_PASS` and `DB_NAME`.
 
 ## Usage
