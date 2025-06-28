@@ -241,9 +241,9 @@ button:focus {
     justify-content: center;
     align-items: center;
     gap: 4px;
-    min-width: 2.5rem;
+    width: 2.5rem;
     height: 2.5rem;
-    padding: calc(var(--spacing) / 2);
+    padding: 0;
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     background: var(--color-bg);
@@ -365,7 +365,7 @@ button:focus {
     display: none;
 }
 .due-task {
-    padding: calc(var(--spacing) / 2) var(--spacing);
+    padding: 0;
     border-radius: var(--radius);
     font-weight: bold;
     /* spacing is handled by the actions grid gap */
@@ -759,10 +759,7 @@ button:focus {
   }
 }
 
-.plant-card .actions .action-btn {
-  width: 2.5rem;
-  height: 2.5rem;
-}
+
 
 .overflow-container {
   position: relative;
