@@ -752,7 +752,7 @@ function populateForm(plant) {
   editingPlantId = plant.id;
 
   const submitBtn = form.querySelector('button[type="submit"]');
-  submitBtn.innerHTML = ICONS.check + '<span class="visually-hidden">Update Plant</span>';
+  submitBtn.innerHTML = ICONS.check + ' Update Plant';
   document.getElementById('cancel-edit').style.display = 'inline-block';
   showFormStep(1);
 }
@@ -770,7 +770,7 @@ function resetForm() {
   const taxInfo = document.getElementById('taxonomy-info');
   if (taxInfo) taxInfo.innerHTML = '';
   editingPlantId = null;
-  form.querySelector('button[type="submit"]').innerHTML = ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
+  form.querySelector('button[type="submit"]').innerHTML = ICONS.plus + ' Add Plant';
   document.getElementById('cancel-edit').style.display = 'none';
   document.getElementById('search-input').value = '';
   form.style.display = 'none';
@@ -1247,7 +1247,7 @@ function init(){
     exportBtn.addEventListener('click', exportPlantsJSON);
   }
   if (cancelBtn) {
-    cancelBtn.innerHTML = ICONS.cancel + '<span class="visually-hidden">Cancel</span>';
+    cancelBtn.innerHTML = ICONS.cancel + ' Cancel';
   }
   if (undoBtn) {
     undoBtn.innerHTML = ICONS.undo + ' Undo';
@@ -1277,7 +1277,7 @@ function init(){
     });
   }
   if (submitBtn) {
-    submitBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
+    submitBtn.innerHTML = ICONS.plus + ' Add Plant';
   }
   if (prevBtn) {
     prevBtn.innerHTML = ICONS.left + '<span class="visually-hidden">Previous Week</span>';
@@ -1448,9 +1448,9 @@ function init(){
     }finally{
       toggleLoading(false);
       btn.disabled=false;
-      btn.innerHTML=editingPlantId
-        ? ICONS.check + '<span class="visually-hidden">Update Plant</span>'
-        : ICONS.plus + '<span class="visually-hidden">Add Plant</span>';
+      btn.innerHTML = editingPlantId
+        ? ICONS.check + ' Update Plant'
+        : ICONS.plus + ' Add Plant';
     }
   });
 
