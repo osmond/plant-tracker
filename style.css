@@ -563,19 +563,24 @@ button:focus {
 #plant-grid.list-view {
   display: flex;
   flex-direction: column;
+  gap: calc(var(--spacing) * 1.5);
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: calc(var(--spacing) * 2);
 }
 
 #plant-grid.list-view .plant-card {
-  flex-direction: row;
-  align-items: flex-start;
+  flex-direction: column;
   gap: calc(var(--spacing) * 2);
   padding: calc(var(--spacing) * 2);
   border-bottom: 1px solid #e5e7eb;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, box-shadow 0.2s;
 }
 
 #plant-grid.list-view .plant-card:hover {
   background-color: #f9fafb;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 #plant-grid.list-view .plant-card:last-child {
@@ -588,6 +593,18 @@ button:focus {
   margin-right: 0;
   margin-bottom: 0;
   flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  #plant-grid.list-view .plant-card {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  #plant-grid.list-view .plant-photo {
+    width: 80px;
+    height: 80px;
+  }
 }
 
 #plant-grid.list-view .plant-info {
@@ -617,6 +634,12 @@ button:focus {
   flex-direction: column;
   overflow: hidden; /* clip photo when it extends to edges */
   position: relative; /* allow urgency tag overlay */
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+
+.plant-card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .plant-card .actions {
@@ -632,6 +655,30 @@ button:focus {
   gap: var(--spacing);
   grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
   flex: 1;
+}
+
+#plant-grid.list-view .actions {
+  margin-top: calc(var(--spacing) * 2);
+  justify-content: flex-end;
+}
+
+#plant-grid.list-view .actions-left,
+#plant-grid.list-view .actions-right {
+  display: flex;
+  gap: var(--spacing);
+}
+
+@media (min-width: 640px) {
+  #plant-grid.list-view .actions {
+    margin-top: 0;
+    margin-left: calc(var(--spacing) * 1.5);
+    flex-direction: column;
+  }
+
+  #plant-grid.list-view .actions-left,
+  #plant-grid.list-view .actions-right {
+    flex-direction: column;
+  }
 }
 
 .plant-card .actions .action-btn {
