@@ -925,10 +925,17 @@ async function loadPlants() {
       selectedRoom.toLowerCase() === 'outside' &&
       rainForecastInches.length === 3
     ) {
-      const nextText = `${rainForecastInches.map(r => r.toFixed(2)).join(', ')} in`;
+      const nextText = rainForecastInches
+        .map((r, idx) => {
+          const d = new Date();
+          d.setDate(d.getDate() + idx);
+          const day = d.toLocaleDateString(undefined, { weekday: 'short' });
+          return `${day}: ${r.toFixed(2)} in`;
+        })
+        .join(', ');
       rainEl.innerHTML =
         `<div class="summary-row">
-            <span class="summary-item">${ICONS.rain} Next 3d: ${nextText}</span>
+            <span class="summary-item">${ICONS.rain} Next 3 days: ${nextText}</span>
         </div>`;
       rainEl.classList.remove('hidden');
     } else {
