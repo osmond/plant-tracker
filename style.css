@@ -49,13 +49,6 @@
   --font-size-xl: 1.5rem;      /* 24px extra large text */
 }
 
-/* ---- centered max-width wrapper ---- */
-.main-container {
-  margin: 0 auto;
-  padding: 0 1rem;
-  max-width: 80rem;
-}
-
 .bg-primary {
   background-color: var(--color-primary);
   color: var(--color-surface);
@@ -71,19 +64,6 @@ body {
     padding: calc(var(--spacing) * 2.5);
     margin: auto;
     max-width: 100%;
-}
-
-/* ---- filter bar ---- */
-.filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--spacing);
-  margin-bottom: calc(var(--spacing) * 2);
-}
-
-.filter-bar select {
-  padding: 0.5rem 0.75rem;
 }
 
 h1, h2, h3 {
@@ -553,44 +533,43 @@ button:focus {
   border-radius: var(--radius);
 }
 
-/* ---- calendar grid ---- */
+/* simple calendar styles */
 #calendar {
   display: grid;
-  gap: var(--spacing);
-  grid-template-columns: repeat(2, 1fr);
-  overflow-x: auto;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: calc(var(--spacing) * 2);
+  margin-top: calc(var(--spacing) * 2);
 }
-@media (min-width: 640px)  { #calendar { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 768px)  { #calendar { grid-template-columns: repeat(4, 1fr); } }
-@media (min-width: 1024px) { #calendar { grid-template-columns: repeat(7, 1fr); } }
 
 #calendar.hidden {
   display: none;
 }
 
 #calendar .cal-day {
-  display: flex;
-  flex-direction: column;
-  padding: var(--spacing);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
+  padding: var(--spacing);
   min-height: 140px;
+  display: flex;
+  flex-direction: column;
 }
 
 
 #calendar .cal-day-header {
   font-weight: 600;
   margin-bottom: calc(var(--spacing));
-  border-bottom: 1px solid var(--color-border);
   padding-bottom: calc(var(--spacing) / 2);
+  border-bottom: 1px solid var(--color-border);
 }
 
 #calendar .cal-event {
-  margin-top: calc(var(--spacing) / 2);
+  background: var(--color-bg);
+  margin-bottom: calc(var(--spacing) / 2);
   padding: calc(var(--spacing) / 2);
   border-radius: var(--radius);
-  font-size: var(--font-size-sm);
+  cursor: move;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 #calendar .cal-event.water-due {
@@ -604,48 +583,79 @@ button:focus {
 }
 
 
-/* ---- grid view ---- */
+/* card layout */
 #plant-grid {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: calc(var(--spacing) * 2);
-  grid-template-columns: repeat(1, 1fr);
 }
 
-@media (min-width: 640px) {
-  #plant-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (min-width: 768px) {
-  #plant-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (min-width: 1024px) {
-  #plant-grid { grid-template-columns: repeat(4, 1fr); }
+@media (min-width: 1000px) {
+  #plant-grid {
+    grid-template-columns: repeat(auto-fill, minmax(366px, 1fr));
+  }
 }
 
-/* ---- list view overrides ---- */
+@media (max-width: 640px) {
+  #plant-grid {
+    /* Force a single column layout on small screens */
+    grid-template-columns: 1fr;
+    margin-left: calc(var(--spacing) * 2);
+    margin-right: calc(var(--spacing) * 2);
+  }
+
+  body {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* list view layout overrides */
 #plant-grid.list-view {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: calc(var(--spacing) * 1.5);
-  grid-template-columns: 1fr;
   max-width: 48rem;
-  margin: 0 auto;
-  padding: 0 var(--spacing);
+  margin-left: auto;
+  margin-right: auto;
+  padding: calc(var(--spacing) * 2);
 }
 
 #plant-grid.list-view .plant-card {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing);
-  padding: calc(var(--spacing) * 1.5);
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 2);
   border-bottom: 1px solid #e5e7eb;
-  box-shadow: none;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+#plant-grid.list-view .plant-card:hover {
+  background-color: #f9fafb;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#plant-grid.list-view .plant-card:last-child {
+  border-bottom: none;
 }
 
 #plant-grid.list-view .plant-photo {
+  width: 64px;
+  height: 64px;
+  margin-right: 0;
+  margin-bottom: 0;
   flex-shrink: 0;
-  width: 80px;
-  height: 80px;
-  border-radius: var(--radius);
-  object-fit: cover;
+}
+
+@media (min-width: 640px) {
+  #plant-grid.list-view .plant-card {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  #plant-grid.list-view .plant-photo {
+    width: 80px;
+    height: 80px;
+  }
 }
 
 #plant-grid.list-view .plant-info {
@@ -658,13 +668,6 @@ button:focus {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-#plant-grid.list-view .actions {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing);
 }
 
 /* text only view */
@@ -701,7 +704,6 @@ button:focus {
   padding: calc(var(--spacing) * 2);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   overflow: hidden; /* clip photo when it extends to edges */
   position: relative; /* allow urgency tag overlay */
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -728,7 +730,27 @@ button:focus {
 }
 
 #plant-grid.list-view .actions {
-  margin-top: 0;
+  margin-top: calc(var(--spacing) * 2);
+  justify-content: flex-end;
+}
+
+#plant-grid.list-view .actions-left,
+#plant-grid.list-view .actions-right {
+  display: flex;
+  gap: var(--spacing);
+}
+
+@media (min-width: 640px) {
+  #plant-grid.list-view .actions {
+    margin-top: 0;
+    margin-left: calc(var(--spacing) * 1.5);
+    flex-direction: column;
+  }
+
+  #plant-grid.list-view .actions-left,
+  #plant-grid.list-view .actions-right {
+    flex-direction: column;
+  }
 }
 
 .plant-card .actions .action-btn {
