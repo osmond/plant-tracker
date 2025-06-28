@@ -33,8 +33,7 @@ const KC_MAP = {
 let weatherTminC = null;
 let weatherTmaxC = null;
 
-// rainfall totals in inches (initialized to zeros in case fetch fails)
-let rainPastInches = [0, 0, 0];
+// forecast rainfall totals in inches (initialized to zeros in case fetch fails)
 let rainForecastInches = [0, 0, 0];
 
 // starting date for the calendar view
@@ -732,19 +731,6 @@ async function updatePlantPhoto(plant, file) {
 }
 
 // --- weather helper ---
-// Historical rainfall requires OpenWeather's paid tiers.
-// We skip past totals when the API key lacks that access.
-function daysAgoUnix(days) {
-  const d = new Date();
-  d.setUTCHours(0, 0, 0, 0);
-  d.setDate(d.getDate() - days);
-  return Math.floor(d.getTime() / 1000);
-}
-
-async function fetchDailyRainHistoric() {
-  return 0; // placeholder when history API is unavailable
-}
-
 async function fetch3DayForecastRain(lat, lon) {
   const url =
     `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}` +
@@ -772,12 +758,10 @@ async function fetch3DayForecastRain(lat, lon) {
 async function fetchRainData(lat, lon) {
   try {
     const next = await fetch3DayForecastRain(lat, lon);
-    rainPastInches = [0, 0, 0];
     rainForecastInches = next.length === 3 ? next : [0, 0, 0];
     loadPlants();
   } catch (e) {
     console.error('Rain fetch failed', e);
-    rainPastInches = [0, 0, 0];
     rainForecastInches = [0, 0, 0];
     loadPlants();
   }
@@ -942,14 +926,9 @@ async function loadPlants() {
       selectedRoom.toLowerCase() === 'outside' &&
       rainForecastInches.length === 3
     ) {
-      const pastText =
-        rainPastInches.some(v => v !== 0)
-          ? `${rainPastInches.map(r => r.toFixed(2)).join(', ')} in`
-          : 'N/A';
       const nextText = `${rainForecastInches.map(r => r.toFixed(2)).join(', ')} in`;
       rainEl.innerHTML =
         `<div class="summary-row">
-            <span class="summary-item">${ICONS.rain} Past 3d: ${pastText}</span>
             <span class="summary-item">${ICONS.rain} Next 3d: ${nextText}</span>
         </div>`;
       rainEl.classList.remove('hidden');
