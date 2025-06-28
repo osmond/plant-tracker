@@ -7,6 +7,11 @@ if (!class_exists('MockStmt')) {
         public function fetch() { return false; }
         public function close() {}
     }
+    class MockResult {
+        private $data;
+        public function __construct($data) { $this->data = $data; }
+        public function fetch_assoc() { return array_shift($this->data); }
+    }
 }
 
 if (!class_exists('MockMysqli')) {
@@ -14,6 +19,10 @@ if (!class_exists('MockMysqli')) {
         public $connect_error = '';
         public function prepare($query) {
             return new MockStmt();
+        }
+        public function query($query) {
+            global $mockQueryData;
+            return new MockResult($mockQueryData ?? []);
         }
     }
 }

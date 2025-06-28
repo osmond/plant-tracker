@@ -24,6 +24,7 @@ $species                 = trim($_POST['species'] ?? '');
 $room                    = trim($_POST['room'] ?? '');
 $watering_frequency      = intval($_POST['watering_frequency'] ?? 0);
 $fertilizing_frequency   = intval($_POST['fertilizing_frequency'] ?? 0);
+$plant_type             = trim($_POST['plant_type'] ?? 'houseplant');
 $water_amount            = isset($_POST['water_amount']) ? floatval($_POST['water_amount']) : 0;
 $last_watered            = $_POST['last_watered'] ?? null;
 $last_fertilized         = $_POST['last_fertilized'] ?? null;
@@ -59,6 +60,9 @@ if ($room !== '' && !preg_match('/^[\p{L}0-9\s-]{1,50}$/u', $room)) {
 }
 if ($watering_frequency < 1 || $watering_frequency > 365) {
     $errors[] = 'Watering frequency must be 1-365';
+}
+if ($plant_type !== '' && !preg_match('/^[a-zA-Z_\s-]{1,50}$/', $plant_type)) {
+    $errors[] = 'Invalid plant type';
 }
 if ($water_amount < 0) {
     $errors[] = 'Water amount must be non-negative';
@@ -137,6 +141,7 @@ $stmt = $conn->prepare("
         room               = ?,
         watering_frequency = ?,
         fertilizing_frequency = ?,
+        plant_type         = ?,
         last_watered       = ?,
         last_fertilized    = ?,
         photo_url          = ?,
@@ -144,12 +149,13 @@ $stmt = $conn->prepare("
     WHERE id = ?
 ");
 $stmt->bind_param(
-    'sssiisssdi',
+    'sssiissssdi',
     $name,
     $species,
     $room,
     $watering_frequency,
     $fertilizing_frequency,
+    $plant_type,
     $last_watered,
     $last_fertilized,
     $photo_url,
