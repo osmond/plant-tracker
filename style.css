@@ -865,6 +865,7 @@ button:focus {
 .plant-species {
   font-size: 0.875rem; /* ~14px */
   font-style: italic;
+  font-weight: 300;
   opacity: 0.8;
   margin-bottom: calc(var(--spacing) * 1.5);
 }
