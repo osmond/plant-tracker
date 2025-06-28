@@ -1331,6 +1331,7 @@ async function loadPlants() {
       const showBtn = document.getElementById('show-add-form');
       if (showBtn) showBtn.style.display = 'none';
       showFormStep(1);
+      menu.classList.remove('show');
     };
     menu.appendChild(editBtn);
 
@@ -1338,7 +1339,10 @@ async function loadPlants() {
     delBtn.classList.add('action-btn', 'delete-btn');
     delBtn.innerHTML = ICONS.trash + '<span class="visually-hidden">Delete</span>';
     delBtn.title = 'Delete';
-    delBtn.onclick = () => showUndoBanner(plant);
+    delBtn.onclick = () => {
+      showUndoBanner(plant);
+      menu.classList.remove('show');
+    };
     menu.appendChild(delBtn);
 
     const changeBtn = document.createElement('button');
@@ -1346,7 +1350,10 @@ async function loadPlants() {
     changeBtn.innerHTML = ICONS.photo + '<span class="visually-hidden">Change Photo</span>';
     changeBtn.type = 'button';
     changeBtn.title = 'Add Image';
-    changeBtn.onclick = () => fileInput.click();
+    changeBtn.onclick = () => {
+      fileInput.click();
+      menu.classList.remove('show');
+    };
     menu.appendChild(changeBtn);
 
     menuBtn.onclick = (e) => {
