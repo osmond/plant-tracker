@@ -309,7 +309,7 @@ function validateForm(form) {
   // additional constraints
   const species = form.querySelector('[name="species"]');
   if (species && species.value.trim() &&
-      !/^[A-Za-z0-9\s-]{1,100}$/.test(species.value.trim())) {
+      !/^[A-Za-z0-9\s.-]{1,100}$/.test(species.value.trim())) {
     document.getElementById('species-error').textContent =
       'Invalid characters or too long.';
     valid = false;

@@ -49,7 +49,7 @@ $photo_url = trim($_POST['photo_url'] ?? '');
 
 // further validation
 $errors = [];
-if ($species !== '' && !preg_match('/^[A-Za-z0-9\s-]{1,100}$/', $species)) {
+if ($species !== '' && !preg_match('/^[A-Za-z0-9\s.-]{1,100}$/', $species)) {
     $errors[] = 'Invalid species';
 }
 if ($room !== '' && !preg_match('/^[A-Za-z0-9\s-]{1,50}$/', $room)) {
