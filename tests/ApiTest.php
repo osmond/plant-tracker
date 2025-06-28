@@ -115,5 +115,37 @@ class ApiTest extends TestCase
         $data = json_decode($output, true);
         $this->assertArrayHasKey('error', $data);
     }
+
+    public function testAddPlantWithPeriodInSpecies()
+    {
+        $_POST = [
+            'name' => 'Period Plant',
+            'watering_frequency' => 5,
+            'species' => 'Oxytropis nuda Basil.'
+        ];
+        ob_start();
+        include __DIR__ . '/../api/add_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertEquals('success', $data['status']);
+    }
+
+    public function testUpdatePlantWithPeriodInSpecies()
+    {
+        $_POST = [
+            'id' => 1,
+            'name' => 'Updated',
+            'watering_frequency' => 7,
+            'species' => 'Oxytropis nuda Basil.',
+            'water_amount' => 150,
+            'last_watered' => '',
+            'last_fertilized' => ''
+        ];
+        ob_start();
+        include __DIR__ . '/../api/update_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertEquals('success', $data['status']);
+    }
 }
 ?>
