@@ -1117,7 +1117,10 @@ async function loadPlants() {
 
   filtered.forEach(plant => {
     const card = document.createElement('div');
-    card.classList.add('plant-card', 'shadow');
+    card.classList.add('plant-card');
+    if (viewMode !== 'text') {
+      card.classList.add('shadow');
+    }
     if (plant.id === window.lastUpdatedPlantId) {
       card.classList.add('just-updated');
       setTimeout(() => card.classList.remove('just-updated'), 2000);

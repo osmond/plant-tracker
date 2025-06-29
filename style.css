@@ -705,17 +705,34 @@ button:focus {
 
 #plant-grid.text-view .plant-card {
   display: block;
-  padding: 1rem 1.5rem;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
-
+#plant-grid.text-view .tag-list,
+#plant-grid.text-view .urgency-tag,
+#plant-grid.text-view .water-warning {
+  display: none;
+}
 #plant-grid.text-view .plant-title {
-  font-size: 1.25rem;
-  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  margin: 0;
+  font-weight: normal;
 }
-
+#plant-grid.text-view .plant-species {
+  font-size: 1rem;
+  font-style: normal;
+  margin: 0 0 0.5rem 0;
+}
 #plant-grid.text-view .plant-summary {
   margin-left: 0;
+  margin-top: 0.5rem;
+  padding: 0;
 }
+
 
 #plant-grid .no-results {
   grid-column: 1 / -1;
