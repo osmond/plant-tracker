@@ -874,6 +874,7 @@ function populateForm(plant) {
   const form = document.getElementById('plant-form');
   form.name.value = plant.name;
   form.species.value = plant.species;
+  if (form.plant_type) form.plant_type.value = plant.plant_type || 'houseplant';
   showTaxonomyInfo(plant.species);
   form.watering_frequency.value = plant.watering_frequency;
   if (form.water_amount) {
