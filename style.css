@@ -745,7 +745,16 @@ button:focus {
   color: #000;
 }
 
+
+#plant-grid.text-view .plant-summary .summary-item {
+  display: block;
+  grid-template-columns: 1fr;
+}
+
+#plant-grid.text-view .plant-summary .summary-item > span:first-child {
+
 #plant-grid.text-view .schedule-heading {
+
   display: none;
 }
 
