@@ -699,7 +699,6 @@ button:focus {
 
 /* text only view */
 #plant-grid.text-view .plant-photo,
-#plant-grid.text-view .tag-list,
 #plant-grid.text-view .actions {
   display: none;
 }
@@ -1106,11 +1105,7 @@ button:focus {
   color: var(--color-text);
 }
 
-@media (max-width: 500px) {
-  .plant-card .amt-tag {
-    display: none;
-  }
-}
+
 
 
 
