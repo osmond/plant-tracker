@@ -637,9 +637,10 @@ button:focus {
 }
 
 #plant-grid.list-view .plant-card {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: calc(var(--spacing) * 2);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-gap: 1rem;
+  align-items: start;
   padding: calc(var(--spacing) * 2);
   border-bottom: 1px solid #e5e7eb;
   transition: background-color 0.2s, box-shadow 0.2s;
@@ -655,41 +656,35 @@ button:focus {
 }
 
 #plant-grid.list-view .plant-photo {
+  grid-column: 1;
+  align-self: start;
   width: 64px;
   height: 64px;
-  margin-right: var(--spacing);
+  margin-right: 0;
   margin-bottom: 0;
   flex-shrink: 0;
-  align-self: flex-start;
 }
 
 #plant-grid.list-view .tag-list {
+  grid-column: 1;
+  display: flex;
   flex-direction: column;
-  flex-wrap: nowrap;
-  margin-top: var(--spacing);
+  gap: 0.25rem;
+  width: max-content;
+  margin-top: 0.5rem;
 }
 #plant-grid.list-view .room-tag { order: 1; }
 #plant-grid.list-view .amt-tag { order: 2; }
 
 @media (min-width: 640px) {
-  #plant-grid.list-view .plant-card {
-    flex-direction: row;
-    align-items: flex-start;
-    flex-wrap: wrap; /* allow tag list to sit below the image */
-  }
-
   #plant-grid.list-view .plant-photo {
     width: 80px;
     height: 80px;
   }
-
-  #plant-grid.list-view .tag-list {
-    flex-basis: 100%;
-    margin-left: calc(80px + var(--spacing));
-  }
 }
 
 #plant-grid.list-view .plant-info {
+  grid-column: 2;
   flex: 1;
   min-width: 0;
 }
