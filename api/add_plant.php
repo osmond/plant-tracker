@@ -41,7 +41,7 @@ if (!preg_match($namePattern, $name)) {
 $species = trim($_POST['species'] ?? '');
 $room = trim($_POST['room'] ?? '');
 $plant_type = trim($_POST['plant_type'] ?? 'houseplant');
-$valid_types = ['succulent','houseplant','vegetable','cacti'];
+$valid_types = ['succulent','houseplant','vegetable','flower','cacti'];
 if (!in_array($plant_type, $valid_types, true)) {
     $plant_type = 'houseplant';
 }
