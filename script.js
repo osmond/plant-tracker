@@ -902,7 +902,7 @@ function populateForm(plant) {
   showTaxonomyInfo(plant.species);
   form.watering_frequency.value = plant.watering_frequency;
   if (form.water_amount) {
-    // reuse the parsed amount for tag generation
+    const ml = parseFloat(plant.water_amount);
     if (ml > 0) {
       const oz = ml / ML_PER_US_FL_OUNCE;
       form.water_amount.value = oz.toFixed(1).replace(/\.0$/, '');
@@ -1200,19 +1200,6 @@ async function loadPlants() {
     speciesEl.title = plant.species;
     infoWrap.appendChild(speciesEl);
 
-    const metaParts = [];
-    if (plant.room) metaParts.push(plant.room);
-    const ml = parseFloat(plant.water_amount);
-    if (!isNaN(ml) && ml > 0) {
-      metaParts.push(`${(ml / ML_PER_US_FL_OUNCE).toFixed(1).replace(/\.0$/, '')} oz / ${Math.round(ml)} ml`);
-    }
-    if (metaParts.length) {
-      const metaLine = document.createElement('div');
-      metaLine.classList.add('meta-line');
-      metaLine.textContent = metaParts.join(' \u00b7 ');
-      infoWrap.appendChild(metaLine);
-    }
-
     const tagList = document.createElement('div');
     tagList.classList.add('tag-list');
     if (plant.room) {
@@ -1224,6 +1211,7 @@ async function loadPlants() {
       tagList.appendChild(roomTag);
     }
 
+    const ml = parseFloat(plant.water_amount);
     if (!isNaN(ml) && ml > 0) {
       const amtTag = document.createElement('span');
       amtTag.classList.add('tag', 'amt-tag');
