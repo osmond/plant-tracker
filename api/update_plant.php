@@ -22,6 +22,11 @@ $id                      = intval($_POST['id'] ?? 0);
 $name                    = trim($_POST['name'] ?? '');
 $species                 = trim($_POST['species'] ?? '');
 $room                    = trim($_POST['room'] ?? '');
+$plant_type              = trim($_POST['plant_type'] ?? 'houseplant');
+$valid_types = ['succulent','houseplant','vegetable','cacti'];
+if (!in_array($plant_type, $valid_types, true)) {
+    $plant_type = 'houseplant';
+}
 $watering_frequency      = intval($_POST['watering_frequency'] ?? 0);
 $fertilizing_frequency   = intval($_POST['fertilizing_frequency'] ?? 0);
 $water_amount            = isset($_POST['water_amount']) ? floatval($_POST['water_amount']) : 0;
@@ -131,9 +136,10 @@ if (!$id) {
 
 // Prepare update statement
 $stmt = $conn->prepare("
-    UPDATE plants 
+    UPDATE plants
     SET name               = ?,
         species            = ?,
+        plant_type         = ?,
         room               = ?,
         watering_frequency = ?,
         fertilizing_frequency = ?,
@@ -144,9 +150,10 @@ $stmt = $conn->prepare("
     WHERE id = ?
 ");
 $stmt->bind_param(
-    'sssiisssdi',
+    'ssssiisssdi',
     $name,
     $species,
+    $plant_type,
     $room,
     $watering_frequency,
     $fertilizing_frequency,

@@ -40,6 +40,11 @@ if (!preg_match($namePattern, $name)) {
 }
 $species = trim($_POST['species'] ?? '');
 $room = trim($_POST['room'] ?? '');
+$plant_type = trim($_POST['plant_type'] ?? 'houseplant');
+$valid_types = ['succulent','houseplant','vegetable','cacti'];
+if (!in_array($plant_type, $valid_types, true)) {
+    $plant_type = 'houseplant';
+}
 $watering_frequency = intval($_POST['watering_frequency'] ?? 0);
 $fertilizing_frequency = intval($_POST['fertilizing_frequency'] ?? 0);
 $water_amount = isset($_POST['water_amount']) ? floatval($_POST['water_amount']) : 0;
@@ -98,6 +103,7 @@ $stmt = $conn->prepare(
     INSERT INTO plants (
         name,
         species,
+        plant_type,
         room,
         watering_frequency,
         fertilizing_frequency,
@@ -105,7 +111,7 @@ $stmt = $conn->prepare(
         last_fertilized,
         photo_url,
         water_amount
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 );
 if (!$stmt) {
     @http_response_code(500);
@@ -120,9 +126,10 @@ if (!$stmt) {
     return;
 }
 $stmt->bind_param(
-    "sssiisssd",
+    "ssssiisssd",
     $name,
     $species,
+    $plant_type,
     $room,
     $watering_frequency,
     $fertilizing_frequency,
