@@ -21,7 +21,6 @@ if (!headers_sent()) {
 $id                      = intval($_POST['id'] ?? 0);
 $name                    = trim($_POST['name'] ?? '');
 $species                 = trim($_POST['species'] ?? '');
-$plant_type              = isset($_POST['plant_type']) ? trim($_POST['plant_type']) : 'houseplant';
 $room                    = trim($_POST['room'] ?? '');
 $watering_frequency      = intval($_POST['watering_frequency'] ?? 0);
 $fertilizing_frequency   = intval($_POST['fertilizing_frequency'] ?? 0);
@@ -31,9 +30,6 @@ $last_fertilized         = $_POST['last_fertilized'] ?? null;
 $photo_url               = trim($_POST['photo_url'] ?? '');
 
 $errors = [];
-if (!in_array($plant_type, ['succulent', 'houseplant', 'vegetable', 'cacti'], true)) {
-    $errors[] = 'Invalid plant type';
-}
 $namePattern = "/^[\p{L}0-9\s'-]{1,100}$/u";
 if (!preg_match($namePattern, $name)) {
     $errors[] = 'Invalid name';
@@ -138,7 +134,6 @@ $stmt = $conn->prepare("
     UPDATE plants 
     SET name               = ?,
         species            = ?,
-        plant_type         = ?,
         room               = ?,
         watering_frequency = ?,
         fertilizing_frequency = ?,
@@ -149,10 +144,9 @@ $stmt = $conn->prepare("
     WHERE id = ?
 ");
 $stmt->bind_param(
-    'ssssiisssdi',
+    'sssiisssdi',
     $name,
     $species,
-    $plant_type,
     $room,
     $watering_frequency,
     $fertilizing_frequency,
