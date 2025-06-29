@@ -571,6 +571,17 @@ function formatDateShort(dateStr) {
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
+function formatFrequency(days) {
+  const n = parseInt(days, 10);
+  if (isNaN(n) || n <= 0) return '';
+  if (n === 1) return 'every day';
+  if (n === 7) return 'once a week';
+  if (n === 14) return 'every 2 weeks';
+  if (n === 30 || n === 31) return 'once a month';
+  if (n === 365) return 'once a year';
+  return `every ${n} days`;
+}
+
 function getSoonestDueDate(plant) {
   const waterDate = plant.last_watered
     ? addDays(parseLocalDate(plant.last_watered), plant.watering_frequency)
@@ -1202,9 +1213,9 @@ async function loadPlants() {
     waterIconWrap.innerHTML = ICONS.water;
     const waterNext = formatDateShort(getNextWaterDate(plant));
     const waterText = document.createElement('span');
+    const waterFreq = formatFrequency(plant.watering_frequency);
     waterText.textContent =
-      `Water every ${plant.watering_frequency} days. ` +
-      `Last ${formatDateShort(plant.last_watered)}, next ${waterNext}.`;
+      `Water ${waterFreq} (last: ${formatDateShort(plant.last_watered)}; next: ${waterNext})`;
     waterSummary.appendChild(waterIconWrap);
     waterSummary.appendChild(waterText);
 
@@ -1215,13 +1226,13 @@ async function loadPlants() {
     const fertIconWrap = document.createElement('span');
     fertIconWrap.innerHTML = ICONS.fert;
     const fertFreq = plant.fertilizing_frequency
-      ? `${plant.fertilizing_frequency} days`
-      : 'N/A';
+      ? formatFrequency(plant.fertilizing_frequency)
+      : 'as needed';
     const fertNext = getNextFertDate(plant);
     const fertText = document.createElement('span');
+    const fertNextStr = fertNext ? formatDateShort(fertNext) : 'N/A';
     fertText.textContent =
-      `Fertilize every ${fertFreq}. ` +
-      `Last ${formatDateShort(plant.last_fertilized)}, next ${fertNext ? formatDateShort(fertNext) : 'N/A'}.`;
+      `Fertilize ${fertFreq} (last: ${formatDateShort(plant.last_fertilized)}; next: ${fertNextStr})`;
     fertSummary.appendChild(fertIconWrap);
     fertSummary.appendChild(fertText);
 
