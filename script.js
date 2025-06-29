@@ -1429,8 +1429,7 @@ async function loadPlants() {
 
     const changeBtn = document.createElement('button');
     changeBtn.classList.add('action-btn', 'photo-btn');
-    changeBtn.innerHTML =
-      ICONS.photo + '<span class="visually-hidden">Change Photo</span>';
+    changeBtn.innerHTML = ICONS.photo + '<span class="visually-hidden">Change Photo</span>';
     changeBtn.type = 'button';
     changeBtn.title = 'Add Image';
     changeBtn.onclick = () => {
@@ -1438,34 +1437,6 @@ async function loadPlants() {
       menu.classList.remove('show');
     };
     menu.appendChild(changeBtn);
-
-    if (waterDue) {
-      const waterMenuBtn = document.createElement('button');
-      waterMenuBtn.classList.add('action-btn', 'water-due');
-      waterMenuBtn.innerHTML =
-        ICONS.water + '<span class="visually-hidden">Mark Watered</span>';
-      waterMenuBtn.title = 'Mark Watered';
-      waterMenuBtn.type = 'button';
-      waterMenuBtn.onclick = () => {
-        markAction(plant.id, 'watered');
-        menu.classList.remove('show');
-      };
-      menu.appendChild(waterMenuBtn);
-    }
-
-    if (fertDue) {
-      const fertMenuBtn = document.createElement('button');
-      fertMenuBtn.classList.add('action-btn', 'fert-due');
-      fertMenuBtn.innerHTML =
-        ICONS.fert + '<span class="visually-hidden">Mark Fertilized</span>';
-      fertMenuBtn.title = 'Mark Fertilized';
-      fertMenuBtn.type = 'button';
-      fertMenuBtn.onclick = () => {
-        markAction(plant.id, 'fertilized');
-        menu.classList.remove('show');
-      };
-      menu.appendChild(fertMenuBtn);
-    }
 
     menuBtn.onclick = (e) => {
       e.stopPropagation();

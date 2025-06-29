@@ -927,12 +927,6 @@ button:focus {
   gap: var(--spacing);
 }
 
-.overflow-menu .action-btn {
-  width: 100%;
-  justify-content: flex-start;
-  padding: calc(var(--spacing) / 2);
-}
-
 .overflow-menu.show {
   display: flex;
 }
