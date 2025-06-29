@@ -555,6 +555,36 @@ button:focus {
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: calc(var(--spacing) * 2);
   margin-top: calc(var(--spacing) * 2);
+  overflow-x: auto;
+  scroll-behavior: smooth;
+}
+
+#calendar-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: calc(var(--spacing));
+  padding: 0 calc(var(--spacing) * 2) calc(var(--spacing));
+}
+
+@media (max-width: 640px) {
+  #calendar-nav {
+    display: none;
+  }
+  #calendar {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+  #calendar .cal-day {
+    flex: 0 0 80%;
+    scroll-snap-align: start;
+  }
+}
+
+@media (min-width: 1200px) {
+  #calendar {
+    grid-template-columns: repeat(7, 1fr);
+  }
 }
 
 #calendar.hidden {
@@ -562,10 +592,11 @@ button:focus {
 }
 
 #calendar .cal-day {
-  background: var(--color-surface);
+  background: #fff;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: var(--spacing);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  padding: 1rem;
   min-height: 140px;
   display: flex;
   flex-direction: column;
@@ -573,7 +604,8 @@ button:focus {
 
 
 #calendar .cal-day-header {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 1.1rem;
   margin-bottom: calc(var(--spacing));
   padding-bottom: calc(var(--spacing) / 2);
   border-bottom: 1px solid var(--color-border);
@@ -587,6 +619,11 @@ button:focus {
   cursor: move;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   border-left: 4px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 #calendar .cal-event.water-due {
