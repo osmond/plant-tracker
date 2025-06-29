@@ -636,6 +636,11 @@ async function loadCalendar() {
   start.setHours(0,0,0,0);
   container.innerHTML = '';
 
+  const roomSet = new Set();
+  plants.forEach(p => { if (p.room) roomSet.add(p.room); });
+  const rooms = Array.from(roomSet).sort((a,b) => a.localeCompare(b));
+  const groupMap = new Map();
+
   const dayEls = [];
   for (let i=0;i<daysToShow;i++) {
     const d = addDays(start,i);
@@ -645,6 +650,19 @@ async function loadCalendar() {
     dayEl.innerHTML = `<div class="cal-day-header">${d.toLocaleDateString(undefined,{weekday:'short',month:'numeric',day:'numeric'})}</div>`;
     dayEl.addEventListener('dragover',e=>e.preventDefault());
     dayEl.addEventListener('drop',e=>handleDrop(e, dayEl.dataset.date, plants));
+    rooms.forEach(r => {
+      const group = document.createElement('div');
+      group.classList.add('room-group');
+      group.dataset.room = r;
+      const header = document.createElement('div');
+      header.classList.add('room-header');
+      header.textContent = r;
+      header.style.backgroundColor = colorForRoom(r);
+      header.style.borderColor = borderColorForRoom(r);
+      group.appendChild(header);
+      dayEl.appendChild(group);
+      groupMap.set(`${dayEl.dataset.date}|${r}`, group);
+    });
     container.appendChild(dayEl);
     dayEls.push(dayEl);
   }
@@ -664,7 +682,9 @@ async function loadCalendar() {
     ev.addEventListener('dragstart',e=>{
       e.dataTransfer.setData('text/plain', JSON.stringify({id:plant.id,type,date:dateStr}));
     });
-    dayEl.appendChild(ev);
+    ev.style.borderLeftColor = borderColorForRoom(plant.room);
+    const group = groupMap.get(`${dateStr}|${plant.room}`);
+    if (group) group.appendChild(ev); else dayEl.appendChild(ev);
   }
 
   plants.forEach(p=>{
