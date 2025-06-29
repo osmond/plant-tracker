@@ -661,16 +661,10 @@ button:focus {
   flex-shrink: 0;
 }
 
-#plant-grid.list-view .tag-list {
-  flex-direction: column;
-  flex-wrap: nowrap;
-  margin-top: var(--spacing);
-}
-
 @media (min-width: 640px) {
   #plant-grid.list-view .plant-card {
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
   }
 
   #plant-grid.list-view .plant-photo {
