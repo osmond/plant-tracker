@@ -1117,6 +1117,43 @@ async function loadPlants() {
       card.classList.add('just-updated');
       setTimeout(() => card.classList.remove('just-updated'), 2000);
     }
+
+    if (viewMode === 'text') {
+      const nameLine = document.createElement('div');
+      nameLine.textContent = `${plant.name} (${plant.species})`;
+      card.appendChild(nameLine);
+
+      if (plant.room) {
+        const roomLine = document.createElement('div');
+        roomLine.textContent = `Location: ${plant.room}`;
+        card.appendChild(roomLine);
+      }
+
+      const ml = parseFloat(plant.water_amount);
+      if (!isNaN(ml) && ml > 0) {
+        const amtLine = document.createElement('div');
+        amtLine.textContent = `${(ml / ML_PER_US_FL_OUNCE).toFixed(1).replace(/\.0$/, '')} oz / ${Math.round(ml)} ml`;
+        card.appendChild(amtLine);
+      }
+
+      const waterNext = formatDateShort(getNextWaterDate(plant));
+      const waterFreq = formatFrequency(plant.watering_frequency);
+      const waterLine = document.createElement('div');
+      waterLine.textContent = `\u2022 Water ${waterFreq} (last: ${formatDateShort(plant.last_watered)}; next: ${waterNext})`;
+      card.appendChild(waterLine);
+
+      const fertFreq = plant.fertilizing_frequency ?
+        formatFrequency(plant.fertilizing_frequency) : 'as needed';
+      const fertNext = getNextFertDate(plant);
+      const fertNextStr = fertNext ? formatDateShort(fertNext) : 'N/A';
+      const fertLine = document.createElement('div');
+      fertLine.textContent = `\u2022 Fertilize ${fertFreq} (last: ${formatDateShort(plant.last_fertilized)}; next: ${fertNextStr})`;
+      card.appendChild(fertLine);
+
+      list.appendChild(card);
+      return;
+    }
+
     const soonest = getSoonestDueDate(plant);
     let urgencyClass = '';
     let urgencyText = '';
