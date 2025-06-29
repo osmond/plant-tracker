@@ -638,6 +638,7 @@ button:focus {
 
 #plant-grid.list-view .plant-card {
   flex-direction: column;
+  align-items: flex-start;
   gap: calc(var(--spacing) * 2);
   padding: calc(var(--spacing) * 2);
   border-bottom: 1px solid #e5e7eb;
@@ -656,9 +657,10 @@ button:focus {
 #plant-grid.list-view .plant-photo {
   width: 64px;
   height: 64px;
-  margin-right: 0;
+  margin-right: var(--spacing);
   margin-bottom: 0;
   flex-shrink: 0;
+  align-self: flex-start;
 }
 
 #plant-grid.list-view .tag-list {
@@ -666,6 +668,8 @@ button:focus {
   flex-wrap: nowrap;
   margin-top: var(--spacing);
 }
+#plant-grid.list-view .room-tag { order: 1; }
+#plant-grid.list-view .amt-tag { order: 2; }
 
 @media (min-width: 640px) {
   #plant-grid.list-view .plant-card {
