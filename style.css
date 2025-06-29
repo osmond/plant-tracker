@@ -627,8 +627,8 @@ button:focus {
   #plant-grid {
     /* Force a single column layout on small screens */
     grid-template-columns: 1fr;
-    margin-left: calc(var(--spacing) * 2);
-    margin-right: calc(var(--spacing) * 2);
+    margin-left: 0;
+    margin-right: 0;
   }
 
   body {
@@ -642,9 +642,8 @@ button:focus {
   display: flex;
   flex-direction: column;
   gap: calc(var(--spacing) * 1.5);
-  max-width: 48rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 0;
+  margin-right: 0;
   padding: calc(var(--spacing) * 2);
 }
 
