@@ -464,11 +464,6 @@ function applyViewMode() {
 
 function applyDarkMode() {
   document.body.classList.toggle('dark', darkMode);
-  const btn = document.getElementById('theme-toggle');
-  if (btn) {
-    btn.innerHTML = (darkMode ? ICONS.sun : ICONS.moon) +
-      `<span class="visually-hidden">${darkMode ? 'Light' : 'Dark'} Mode</span>`;
-  }
   localStorage.setItem('darkMode', darkMode);
 }
 
@@ -1114,12 +1109,7 @@ async function loadPlants() {
     icon.classList.add('weather-icon');
     icon.src = currentWeatherIcon;
     icon.alt = currentWeatherDesc;
-    icon.style.cursor = 'pointer';
-    icon.title = 'Toggle dark mode';
-    icon.addEventListener('click', () => {
-      darkMode = !darkMode;
-      applyDarkMode();
-    });
+    icon.title = currentWeatherDesc;
     weatherSpan.appendChild(icon);
     weatherSpan.insertAdjacentText('beforeend', ` ${currentWeather}`);
     row2.appendChild(weatherSpan);
@@ -1465,7 +1455,6 @@ function init(){
   const cancelBtn = document.getElementById('cancel-edit');
   const undoBtn = document.getElementById('undo-btn');
   const toggleSearch = document.getElementById('toggle-search');
-  const themeToggle = document.getElementById('theme-toggle');
   const searchContainer = document.getElementById('search-container');
   const closeSearch = document.getElementById('close-search');
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
@@ -1814,12 +1803,6 @@ function init(){
       });
     });
     applyViewMode();
-  }
-  if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-      darkMode = !darkMode;
-      applyDarkMode();
-    });
   }
   if (prevBtn) {
     prevBtn.addEventListener('click', () => {
