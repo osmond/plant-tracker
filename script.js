@@ -694,6 +694,13 @@ async function loadCalendar() {
     if (f) addEvent(p,'fert',f);
   });
 
+  // Remove room groups that have no events
+  groupMap.forEach(group => {
+    if (group.querySelectorAll('.cal-event').length === 0) {
+      group.remove();
+    }
+  });
+
 }
 
 
