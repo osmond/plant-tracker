@@ -665,34 +665,10 @@ async function loadCalendar() {
     dayEls.push(dayEl);
   }
 
-  function getRoomGroup(dayEl, room) {
-    const safeRoom = room || 'Unassigned';
-    let group = dayEl.querySelector(`.room-group[data-room="${CSS.escape(safeRoom)}"]`);
-    if (!group) {
-      group = document.createElement('div');
-      group.classList.add('room-group');
-      group.dataset.room = safeRoom;
-      const header = document.createElement('div');
-      header.classList.add('room-header');
-      header.textContent = safeRoom;
-      header.style.backgroundColor = colorForRoom(room);
-      header.style.color = '#fff';
-      header.style.padding = '2px 6px';
-      header.style.borderRadius = '4px';
-      header.style.display = 'inline-block';
-      group.appendChild(header);
-      dayEl.appendChild(group);
-    }
-    return group;
-  }
-
   function addEvent(plant,type,date) {
     const dateStr = date.toISOString().split('T')[0];
     const dayEl = container.querySelector(`.cal-day[data-date="${dateStr}"]`);
     if (!dayEl) return;
-
-    const group = getRoomGroup(dayEl, plant.room);
-
     const ev = document.createElement('div');
     ev.classList.add('cal-event', type === 'water' ? 'water-due' : 'fert-due');
     ev.innerHTML =
@@ -704,7 +680,7 @@ async function loadCalendar() {
     ev.addEventListener('dragstart',e=>{
       e.dataTransfer.setData('text/plain', JSON.stringify({id:plant.id,type,date:dateStr}));
     });
-    group.appendChild(ev);
+    dayEl.appendChild(ev);
   }
 
   plants.forEach(p=>{
