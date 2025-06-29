@@ -696,6 +696,12 @@ button:focus {
 }
 
 /* text only view */
+#plant-grid.text-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 #plant-grid.text-view .plant-photo,
 #plant-grid.text-view .tag-list,
 #plant-grid.text-view .actions {
@@ -709,11 +715,32 @@ button:focus {
 
 #plant-grid.text-view .plant-title {
   font-size: 1.25rem;
-  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 0.25rem;
+}
+
+#plant-grid.text-view .plant-species,
+#plant-grid.text-view .meta-line {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #6c757d;
+}
+
+#plant-grid.text-view .plant-species {
+  font-style: normal;
+  margin-bottom: 0.75rem;
+}
+
+#plant-grid.text-view .meta-line {
+  margin-bottom: 0.75rem;
 }
 
 #plant-grid.text-view .plant-summary {
   margin-left: 0;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #000;
 }
 
 #plant-grid .no-results {
@@ -884,6 +911,10 @@ button:focus {
   flex-wrap: wrap;
   gap: calc(var(--spacing) / 2);
   margin-bottom: calc(var(--spacing) * 1.5);
+}
+
+.meta-line {
+  display: none;
 }
 
 .tag {
