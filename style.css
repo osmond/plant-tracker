@@ -1,5 +1,4 @@
 :root {
-  /* Blossom-inspired palette */
 
 --color-primary: #4caf50; 
 
@@ -856,11 +855,8 @@ button:focus {
 
 
 .plant-title {
-
   font-size: 1.125rem; /* ~18px */
   font-weight: 700;
-
-  margin-bottom: calc(var(--spacing) * 1.5);
 }
 
 .plant-species {
