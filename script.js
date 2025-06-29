@@ -732,35 +732,6 @@ async function markAction(id, type, days = 0) {
   }
 }
 
-// --- swipe gestures ---
-function addSwipeHandlers(card, plant, waterDue, fertDue) {
-  let startX = null;
-  let startY = null;
-  const threshold = 50; // minimum px to count as swipe
-
-  card.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 1) {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-    }
-  });
-
-  card.addEventListener('touchend', (e) => {
-    if (startX === null) return;
-    const dx = e.changedTouches[0].clientX - startX;
-    const dy = e.changedTouches[0].clientY - startY;
-    if (Math.abs(dx) > threshold && Math.abs(dx) > Math.abs(dy)) {
-      if (dx > 0 && waterDue) {
-        markAction(plant.id, 'watered');
-      } else if (dx < 0 && fertDue) {
-        markAction(plant.id, 'fertilized');
-      }
-    }
-    startX = null;
-    startY = null;
-  });
-}
-
 // --- undo-delete snackbar ---
 function showUndoBanner(plant) {
   lastDeletedPlant = plant;
@@ -1442,10 +1413,6 @@ async function loadPlants() {
     actionsDiv.appendChild(overflow);
     actionsDiv.appendChild(fileInput);
     card.appendChild(actionsDiv);
-
-    if (viewMode === 'list') {
-      addSwipeHandlers(card, plant, waterDue, fertDue);
-    }
 
     list.appendChild(card);
   });
