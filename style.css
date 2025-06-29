@@ -749,6 +749,10 @@ button:focus {
   color: #000;
 }
 
+#plant-grid.text-view .schedule-heading {
+  display: none;
+}
+
 #plant-grid .no-results {
   grid-column: 1 / -1;
   text-align: center;
