@@ -774,25 +774,37 @@ button:focus {
   display: none;
 }
 #plant-grid.text-view .plant-title {
-  font-size: 1rem;
+  font-size: 1.25rem;
   margin: 0;
-  font-weight: normal;
+  font-weight: 700;
 }
 #plant-grid.text-view .plant-species {
   font-size: 1rem;
-  font-style: normal;
+  font-style: italic;
   margin: 0 0 0.5rem 0;
 }
 #plant-grid.text-view .plant-summary {
   margin-left: 0;
   margin-top: 0.5rem;
   padding: 0;
+  font-size: 0.9rem;
 }
 
 /* remove icon spacing when in text view */
 #plant-grid.text-view .plant-summary .summary-item {
   grid-template-columns: 1fr;
   column-gap: 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+/* show bullet for each task line in text view */
+#plant-grid.text-view .plant-summary .summary-item::before {
+  content: "\2022"; /* bullet */
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+  margin-right: 0.25em;
 }
 
 /* hide all images and icons in text mode */
