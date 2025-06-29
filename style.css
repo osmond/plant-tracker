@@ -643,7 +643,7 @@ button:focus {
   flex-direction: column;
   gap: calc(var(--spacing) * 1.5);
   max-width: 48rem;
-  margin-left: auto;
+  margin-left: 0;
   margin-right: auto;
   padding: calc(var(--spacing) * 2);
 }
