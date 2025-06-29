@@ -818,6 +818,11 @@ button:focus {
   font-size: 0.9rem;
 }
 
+/* reduce text size for summary items in text view */
+#plant-grid.text-view .summary-item {
+  font-size: 0.85rem;
+}
+
 /* remove icon spacing when in text view */
 #plant-grid.text-view .plant-summary .summary-item {
   grid-template-columns: 1fr;
@@ -831,7 +836,7 @@ button:focus {
   content: "\2022"; /* bullet */
   display: inline-block;
   width: 1em;
-  margin-left: -1em;
+  margin-left: 0;
   margin-right: 0.25em;
 }
 
