@@ -609,6 +609,15 @@ button:focus {
   color: var(--color-plant);
 }
 
+#calendar .room-group {
+  margin-bottom: var(--spacing);
+}
+
+#calendar .room-header {
+  font-weight: 600;
+  margin: calc(var(--spacing) / 2) 0;
+}
+
 
 /* card layout */
 #plant-grid {
