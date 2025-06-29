@@ -39,7 +39,6 @@ if (!preg_match($namePattern, $name)) {
     return;
 }
 $species = trim($_POST['species'] ?? '');
-$plant_type = isset($_POST['plant_type']) ? trim($_POST['plant_type']) : 'houseplant';
 $room = trim($_POST['room'] ?? '');
 $watering_frequency = intval($_POST['watering_frequency'] ?? 0);
 $fertilizing_frequency = intval($_POST['fertilizing_frequency'] ?? 0);
@@ -50,9 +49,6 @@ $photo_url = trim($_POST['photo_url'] ?? '');
 
 // further validation
 $errors = [];
-if (!in_array($plant_type, ['succulent', 'houseplant', 'vegetable', 'cacti'], true)) {
-    $errors[] = 'Invalid plant type';
-}
 if ($species !== '' && !preg_match("/^[\p{L}0-9\s.'-]{1,100}$/u", $species)) {
     $errors[] = 'Invalid species';
 }
@@ -102,7 +98,6 @@ $stmt = $conn->prepare(
     INSERT INTO plants (
         name,
         species,
-        plant_type,
         room,
         watering_frequency,
         fertilizing_frequency,
@@ -110,7 +105,7 @@ $stmt = $conn->prepare(
         last_fertilized,
         photo_url,
         water_amount
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 );
 if (!$stmt) {
     @http_response_code(500);
@@ -125,10 +120,9 @@ if (!$stmt) {
     return;
 }
 $stmt->bind_param(
-    "ssssiisssd",
+    "sssiisssd",
     $name,
     $species,
-    $plant_type,
     $room,
     $watering_frequency,
     $fertilizing_frequency,
