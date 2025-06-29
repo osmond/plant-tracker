@@ -74,9 +74,8 @@ Both rely on the coefficients defined in `config.php`.
 ## Basic Usage
 
 Use the main interface at `index.html` to add plants, mark them as watered or
-fertilized, and upload photos. When a plant has a watering or fertilizing task
-due, the overflow menu on each card now includes **Mark Watered** and **Mark
-Fertilized** options so the actions remain available even in list view. The API
+fertilized, and upload photos. In list view there are no action buttons; instead
+swipe a plant card to the right to mark watering or fertilizing as done. The API
 endpoints under `api/` are used by the front‑end JavaScript (`script.js`) to
 interact with the database.
 

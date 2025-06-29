@@ -1310,11 +1310,12 @@ async function loadPlants() {
       card.appendChild(warn);
     }
 
-    const actionsDiv = document.createElement('div');
-    actionsDiv.classList.add('actions');
-
     const waterDue = needsWatering(plant, today);
     const fertDue = needsFertilizing(plant, today);
+
+    if (viewMode !== 'list') {
+      const actionsDiv = document.createElement('div');
+      actionsDiv.classList.add('actions');
 
     if (waterDue) {
       const btn = document.createElement('button');
@@ -1478,11 +1479,10 @@ async function loadPlants() {
       }
     });
 
-    actionsDiv.appendChild(overflow);
-    actionsDiv.appendChild(fileInput);
-    card.appendChild(actionsDiv);
-
-    if (viewMode === 'list') {
+      actionsDiv.appendChild(overflow);
+      actionsDiv.appendChild(fileInput);
+      card.appendChild(actionsDiv);
+    } else {
       enableSwipeComplete(card, plant, waterDue, fertDue);
     }
 
