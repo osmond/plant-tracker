@@ -454,31 +454,6 @@ function applyViewMode() {
     btn.classList.toggle('active', btn.dataset.view === viewMode);
   });
   localStorage.setItem('viewMode', viewMode);
-  adjustTagPlacement();
-}
-
-function adjustTagPlacement() {
-  const isList = viewMode === 'list';
-  document.querySelectorAll('#plant-grid .plant-card').forEach(card => {
-    const tagList = card.querySelector('.tag-list');
-    const info = card.querySelector('.plant-info');
-    const photo = card.querySelector('.plant-photo');
-    if (!tagList || !info || !photo) return;
-    if (isList) {
-      if (tagList.parentElement !== card) {
-        card.insertBefore(tagList, info);
-      }
-    } else {
-      if (tagList.parentElement !== info) {
-        const summary = info.querySelector('.plant-summary');
-        if (summary) {
-          info.insertBefore(tagList, summary);
-        } else {
-          info.appendChild(tagList);
-        }
-      }
-    }
-  });
 }
 
 // --- validation, date math, due-date helpers ---
@@ -1454,8 +1429,6 @@ async function loadPlants() {
       datalist.appendChild(opt);
     });
   }
-
-  adjustTagPlacement();
 }
 
 // --- init ---
