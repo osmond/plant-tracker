@@ -458,16 +458,24 @@ function applyViewMode() {
 }
 
 function adjustTagPlacement() {
+  const isList = viewMode === 'list';
   document.querySelectorAll('#plant-grid .plant-card').forEach(card => {
     const tagList = card.querySelector('.tag-list');
     const info = card.querySelector('.plant-info');
-    if (!tagList || !info) return;
-    if (tagList.parentElement !== info) {
-      const summary = info.querySelector('.plant-summary');
-      if (summary) {
-        info.insertBefore(tagList, summary);
-      } else {
-        info.appendChild(tagList);
+    const photo = card.querySelector('.plant-photo');
+    if (!tagList || !info || !photo) return;
+    if (isList) {
+      if (tagList.parentElement !== card) {
+        card.insertBefore(tagList, info);
+      }
+    } else {
+      if (tagList.parentElement !== info) {
+        const summary = info.querySelector('.plant-summary');
+        if (summary) {
+          info.insertBefore(tagList, summary);
+        } else {
+          info.appendChild(tagList);
+        }
       }
     }
   });
