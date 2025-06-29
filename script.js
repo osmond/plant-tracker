@@ -3,14 +3,7 @@ let lastDeletedPlant = null;
 let deleteTimer = null;
 
 // preferred layout for plant cards
-
 let viewMode = localStorage.getItem('viewMode') || 'grid';
-let darkModeStore = localStorage.getItem('darkMode');
-let darkMode = darkModeStore === null
-  ? window.matchMedia('(prefers-color-scheme: dark)').matches
-  : darkModeStore === 'true';
-
-
 // track weather info so the summary can include current conditions
 let currentWeather = null;
 let currentWeatherIcon = null;
@@ -462,10 +455,6 @@ function applyViewMode() {
   localStorage.setItem('viewMode', viewMode);
 }
 
-function applyDarkMode() {
-  document.body.classList.toggle('dark', darkMode);
-  localStorage.setItem('darkMode', darkMode);
-}
 
 // --- validation, date math, due-date helpers ---
 function validateForm(form) {
@@ -1509,7 +1498,6 @@ function init(){
   showFormStep(1);
 
   applyViewMode();
-  applyDarkMode();
 
   loadCalendar();
 
