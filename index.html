@@ -12,14 +12,15 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             colors: {
-              bg: '#fdf9fd',
-              card: '#ffffff',
+              bg: 'var(--color-bg)',
+              card: 'var(--color-card)',
               primary: '#8d67d6',
               accent: '#ffa5d8',
-              text: '#333333'
+              text: 'var(--color-text)'
             }
           }
         },
@@ -32,6 +33,7 @@
         My Plant Tracker
         <button id="show-add-form" class="bg-primary text-white rounded-md px-4 py-2 ml-auto"></button>
         <button id="export-json" class="bg-primary text-white rounded-md px-4 py-2 ml-2"></button>
+        <button id="theme-toggle" class="bg-primary text-white rounded-md px-4 py-2 ml-2"></button>
         <button id="toggle-search" class="bg-primary text-white rounded-md px-4 py-2 ml-2">Search</button>
     </h1>
     <div id="summary" class="p-4 bg-card rounded-lg mb-4">
@@ -65,7 +67,7 @@
             </div>
             <div>
                 <label for="plant_type" class="block mb-1">Plant Type <span class="required-star" aria-hidden="true">*</span></label>
-                <select id="plant_type" name="plant_type" class="w-full border rounded-md p-2">
+                <select id="plant_type" class="w-full border rounded-md p-2">
                     <option value="succulent">Succulent</option>
                     <option value="houseplant" selected>Houseplant</option>
                     <option value="vegetable">Vegetable</option>
