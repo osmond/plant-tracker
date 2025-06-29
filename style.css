@@ -766,12 +766,18 @@ button:focus {
 
 #plant-grid.text-view .plant-card {
   display: block;
-  padding: 0;
-  margin: 0 0 1rem 0;
+  padding-bottom: calc(var(--spacing) * 1.5);
+  margin: 0;
   background: none;
   border: none;
+  /* subtle separator between entries */
+  border-bottom: 1px solid var(--color-border);
   border-radius: 0;
   box-shadow: none;
+}
+
+#plant-grid.text-view .plant-card:last-child {
+  border-bottom: none;
 }
 #plant-grid.text-view .urgency-tag,
 #plant-grid.text-view .water-warning {
@@ -785,10 +791,10 @@ button:focus {
 }
 
 #plant-grid.text-view .tag-list .tag {
-  background: none;
+  background: none !important;
+  border: none !important;
   color: inherit;
   padding: 0;
-  border: none;
   font-weight: 400;
   margin-right: 0.5rem;
 }
