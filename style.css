@@ -744,6 +744,15 @@ button:focus {
   color: #000;
 }
 
+#plant-grid.text-view .plant-summary .summary-item {
+  display: block;
+  grid-template-columns: 1fr;
+}
+
+#plant-grid.text-view .plant-summary .summary-item > span:first-child {
+  display: none;
+}
+
 #plant-grid .no-results {
   grid-column: 1 / -1;
   text-align: center;
