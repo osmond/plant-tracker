@@ -743,6 +743,30 @@ async function markAction(id, type, days = 0) {
   }
 }
 
+// --- swipe-to-complete helper ---
+function enableSwipeComplete(card, plant, waterDue, fertDue) {
+  if (!waterDue && !fertDue) return;
+  let startX = null;
+  let startY = null;
+  card.addEventListener('pointerdown', e => {
+    startX = e.clientX;
+    startY = e.clientY;
+  });
+  card.addEventListener('pointerup', e => {
+    if (startX === null) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    startX = startY = null;
+    if (dx > 80 && Math.abs(dy) < 50) {
+      if (waterDue) markAction(plant.id, 'watered');
+      if (fertDue) markAction(plant.id, 'fertilized');
+    }
+  });
+  card.addEventListener('pointercancel', () => {
+    startX = startY = null;
+  });
+}
+
 // --- undo-delete snackbar ---
 function showUndoBanner(plant) {
   lastDeletedPlant = plant;
@@ -1428,6 +1452,10 @@ async function loadPlants() {
     actionsDiv.appendChild(overflow);
     actionsDiv.appendChild(fileInput);
     card.appendChild(actionsDiv);
+
+    if (viewMode === 'list') {
+      enableSwipeComplete(card, plant, waterDue, fertDue);
+    }
 
     list.appendChild(card);
   });

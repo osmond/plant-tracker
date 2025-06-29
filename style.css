@@ -893,6 +893,12 @@ button:focus {
   display: none;
 }
 
+/* hide inline due buttons and snooze dropdowns in list view */
+#plant-grid.list-view .due-task,
+#plant-grid.list-view .snooze-select {
+  display: none;
+}
+
 @media (min-width: 640px) {
   #plant-grid.list-view .actions {
     margin-top: 0;
