@@ -749,6 +749,12 @@ button:focus {
   padding: 0;
 }
 
+/* remove icon spacing when in text view */
+#plant-grid.text-view .plant-summary .summary-item {
+  grid-template-columns: 1fr;
+  column-gap: 0;
+}
+
 /* hide all images and icons in text mode */
 #plant-grid.text-view .plant-card img,
 #plant-grid.text-view .plant-card svg {
