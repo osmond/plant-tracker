@@ -750,6 +750,14 @@ button:focus {
   text-overflow: ellipsis;
 }
 
+#plant-grid.list-view .schedule-heading {
+  display: none;
+}
+
+#plant-grid.list-view .summary-item {
+  font-size: 0.85rem;
+}
+
 /* text only view */
 #plant-grid.text-view .plant-photo,
 #plant-grid.text-view .actions {

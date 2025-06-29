@@ -1237,10 +1237,12 @@ async function loadPlants() {
     const summary = document.createElement('div');
     summary.classList.add('plant-summary');
 
-    const heading = document.createElement('div');
-    heading.classList.add('schedule-heading');
-    heading.textContent = 'Care Schedule';
-    summary.appendChild(heading);
+    if (viewMode !== 'list') {
+      const heading = document.createElement('div');
+      heading.classList.add('schedule-heading');
+      heading.textContent = 'Care Schedule';
+      summary.appendChild(heading);
+    }
 
     const waterSummary = document.createElement('div');
     waterSummary.classList.add('summary-item');
