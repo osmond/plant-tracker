@@ -701,7 +701,7 @@ button:focus {
 #plant-grid.text-view .plant-photo,
 #plant-grid.text-view .tag-list,
 #plant-grid.text-view .actions {
-  display: none;
+  display: none !important;
 }
 
 #plant-grid.text-view .plant-card {
@@ -887,7 +887,6 @@ button:focus {
   gap: calc(var(--spacing) / 2);
   margin-bottom: calc(var(--spacing) * 1.5);
 }
-
 
 .tag {
   background-color: var(--color-accent);
