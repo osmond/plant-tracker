@@ -637,6 +637,17 @@ button:focus {
   padding: calc(var(--spacing) * 2);
 }
 
+/* text view layout overrides */
+#plant-grid.text-view {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 1.5);
+  max-width: 48rem;
+  margin-left: 0;
+  margin-right: auto;
+  padding: calc(var(--spacing) * 2);
+}
+
 #plant-grid.list-view .plant-card {
   flex-direction: column;
   gap: calc(var(--spacing) * 2);
