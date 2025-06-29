@@ -758,6 +758,7 @@ async function updatePlantInline(plant, field, newValue) {
   data.append('id', plant.id);
   data.append('name', plant.name);
   data.append('species', plant.species);
+  data.append('plant_type', plant.plant_type || 'houseplant');
   data.append('watering_frequency', plant.watering_frequency);
   data.append('fertilizing_frequency', plant.fertilizing_frequency);
   data.append('water_amount', plant.water_amount);
@@ -790,6 +791,7 @@ async function updatePlantPhoto(plant, file) {
   data.append('id', plant.id);
   data.append('name', plant.name);
   data.append('species', plant.species);
+  data.append('plant_type', plant.plant_type || 'houseplant');
   data.append('watering_frequency', plant.watering_frequency);
   data.append('fertilizing_frequency', plant.fertilizing_frequency);
   data.append('water_amount', plant.water_amount);
