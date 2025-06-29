@@ -458,24 +458,16 @@ function applyViewMode() {
 }
 
 function adjustTagPlacement() {
-  const isList = viewMode === 'list';
   document.querySelectorAll('#plant-grid .plant-card').forEach(card => {
     const tagList = card.querySelector('.tag-list');
     const info = card.querySelector('.plant-info');
-    const photo = card.querySelector('.plant-photo');
-    if (!tagList || !info || !photo) return;
-    if (isList) {
-      if (tagList.parentElement !== card) {
-        card.insertBefore(tagList, info);
-      }
-    } else {
-      if (tagList.parentElement !== info) {
-        const summary = info.querySelector('.plant-summary');
-        if (summary) {
-          info.insertBefore(tagList, summary);
-        } else {
-          info.appendChild(tagList);
-        }
+    if (!tagList || !info) return;
+    if (tagList.parentElement !== info) {
+      const summary = info.querySelector('.plant-summary');
+      if (summary) {
+        info.insertBefore(tagList, summary);
+      } else {
+        info.appendChild(tagList);
       }
     }
   });
@@ -1239,10 +1231,12 @@ async function loadPlants() {
     const summary = document.createElement('div');
     summary.classList.add('plant-summary');
 
-    const heading = document.createElement('div');
-    heading.classList.add('schedule-heading');
-    heading.textContent = 'Care Schedule';
-    summary.appendChild(heading);
+    if (viewMode !== 'text') {
+      const heading = document.createElement('div');
+      heading.classList.add('schedule-heading');
+      heading.textContent = 'Care Schedule';
+      summary.appendChild(heading);
+    }
 
     const waterSummary = document.createElement('div');
     waterSummary.classList.add('summary-item');
