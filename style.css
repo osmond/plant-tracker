@@ -749,6 +749,12 @@ button:focus {
   padding: 0;
 }
 
+/* hide all images and icons in text mode */
+#plant-grid.text-view .plant-card img,
+#plant-grid.text-view .plant-card svg {
+  display: none;
+}
+
 
 #plant-grid .no-results {
   grid-column: 1 / -1;
