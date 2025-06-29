@@ -773,10 +773,24 @@ button:focus {
   border-radius: 0;
   box-shadow: none;
 }
-#plant-grid.text-view .tag-list,
 #plant-grid.text-view .urgency-tag,
 #plant-grid.text-view .water-warning {
   display: none;
+}
+
+#plant-grid.text-view .tag-list {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+#plant-grid.text-view .tag-list .tag {
+  background: none;
+  color: inherit;
+  padding: 0;
+  border: none;
+  font-weight: 400;
+  margin-right: 0.5rem;
 }
 #plant-grid.text-view .schedule-heading {
   display: none;
