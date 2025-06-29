@@ -675,11 +675,17 @@ button:focus {
   #plant-grid.list-view .plant-card {
     flex-direction: row;
     align-items: flex-start;
+    flex-wrap: wrap; /* allow tag list to sit below the image */
   }
 
   #plant-grid.list-view .plant-photo {
     width: 80px;
     height: 80px;
+  }
+
+  #plant-grid.list-view .tag-list {
+    flex-basis: 100%;
+    margin-left: calc(80px + var(--spacing));
   }
 }
 
