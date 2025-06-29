@@ -5,7 +5,7 @@
 --color-accent: #8bc34a; 
 
 --color-bg: #f1f8e9;
- --color-card: #ffffff;
+
  --color-surface: #ffffff;
 
 --color-border: #c8e6c9; 
@@ -46,18 +46,6 @@
   --font-size-base: 1rem;      /* 16px base text */
   --font-size-lg: 1.25rem;     /* 20px large text */
   --font-size-xl: 1.5rem;      /* 24px extra large text */
-}
-
-body.dark {
-  --color-bg: #1a1a1a;
-  --color-card: #1e1e1e;
-  --color-surface: #1e1e1e;
-  --color-border: #444444;
-  --color-text: #f5f5f5;
-  --color-error-bg: #4a2b2b;
-  --color-warning-bg: #5b4b1a;
-  --color-success-bg: #224422;
-  --add-photo-bg: #312d4b;
 }
 
 .bg-primary {

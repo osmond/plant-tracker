@@ -54,7 +54,6 @@ Database credentials are taken from the environment variables `DB_HOST`, `DB_USE
 4. Selecting a suggestion shows its classification, common names and synonyms beneath the field.
 5. If available, specimen photos from GBIF appear as thumbnails for quick reference.
 6. View upcoming tasks in the calendar and drag them to reschedule.
-7. Click the weather icon in the summary bar to toggle dark mode.
 7. When using **list view**, swipe right on a plant to mark watering done or swipe left to record fertilizing.
 
 Uploaded images are stored in `uploads/` and automatically converted to WebP when possible.
