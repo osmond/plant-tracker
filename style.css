@@ -638,9 +638,9 @@ button:focus {
 
 #plant-grid.list-view .plant-card {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
   grid-gap: 1rem;
-  align-items: center;
+  align-items: start;
   padding: calc(var(--spacing) * 2);
   border-bottom: 1px solid #e5e7eb;
   transition: background-color 0.2s, box-shadow 0.2s;
@@ -657,6 +657,7 @@ button:focus {
 
 #plant-grid.list-view .plant-photo {
   grid-column: 1;
+  align-self: start;
   width: 64px;
   height: 64px;
   margin-right: 0;
@@ -665,6 +666,11 @@ button:focus {
 }
 
 #plant-grid.list-view .tag-list {
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: max-content;
   margin-top: 0.5rem;
 }
 #plant-grid.list-view .room-tag { order: 1; }
@@ -688,13 +694,6 @@ button:focus {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-#plant-grid.list-view .meta-line {
-  display: block;
-  font-size: 0.875rem;
-  color: #6c757d;
-  margin-bottom: 0.75rem;
 }
 
 /* text only view */
@@ -787,8 +786,7 @@ button:focus {
 }
 
 #plant-grid.list-view .actions {
-  grid-column: 3;
-  margin-top: 0;
+  margin-top: calc(var(--spacing) * 2);
 }
 
 #plant-grid.list-view .actions-left,
@@ -799,6 +797,7 @@ button:focus {
 @media (min-width: 640px) {
   #plant-grid.list-view .actions {
     margin-top: 0;
+    margin-left: calc(var(--spacing) * 1.5);
   }
 }
 
