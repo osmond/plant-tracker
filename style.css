@@ -733,6 +733,9 @@ button:focus {
 #plant-grid.text-view .water-warning {
   display: none;
 }
+#plant-grid.text-view .schedule-heading {
+  display: none;
+}
 #plant-grid.text-view .plant-title {
   font-size: 1rem;
   margin: 0;
