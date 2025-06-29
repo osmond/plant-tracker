@@ -743,25 +743,6 @@ async function markAction(id, type, days = 0) {
   }
 }
 
-function setupSwipe(card, plant, waterDue, fertDue) {
-  let startX = 0;
-  let startY = 0;
-  card.addEventListener('touchstart', e => {
-    const t = e.touches[0];
-    startX = t.clientX;
-    startY = t.clientY;
-  });
-  card.addEventListener('touchend', e => {
-    const t = e.changedTouches[0];
-    const dx = t.clientX - startX;
-    const dy = t.clientY - startY;
-    if (dx > 80 && Math.abs(dy) < 40) {
-      if (waterDue) markAction(plant.id, 'watered');
-      if (fertDue) markAction(plant.id, 'fertilized');
-    }
-  });
-}
-
 // --- undo-delete snackbar ---
 function showUndoBanner(plant) {
   lastDeletedPlant = plant;
@@ -1311,8 +1292,7 @@ async function loadPlants() {
     const waterDue = needsWatering(plant, today);
     const fertDue = needsFertilizing(plant, today);
 
-    const showButtons = viewMode !== 'list';
-    if (waterDue && showButtons) {
+    if (waterDue) {
       const btn = document.createElement('button');
       btn.classList.add('action-btn', 'due-task', 'water-due');
       btn.innerHTML = ICONS.water + '<span class="visually-hidden">Water</span>';
@@ -1343,7 +1323,7 @@ async function loadPlants() {
       actionsDiv.appendChild(snooze);
     }
 
-    if (fertDue && showButtons) {
+    if (fertDue) {
       const btn = document.createElement('button');
       btn.classList.add('action-btn', 'due-task', 'fert-due');
       btn.innerHTML = ICONS.fert + '<span class="visually-hidden">Fertilize</span>';
@@ -1450,9 +1430,6 @@ async function loadPlants() {
     card.appendChild(actionsDiv);
 
     list.appendChild(card);
-    if (viewMode === 'list') {
-      setupSwipe(card, plant, waterDue, fertDue);
-    }
   });
 
   // refresh room filter and datalist
