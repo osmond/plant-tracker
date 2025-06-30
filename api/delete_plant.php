@@ -58,7 +58,16 @@ if ($stmt->affected_rows > 0) {
             strpos($oldReal, $uploadsRoot) === 0 &&
             is_file($oldReal)
         ) {
-            unlink($oldReal);
+            $archiveDir = $uploadsRoot . '/archive';
+            if (!is_dir($archiveDir)) {
+                mkdir($archiveDir, 0755, true);
+            }
+            $archivePath = $archiveDir . '/' . basename($oldReal);
+            if (file_exists($archivePath)) {
+                $info = pathinfo($oldReal);
+                $archivePath = $archiveDir . '/' . $info['filename'] . '_' . time() . '.' . $info['extension'];
+            }
+            rename($oldReal, $archivePath);
         }
     }
     @http_response_code(200);
