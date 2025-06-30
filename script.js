@@ -1619,7 +1619,7 @@ function init(){
   const roomFilter = document.getElementById('room-filter');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('due-filter');
-  const archiveBtn = document.getElementById('archive-btn');
+  const archiveToggle = document.getElementById('archive-toggle');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
@@ -1949,11 +1949,12 @@ function init(){
       loadPlants();
     });
   }
-  if (archiveBtn) {
+  if (archiveToggle) {
     const updateArchLabel = () => {
-      archiveBtn.textContent = archiveMode === 'archived' ? 'Show Active' : 'View Archived';
+      archiveToggle.textContent = archiveMode === 'archived' ? 'Archived' : 'Show Archived';
+      archiveToggle.classList.toggle('active', archiveMode === 'archived');
     };
-    archiveBtn.addEventListener('click', () => {
+    archiveToggle.addEventListener('click', () => {
       archiveMode = archiveMode === 'archived' ? 'active' : 'archived';
       saveFilterPrefs();
       loadPlants();
