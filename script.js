@@ -4,6 +4,7 @@ let deleteTimer = null;
 
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
+let archiveMode = localStorage.getItem('archiveMode') || 'active';
 // track weather info so the summary can include current conditions
 let currentWeather = null;
 let currentWeatherIcon = null;
@@ -380,6 +381,7 @@ const ICONS = {
   ,grid: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>'
   ,text: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>'
   ,menu: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>'
+  ,archive: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>'
 };
 
 function showToast(msg, isError = false) {
@@ -405,27 +407,36 @@ function saveFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
   const df = document.getElementById('due-filter');
+  const af = document.getElementById('archive-toggle');
   if (rf) localStorage.setItem('roomFilter', rf.value);
   if (sf) localStorage.setItem('sortPref', sf.value);
   if (df) localStorage.setItem('dueFilter', df.value);
+  if (af) localStorage.setItem('archiveMode', af.value);
 }
 
 function loadFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
   const df = document.getElementById('due-filter');
+  const af = document.getElementById('archive-toggle');
   const rVal = localStorage.getItem('roomFilter');
   const sVal = localStorage.getItem('sortPref');
   const dVal = localStorage.getItem('dueFilter');
+  const aVal = localStorage.getItem('archiveMode');
   if (rf) rf.value = rVal !== null ? rVal : 'all';
   if (sf) sf.value = sVal !== null ? sVal : 'due';
   if (df) df.value = dVal !== null ? dVal : 'any';
+  if (af) {
+    af.value = aVal !== null ? aVal : 'active';
+    archiveMode = af.value;
+  }
 }
 
 function clearFilterPrefs() {
   localStorage.removeItem('roomFilter');
   localStorage.removeItem('sortPref');
   localStorage.removeItem('dueFilter');
+  localStorage.removeItem('archiveMode');
 }
 
 function saveHistoryValue(key, value) {
@@ -1102,7 +1113,7 @@ async function exportPlantsJSON() {
 
 // --- main render & filter loop ---
 async function loadPlants() {
-  const res = await fetch('api/get_plants.php');
+  const res = await fetch('api/get_plants.php?archived=' + (archiveMode === 'archived' ? 'true' : 'false'));
   const plants = await res.json();
   const list = document.getElementById('plant-grid');
   if (list) {
@@ -1244,6 +1255,13 @@ async function loadPlants() {
     card.classList.add('plant-card');
     if (viewMode !== 'text') {
       card.classList.add('shadow');
+    }
+    if (archiveMode === 'archived') {
+      card.classList.add('archived-card');
+      const badge = document.createElement('span');
+      badge.classList.add('archived-badge');
+      badge.textContent = 'Archived';
+      card.appendChild(badge);
     }
     if (plant.id === window.lastUpdatedPlantId) {
       card.classList.add('just-updated');
@@ -1512,6 +1530,17 @@ async function loadPlants() {
     };
     menu.appendChild(changeBtn);
 
+    const archiveBtn = document.createElement('button');
+    archiveBtn.classList.add('action-btn', 'archive-btn');
+    const archLabel = archiveMode === 'archived' ? 'Unarchive' : 'Archive';
+    archiveBtn.innerHTML = ICONS.archive + `<span class="visually-hidden">${archLabel}</span>`;
+    archiveBtn.title = archLabel;
+    archiveBtn.onclick = async () => {
+      await updatePlantInline(plant, 'archived', archiveMode === 'archived' ? 0 : 1);
+      menu.classList.remove('show');
+    };
+    menu.appendChild(archiveBtn);
+
     menuBtn.onclick = (e) => {
       e.stopPropagation();
       menu.classList.toggle('show');
@@ -1585,6 +1614,7 @@ function init(){
   const roomFilter = document.getElementById('room-filter');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('due-filter');
+  const archiveToggle = document.getElementById('archive-toggle');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
@@ -1910,6 +1940,13 @@ function init(){
   }
   if (dueFilterEl) {
     dueFilterEl.addEventListener('change', () => {
+      saveFilterPrefs();
+      loadPlants();
+    });
+  }
+  if (archiveToggle) {
+    archiveToggle.addEventListener('change', () => {
+      archiveMode = archiveToggle.value;
       saveFilterPrefs();
       loadPlants();
     });
