@@ -121,8 +121,11 @@ async function markActionsWithUndo(plant, card, actions) {
   const prevWater = plant.last_watered;
   const prevFert = plant.last_fertilized;
   for (const act of actions) {
-    await markAction(plant.id, act);
+    await markAction(plant.id, act, 0, false);
   }
+  const toastMsg = actions.length === 2 ? 'Watered & fertilized!' :
+    (actions[0] === 'watered' ? 'Marked watered!' : 'Marked fertilized!');
+  showToast(toastMsg);
   showCompletionBadge(card, actions.length === 2 ? 'Care done!' :
     (actions[0] === 'watered' ? 'Watered!' : 'Fertilized!'));
   playSuccessFeedback();
@@ -811,7 +814,7 @@ async function handleDrop(e,newDate,plants) {
 }
 
 // --- mark watered/fertilized / snooze ---
-async function markAction(id, type, days = 0) {
+async function markAction(id, type, days = 0, showMsg = true) {
   window.lastUpdatedPlantId = id;
   try {
     const resp = await fetch(`api/mark_${type}.php`, {
@@ -832,7 +835,9 @@ async function markAction(id, type, days = 0) {
     } else {
       msg = type === 'watered' ? 'Marked watered!' : 'Marked fertilized!';
     }
-    showToast(msg);
+    if (showMsg) {
+      showToast(msg);
+    }
   } catch (err) {
     console.error('Failed to mark action:', err);
     showToast('Failed to update plant. Please try again.', true);
