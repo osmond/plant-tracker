@@ -53,6 +53,10 @@ php -S localhost:8000
 
    Then open `http://localhost:8000/index.html` in your browser.
 
+   **Note:** Opening `index.html` directly as a file won't work because the
+   JavaScript needs the PHP API endpoints. Always access the app through the
+   local server above.
+
 ## Running Tests
 
 PHPUnit tests are provided for the API endpoints. Run them from the project root:
