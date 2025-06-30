@@ -2,6 +2,10 @@ let editingPlantId = null;
 let lastDeletedPlant = null;
 let deleteTimer = null;
 
+// show archived plants instead of active ones
+let showArchive = false;
+let archivedCache = null;
+
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
 // track weather info so the summary can include current conditions
@@ -379,7 +383,8 @@ const ICONS = {
   list: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3" y2="6"/><line x1="3" y1="12" x2="3" y2="12"/><line x1="3" y1="18" x2="3" y2="18"/></svg>',
   grid: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
   text: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>',
-  menu: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>'
+  menu: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>',
+  archive: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5" rx="2" ry="2"/><line x1="10" y1="12" x2="14" y2="12"/></svg>'
 };
 
 function showToast(msg, isError = false) {
@@ -769,6 +774,27 @@ async function markAction(id, type, days = 0) {
   }
 }
 
+// --- archive/unarchive helper ---
+async function archivePlant(id, archive = true) {
+  try {
+    const resp = await fetch('api/archive_plant.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `id=${id}&archive=${archive ? 1 : 0}`
+    });
+    if (!resp.ok) throw new Error();
+    archivedCache = null;
+    showToast(archive ? 'Plant archived!' : 'Plant restored!');
+    if (showArchive && !archive) showArchive = false;
+    loadPlants();
+    loadCalendar();
+    checkArchivedLink();
+  } catch (err) {
+    console.error('Failed to update archive state:', err);
+    showToast('Failed to update plant. Please try again.', true);
+  }
+}
+
 // --- swipe-to-complete helper ---
 function enableSwipeComplete(card, overlay, plant, waterDue, fertDue) {
   if (!waterDue && !fertDue) return;
@@ -1109,7 +1135,7 @@ async function exportPlantsJSON() {
 
 // --- main render & filter loop ---
 async function loadPlants() {
-  const res = await fetch('api/get_plants.php');
+  const res = await fetch(`api/get_plants.php${showArchive ? '?archived=1' : ''}`);
   const plants = await res.json();
   const list = document.getElementById('plant-grid');
   if (list) {
@@ -1249,6 +1275,9 @@ async function loadPlants() {
 
     const card = document.createElement('div');
     card.classList.add('plant-card');
+    if (showArchive) {
+      card.classList.add('archived');
+    }
     if (viewMode !== 'text') {
       card.classList.add('shadow');
     }
@@ -1259,26 +1288,28 @@ async function loadPlants() {
     const soonest = getSoonestDueDate(plant);
     let urgencyClass = '';
     let urgencyText = '';
-    if (soonest < startOfToday) {
-      card.classList.add('due-overdue');
-      urgencyClass = 'urgency-overdue';
-      const overdueDays = Math.floor((startOfToday - soonest) / 86400000);
-      urgencyText = `Overdue by ${overdueDays} day${overdueDays !== 1 ? 's' : ''}`;
-    } else if (soonest < startOfTomorrow) {
-      card.classList.add('due-today');
-      urgencyClass = 'urgency-today';
-      urgencyText = 'Due Today';
-    } else if (soonest < startOfDayAfterTomorrow) {
-      card.classList.add('due-future');
-      urgencyClass = 'urgency-future';
-      urgencyText = 'Upcoming';
-    }
+    if (!showArchive) {
+      if (soonest < startOfToday) {
+        card.classList.add('due-overdue');
+        urgencyClass = 'urgency-overdue';
+        const overdueDays = Math.floor((startOfToday - soonest) / 86400000);
+        urgencyText = `Overdue by ${overdueDays} day${overdueDays !== 1 ? 's' : ''}`;
+      } else if (soonest < startOfTomorrow) {
+        card.classList.add('due-today');
+        urgencyClass = 'urgency-today';
+        urgencyText = 'Due Today';
+      } else if (soonest < startOfDayAfterTomorrow) {
+        card.classList.add('due-future');
+        urgencyClass = 'urgency-future';
+        urgencyText = 'Upcoming';
+      }
 
-    if (urgencyText) {
-      const urgencyTag = document.createElement('span');
-      urgencyTag.classList.add('urgency-tag', urgencyClass);
-      urgencyTag.textContent = urgencyText;
-      card.appendChild(urgencyTag);
+      if (urgencyText) {
+        const urgencyTag = document.createElement('span');
+        urgencyTag.classList.add('urgency-tag', urgencyClass);
+        urgencyTag.textContent = urgencyText;
+        card.appendChild(urgencyTag);
+      }
     }
 
     const img = document.createElement('img');
@@ -1508,6 +1539,19 @@ async function loadPlants() {
     };
     menu.appendChild(delBtn);
 
+    const archBtn = document.createElement('button');
+    archBtn.classList.add('action-btn');
+    archBtn.innerHTML =
+      (showArchive ? ICONS.undo : ICONS.archive) +
+      `<span class="visually-hidden">${showArchive ? 'Restore' : 'Archive'}</span>`;
+    archBtn.title = showArchive ? 'Restore' : 'Archive';
+    archBtn.type = 'button';
+    archBtn.onclick = () => {
+      archivePlant(plant.id, !showArchive);
+      menu.classList.remove('show');
+    };
+    menu.appendChild(archBtn);
+
     const changeBtn = document.createElement('button');
     changeBtn.classList.add('action-btn', 'photo-btn');
     changeBtn.innerHTML = ICONS.photo + '<span class="visually-hidden">Change Photo</span>';
@@ -1578,6 +1622,29 @@ async function loadPlants() {
     });
   }
 
+  checkArchivedLink(plants);
+}
+
+async function checkArchivedLink(plantsList) {
+  const link = document.getElementById('archived-link');
+  if (!link) return;
+  const room = document.getElementById('room-filter').value;
+  if (showArchive) {
+    link.textContent = 'Back to active plants';
+    link.classList.remove('hidden');
+    return;
+  }
+  if (!archivedCache) {
+    const res = await fetch('api/get_plants.php?archived=1');
+    archivedCache = await res.json();
+  }
+  const has = archivedCache.some(p => room === 'all' ? true : p.room === room);
+  if (has) {
+    link.textContent = 'Archived plants';
+    link.classList.remove('hidden');
+  } else {
+    link.classList.add('hidden');
+  }
 }
 
 // --- init ---
@@ -1592,6 +1659,7 @@ function init(){
   const closeSearch = document.getElementById('close-search');
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
   const roomFilter = document.getElementById('room-filter');
+  const archivedLink = document.getElementById('archived-link');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('due-filter');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
@@ -1909,6 +1977,7 @@ function init(){
     roomFilter.addEventListener('change', () => {
       saveFilterPrefs();
       loadPlants();
+      checkArchivedLink();
     });
   }
   if (sortToggle) {
@@ -1948,6 +2017,14 @@ function init(){
     nextBtn.addEventListener('click', () => {
       calendarStartDate = addDays(calendarStartDate, 7);
       loadCalendar();
+    });
+  }
+  if (archivedLink) {
+    archivedLink.addEventListener('click', e => {
+      e.preventDefault();
+      showArchive = !showArchive;
+      loadPlants();
+      checkArchivedLink();
     });
   }
   loadPlants();

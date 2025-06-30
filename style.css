@@ -1270,6 +1270,29 @@ button:focus {
   color: var(--color-text);
 }
 
+.plant-card.archived {
+  opacity: 0.6;
+}
+.plant-card.archived::after {
+  content: 'Archived';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+#archived-link {
+  cursor: pointer;
+  color: var(--color-primary);
+  text-decoration: underline;
+  display: none;
+}
+#archived-link.hidden { display: none; }
+
 
 
 
