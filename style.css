@@ -431,6 +431,10 @@ button:focus {
   transition: opacity 0.3s ease, visibility 0s linear 0.3s;
 }
 
+#undo-banner.success {
+  background: var(--color-success);
+}
+
 #undo-banner.show {
   opacity: 1;
   visibility: visible;
@@ -448,6 +452,15 @@ button:focus {
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
+}
+
+#undo-banner.success #undo-btn {
+  color: var(--color-success);
+}
+#undo-banner.success #undo-btn:hover,
+#undo-banner.success #undo-btn:focus {
+  background: var(--color-success);
+  color: var(--color-bg);
 }
 
 #undo-btn:hover,
@@ -469,6 +482,24 @@ button:focus {
 
 .summary-banner.show {
   opacity: 1;
+}
+
+.completion-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--color-success);
+  color: var(--color-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: var(--font-size-sm);
+  animation: fade-up 2s forwards;
+}
+
+@keyframes fade-up {
+  0% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-10px); }
 }
 
 /* toast notification */
@@ -877,6 +908,7 @@ button:focus {
 
 .plant-card-wrapper {
   position: relative;
+  --swipe-progress: 0;
 }
 
 .swipe-overlay {
@@ -888,16 +920,19 @@ button:focus {
   padding-left: calc(var(--spacing) * 2);
   background-color: var(--color-success-bg);
   border-radius: 12px;
-  opacity: 0;
+  opacity: var(--swipe-progress);
   pointer-events: none;
   z-index: 0;
-  transition: opacity 0.2s;
+  transform: translateX(calc(-20% * (1 - var(--swipe-progress))));
+  transition: opacity 0.2s, transform 0.2s;
 }
 
 .swipe-overlay .icon {
   width: 1.5rem;
   height: 1.5rem;
   color: var(--color-success);
+  transform: scale(calc(0.5 + 0.5 * var(--swipe-progress)));
+  transition: transform 0.2s;
 }
 
 .plant-card .actions {
