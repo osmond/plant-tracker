@@ -77,4 +77,7 @@ Use the main interface at `index.html` to add plants, mark them as watered or
 fertilized, and upload photos. The API endpoints under `api/` are used by the
 front‑end JavaScript (`script.js`) to interact with the database.
 
+In list or text view you can swipe right on a plant card to complete all due
+tasks (watering and fertilizing) at once.
+
 

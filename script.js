@@ -1453,7 +1453,7 @@ async function loadPlants() {
     actionsDiv.appendChild(fileInput);
     card.appendChild(actionsDiv);
 
-    if (viewMode === 'list') {
+    if (viewMode === 'list' || viewMode === 'text') {
       enableSwipeComplete(card, plant, waterDue, fertDue);
     }
 
