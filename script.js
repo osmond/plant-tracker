@@ -643,8 +643,18 @@ function getNextFertDate(plant) {
 }
 
 async function loadCalendar() {
-  const res = await fetch('api/get_plants.php');
-  const plants = await res.json();
+  let plants = [];
+  try {
+    const res = await fetch('api/get_plants.php');
+    if (!res.ok) {
+      throw new Error(`Request failed with status ${res.status}`);
+    }
+    plants = await res.json();
+  } catch (err) {
+    console.error('Failed to load calendar:', err);
+    showToast('Failed to load calendar data', true);
+    return;
+  }
   const container = document.getElementById('calendar');
   if (!container) return;
   const daysToShow = 7;
