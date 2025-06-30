@@ -906,6 +906,7 @@ async function updatePlantInline(plant, field, newValue) {
   data.append('last_watered', plant.last_watered || '');
   data.append('last_fertilized', plant.last_fertilized || '');
   data.append('photo_url', plant.photo_url || '');
+  data.append('archived', plant.archived ? 1 : 0);
 
   data.set(field, newValue);
 
@@ -938,6 +939,7 @@ async function updatePlantPhoto(plant, file) {
   data.append('room', plant.room);
   data.append('last_watered', plant.last_watered || '');
   data.append('last_fertilized', plant.last_fertilized || '');
+  data.append('archived', plant.archived ? 1 : 0);
   data.append('photo', file);
 
   toggleLoading(true);
