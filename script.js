@@ -466,6 +466,30 @@ function applyViewMode() {
   localStorage.setItem('viewMode', viewMode);
 }
 
+function setArchiveToggleState(btn) {
+  if (!btn) return;
+  btn.textContent = archiveMode === 'archived' ? 'Archived' : 'Show Archived';
+  btn.classList.toggle('active', archiveMode === 'archived');
+}
+
+async function updateArchiveToggleVisibility() {
+  const btn = document.getElementById('archive-toggle');
+  if (!btn) return;
+  try {
+    const room = document.getElementById('room-filter').value;
+    const res = await fetch('api/get_plants.php?archived=true');
+    const archived = await res.json();
+    const has = room === 'all' ? archived.length > 0 : archived.some(p => p.room === room);
+    btn.style.display = has ? 'inline-flex' : 'none';
+    if (!has && archiveMode === 'archived') {
+      archiveMode = 'active';
+    }
+    if (has) setArchiveToggleState(btn);
+  } catch (e) {
+    btn.style.display = 'none';
+  }
+}
+
 
 // --- validation, date math, due-date helpers ---
 function validateForm(form) {
@@ -1603,6 +1627,8 @@ async function loadPlants() {
       datalist.appendChild(opt);
     });
   }
+
+  updateArchiveToggleVisibility();
 }
 
 // --- init ---
@@ -1935,6 +1961,7 @@ function init(){
     roomFilter.addEventListener('change', () => {
       saveFilterPrefs();
       loadPlants();
+      updateArchiveToggleVisibility();
     });
   }
   if (sortToggle) {
@@ -1950,10 +1977,7 @@ function init(){
     });
   }
   if (archiveToggle) {
-    const updateArchLabel = () => {
-      archiveToggle.textContent = archiveMode === 'archived' ? 'Archived' : 'Show Archived';
-      archiveToggle.classList.toggle('active', archiveMode === 'archived');
-    };
+    const updateArchLabel = () => setArchiveToggleState(archiveToggle);
     archiveToggle.addEventListener('click', () => {
       archiveMode = archiveMode === 'archived' ? 'active' : 'archived';
       saveFilterPrefs();
@@ -1961,6 +1985,7 @@ function init(){
       updateArchLabel();
     });
     updateArchLabel();
+    updateArchiveToggleVisibility();
   }
   if (viewButtons.length) {
     viewButtons.forEach(btn => {
