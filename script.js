@@ -368,6 +368,7 @@ const ICONS = {
 
   plus: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
   edit: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+  duplicate: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
   cancel: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
   undo: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
   check: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
@@ -941,6 +942,34 @@ async function updatePlantPhoto(plant, file) {
     } else {
       window.lastUpdatedPlantId = plant.id;
       loadPlants();
+    }
+  } finally {
+    toggleLoading(false);
+  }
+}
+
+async function duplicatePlant(plant) {
+  const data = new FormData();
+  data.append('name', plant.name);
+  data.append('species', plant.species);
+  data.append('plant_type', plant.plant_type || 'houseplant');
+  data.append('watering_frequency', plant.watering_frequency);
+  data.append('fertilizing_frequency', plant.fertilizing_frequency);
+  data.append('water_amount', plant.water_amount);
+  data.append('room', plant.room);
+  data.append('last_watered', plant.last_watered || '');
+  data.append('last_fertilized', plant.last_fertilized || '');
+  data.append('photo_url', plant.photo_url || '');
+
+  toggleLoading(true);
+  try {
+    const resp = await fetch('api/add_plant.php', { method: 'POST', body: data });
+    if (!resp.ok) {
+      showToast('Failed to duplicate plant', true);
+    } else {
+      showToast('Plant duplicated!');
+      loadPlants();
+      loadCalendar();
     }
   } finally {
     toggleLoading(false);
@@ -1528,6 +1557,17 @@ async function loadPlants() {
       menu.classList.remove('show');
     };
     menu.appendChild(editBtn);
+
+    const dupBtn = document.createElement('button');
+    dupBtn.classList.add('action-btn', 'duplicate-btn');
+    dupBtn.innerHTML = ICONS.duplicate + '<span class="visually-hidden">Duplicate</span>';
+    dupBtn.title = 'Duplicate';
+    dupBtn.type = 'button';
+    dupBtn.onclick = () => {
+      duplicatePlant(plant);
+      menu.classList.remove('show');
+    };
+    menu.appendChild(dupBtn);
 
     const delBtn = document.createElement('button');
     delBtn.classList.add('action-btn', 'delete-btn');
