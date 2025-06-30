@@ -1,6 +1,8 @@
 let editingPlantId = null;
 let lastDeletedPlant = null;
 let deleteTimer = null;
+let lastCompletedAction = null;
+let actionTimer = null;
 
 // show archived plants instead of active ones
 let showArchive = false;
@@ -63,6 +65,68 @@ function debounce(fn, delay = 300) {
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), delay);
   };
+}
+
+function playSuccessFeedback() {
+  if (navigator.vibrate) {
+    navigator.vibrate(50);
+  }
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = 440;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    osc.stop(ctx.currentTime + 0.15);
+  } catch (e) {}
+}
+
+function showCompletionBadge(card, text) {
+  const badge = document.createElement('div');
+  badge.className = 'completion-badge';
+  badge.textContent = text;
+  card.appendChild(badge);
+  setTimeout(() => badge.remove(), 2000);
+  card.classList.add('just-updated');
+  setTimeout(() => card.classList.remove('just-updated'), 2000);
+}
+
+function showUndoActionBanner(plant, actions, prevWater, prevFert) {
+  lastCompletedAction = { plant, actions, prevWater, prevFert };
+  const banner = document.getElementById('undo-banner');
+  const msg = document.getElementById('undo-message');
+  if (msg) {
+    if (actions.length === 2) {
+      msg.textContent = 'Tasks marked complete.';
+    } else {
+      msg.textContent = actions[0] === 'watered' ? 'Watered.' : 'Fertilized.';
+    }
+  }
+  banner.classList.add('success');
+  banner.classList.add('show');
+  clearTimeout(actionTimer);
+  actionTimer = setTimeout(() => {
+    banner.classList.remove('show');
+    banner.classList.remove('success');
+    lastCompletedAction = null;
+  }, 5000);
+}
+
+async function markActionsWithUndo(plant, card, actions) {
+  const prevWater = plant.last_watered;
+  const prevFert = plant.last_fertilized;
+  for (const act of actions) {
+    await markAction(plant.id, act);
+  }
+  showCompletionBadge(card, actions.length === 2 ? 'Care done!' :
+    (actions[0] === 'watered' ? 'Watered!' : 'Fertilized!'));
+  playSuccessFeedback();
+  showUndoActionBanner(plant, actions, prevWater, prevFert);
 }
 
 // map room names to generated colors so tags remain consistent
@@ -812,7 +876,7 @@ function enableSwipeComplete(card, overlay, plant, waterDue, fertDue) {
     activePointerId = e.pointerId;
     card.setPointerCapture(activePointerId);
     card.style.transition = 'none';
-    overlay.style.transition = 'opacity 0.2s';
+    overlay.style.transition = 'opacity 0.2s, transform 0.2s';
   });
   card.addEventListener('pointermove', e => {
     if (startX === null) return;
@@ -825,7 +889,7 @@ function enableSwipeComplete(card, overlay, plant, waterDue, fertDue) {
       const translate = Math.max(0, dx);
       card.style.transform = `translateX(${translate}px)`;
       const progress = Math.min(1, translate / threshold);
-      overlay.style.opacity = progress;
+      overlay.style.setProperty('--swipe-progress', progress);
     }
   });
   card.addEventListener('pointerup', e => {
@@ -836,16 +900,18 @@ function enableSwipeComplete(card, overlay, plant, waterDue, fertDue) {
     card.style.transition = '';
     if (dx > threshold && Math.abs(dy) < 50) {
       card.style.transform = `translateX(100%)`;
-      overlay.style.opacity = 1;
+      overlay.style.setProperty('--swipe-progress', 1);
       setTimeout(() => {
         card.style.transform = '';
-        overlay.style.opacity = 0;
-        if (waterDue) markAction(plant.id, 'watered');
-        if (fertDue) markAction(plant.id, 'fertilized');
+        overlay.style.setProperty('--swipe-progress', 0);
+        const acts = [];
+        if (waterDue) acts.push('watered');
+        if (fertDue) acts.push('fertilized');
+        markActionsWithUndo(plant, card, acts);
       }, 200);
     } else {
       card.style.transform = '';
-      overlay.style.opacity = 0;
+      overlay.style.setProperty('--swipe-progress', 0);
     }
     swiping = false;
     if (activePointerId !== null) {
@@ -858,7 +924,7 @@ function enableSwipeComplete(card, overlay, plant, waterDue, fertDue) {
     swiping = false;
     card.style.transition = '';
     card.style.transform = '';
-    overlay.style.opacity = 0;
+    overlay.style.setProperty('--swipe-progress', 0);
     if (activePointerId !== null) {
       card.releasePointerCapture(activePointerId);
       activePointerId = null;
@@ -870,6 +936,9 @@ function enableSwipeComplete(card, overlay, plant, waterDue, fertDue) {
 function showUndoBanner(plant) {
   lastDeletedPlant = plant;
   const banner = document.getElementById('undo-banner');
+  const msg = document.getElementById('undo-message');
+  if (msg) msg.textContent = 'Plant deleted.';
+  banner.classList.remove('success');
   banner.classList.add('show');
   clearTimeout(deleteTimer);
   deleteTimer = setTimeout(async () => {
@@ -1462,7 +1531,7 @@ async function loadPlants() {
       btn.classList.add('action-btn', 'due-task', 'water-due');
       btn.innerHTML = ICONS.water + '<span class="visually-hidden">Water</span>';
       btn.title = 'Water Now';
-      btn.onclick = () => markAction(plant.id, 'watered');
+      btn.onclick = () => markActionsWithUndo(plant, card, ['watered']);
       actionsDiv.appendChild(btn);
 
       const snooze = document.createElement('select');
@@ -1493,7 +1562,7 @@ async function loadPlants() {
       btn.classList.add('action-btn', 'due-task', 'fert-due');
       btn.innerHTML = ICONS.fert + '<span class="visually-hidden">Fertilize</span>';
       btn.title = 'Fertilize Now';
-      btn.onclick = () => markAction(plant.id, 'fertilized');
+      btn.onclick = () => markActionsWithUndo(plant, card, ['fertilized']);
       actionsDiv.appendChild(btn);
 
       const snooze = document.createElement('select');
@@ -1820,10 +1889,24 @@ function init(){
       showFormStep(1);
     });
   }
-  document.getElementById('undo-btn').addEventListener('click',()=>{
-    clearTimeout(deleteTimer);
-    document.getElementById('undo-banner').classList.remove('show');
-    lastDeletedPlant=null;
+  document.getElementById('undo-btn').addEventListener('click', async () => {
+    const banner = document.getElementById('undo-banner');
+    banner.classList.remove('show');
+    if (lastDeletedPlant) {
+      clearTimeout(deleteTimer);
+      lastDeletedPlant = null;
+    } else if (lastCompletedAction) {
+      clearTimeout(actionTimer);
+      const { plant, actions, prevWater, prevFert } = lastCompletedAction;
+      if (actions.includes('watered')) {
+        await updatePlantInline(plant, 'last_watered', prevWater);
+      }
+      if (actions.includes('fertilized')) {
+        await updatePlantInline(plant, 'last_fertilized', prevFert);
+      }
+      lastCompletedAction = null;
+      banner.classList.remove('success');
+    }
   });
 
   document.getElementById('search-input').addEventListener('input',loadPlants);
