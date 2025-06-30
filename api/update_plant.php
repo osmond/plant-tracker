@@ -136,7 +136,7 @@ $stmt = $conn->prepare("
         last_watered       = ?,
         last_fertilized    = ?,
         photo_url          = ?,
-        water_amount       = ?,
+        water_amount       = ?
     WHERE id = ?
 ");
 $stmt->bind_param(
