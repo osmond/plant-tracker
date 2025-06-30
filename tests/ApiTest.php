@@ -147,5 +147,25 @@ class ApiTest extends TestCase
         $data = json_decode($output, true);
         $this->assertEquals('success', $data['status']);
     }
+
+    public function testArchivePlantMissingId()
+    {
+        $_POST = [];
+        ob_start();
+        include __DIR__ . '/../api/archive_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertEquals('error', $data['status']);
+    }
+
+    public function testArchivePlantSuccess()
+    {
+        $_POST = ['id' => 1, 'archive' => 1];
+        ob_start();
+        include __DIR__ . '/../api/archive_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertEquals('success', $data['status']);
+    }
 }
 ?>
