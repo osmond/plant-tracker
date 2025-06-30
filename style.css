@@ -42,6 +42,10 @@
   --add-photo-bg: #EDE7F6;     /* Deep Purple 50 – subtle backdrop */
   --add-photo: #5E35B1;        /* Deep Purple 600 – rich frame */
   --add-photo-hover: #512DA8;  /* Deep Purple 700 – hover state */
+  /* duplicate action button colors */
+  --color-duplicate-bg: #E0F2F1; /* Teal 50 – subtle background */
+  --color-duplicate: #009688;    /* Teal 500 – main icon */
+  --color-duplicate-hover: #00796B; /* Teal 700 – hover state */
   --font-size-sm: 0.75rem;     /* ~12px small text */
   --font-size-base: 1rem;      /* 16px base text */
   --font-size-lg: 1.25rem;     /* 20px large text */
@@ -283,6 +287,15 @@ button:focus {
 .photo-btn:hover,
 .photo-btn:focus {
     color: var(--add-photo-hover);
+}
+
+.duplicate-btn {
+    background-color: var(--color-duplicate-bg);
+    color: var(--color-duplicate);
+}
+.duplicate-btn:hover,
+.duplicate-btn:focus {
+    color: var(--color-duplicate-hover);
 }
 
 .action-btn:hover,
