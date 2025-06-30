@@ -159,12 +159,15 @@
             <option value="name">Sort by: Name</option>
             <option value="due" selected>Sort by: Due Date</option>
         </select>
-        <select id="show-filter" class="border rounded-md">
-            <option value="active" selected>Show: Active</option>
-            <option value="archived">Archived</option>
+        <select id="due-filter" class="border rounded-md">
+            <option value="all">Show: All</option>
             <option value="water">Needs Watering</option>
             <option value="fert">Needs Fertilizing</option>
-            <option value="any">Needs Care</option>
+            <option value="any" selected>Needs Care</option>
+        </select>
+        <select id="archive-toggle" class="border rounded-md">
+            <option value="active" selected>Active</option>
+            <option value="archived">Archived</option>
         </select>
         <div id="view-toggle" class="view-toggle-group inline-flex rounded-lg border border-gray-300 overflow-hidden">
             <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
