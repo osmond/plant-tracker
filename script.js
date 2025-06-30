@@ -17,6 +17,9 @@ const WEATHER_API_KEY = '2aa3ade8428368a141f7951420570c16';
 const ML_PER_US_FL_OUNCE = 29.5735;
 const CM_PER_INCH = 2.54;
 
+// how often to refresh weather data (ms)
+const WEATHER_UPDATE_INTERVAL = 60 * 60 * 1000; // 1 hour
+
 // configuration values mirrored from config.php
 const RA = 20.0;
 const DEFAULT_KC = 0.8;
@@ -1970,6 +1973,7 @@ function init(){
   }
   loadPlants();
   fetchWeather();
+  setInterval(fetchWeather, WEATHER_UPDATE_INTERVAL);
 }
 
 if (document.readyState === 'loading') {
