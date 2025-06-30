@@ -1162,15 +1162,11 @@ async function loadPlants() {
   summaryEl.classList.add('show');
 
   const sortBy = document.getElementById('sort-toggle').value || 'name';
-  filtered.sort((a, b) => {
-    if (sortBy === 'due') {
-      return getSoonestDueDate(a) - getSoonestDueDate(b);
-    }
-    if (sortBy === 'type') {
-      return (a.plant_type || '').localeCompare(b.plant_type || '');
-    }
-    return a.name.localeCompare(b.name);
-  });
+  filtered.sort((a, b) =>
+    sortBy === 'due'
+      ? getSoonestDueDate(a) - getSoonestDueDate(b)
+      : a.name.localeCompare(b.name)
+  );
 
   filtered.forEach(plant => {
     const card = document.createElement('div');
