@@ -72,6 +72,9 @@ Two small utilities help estimate watering needs:
 
 Both rely on the coefficients defined in `config.php`.
 
+The interface refreshes weather data every hour to keep watering
+recommendations current.
+
 ## Basic Usage
 
 Use the main interface at `index.html` to add plants, mark them as watered or
