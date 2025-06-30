@@ -1634,11 +1634,15 @@ async function checkArchivedLink(plantsList) {
     link.classList.remove('hidden');
     return;
   }
+  if (room === 'all') {
+    link.classList.add('hidden');
+    return;
+  }
   if (!archivedCache) {
     const res = await fetch('api/get_plants.php?archived=1');
     archivedCache = await res.json();
   }
-  const has = archivedCache.some(p => room === 'all' ? true : p.room === room);
+  const has = archivedCache.some(p => p.room === room);
   if (has) {
     link.textContent = 'Archived plants';
     link.classList.remove('hidden');
