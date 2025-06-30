@@ -4,7 +4,8 @@ let deleteTimer = null;
 
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
-let archiveMode = localStorage.getItem('archiveMode') || 'active';
+let showFilter = localStorage.getItem('showFilter') || 'active';
+let archiveMode = showFilter === 'archived' ? 'archived' : 'active';
 // track weather info so the summary can include current conditions
 let currentWeather = null;
 let currentWeatherIcon = null;
@@ -406,37 +407,33 @@ function toggleLoading(show) {
 function saveFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
-  const df = document.getElementById('due-filter');
-  const af = document.getElementById('archive-toggle');
+  const df = document.getElementById('show-filter');
   if (rf) localStorage.setItem('roomFilter', rf.value);
   if (sf) localStorage.setItem('sortPref', sf.value);
-  if (df) localStorage.setItem('dueFilter', df.value);
-  if (af) localStorage.setItem('archiveMode', af.value);
+  if (df) localStorage.setItem('showFilter', df.value);
 }
 
 function loadFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
-  const df = document.getElementById('due-filter');
-  const af = document.getElementById('archive-toggle');
+  const df = document.getElementById('show-filter');
   const rVal = localStorage.getItem('roomFilter');
   const sVal = localStorage.getItem('sortPref');
-  const dVal = localStorage.getItem('dueFilter');
-  const aVal = localStorage.getItem('archiveMode');
+  const dVal = localStorage.getItem('showFilter') || localStorage.getItem('dueFilter');
   if (rf) rf.value = rVal !== null ? rVal : 'all';
   if (sf) sf.value = sVal !== null ? sVal : 'due';
-  if (df) df.value = dVal !== null ? dVal : 'any';
-  if (af) {
-    af.value = aVal !== null ? aVal : 'active';
-    archiveMode = af.value;
+  if (df) {
+    df.value = dVal !== null ? dVal : 'active';
+    showFilter = df.value;
+    archiveMode = showFilter === 'archived' ? 'archived' : 'active';
   }
 }
 
 function clearFilterPrefs() {
   localStorage.removeItem('roomFilter');
   localStorage.removeItem('sortPref');
+  localStorage.removeItem('showFilter');
   localStorage.removeItem('dueFilter');
-  localStorage.removeItem('archiveMode');
 }
 
 function saveHistoryValue(key, value) {
@@ -1113,6 +1110,11 @@ async function exportPlantsJSON() {
 
 // --- main render & filter loop ---
 async function loadPlants() {
+  const sfEl = document.getElementById('show-filter');
+  showFilter = sfEl ? sfEl.value : 'active';
+  archiveMode = showFilter === 'archived' ? 'archived' : 'active';
+  const dueFilter = ['water','fert','any'].includes(showFilter) ? showFilter : 'all';
+
   const res = await fetch('api/get_plants.php?archived=' + (archiveMode === 'archived' ? 'true' : 'false'));
   const plants = await res.json();
   const list = document.getElementById('plant-grid');
@@ -1121,9 +1123,6 @@ async function loadPlants() {
     list.classList.toggle('text-view', viewMode === 'text');
   }
   const selectedRoom = document.getElementById('room-filter').value;
-  const dueFilter = document.getElementById('due-filter')
-    ? document.getElementById('due-filter').value
-    : 'all';
 
   const rainEl = document.getElementById('rainfall-info');
   if (rainEl) {
@@ -1613,8 +1612,7 @@ function init(){
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
   const roomFilter = document.getElementById('room-filter');
   const sortToggle = document.getElementById('sort-toggle');
-  const dueFilterEl = document.getElementById('due-filter');
-  const archiveToggle = document.getElementById('archive-toggle');
+  const showFilterEl = document.getElementById('show-filter');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
@@ -1938,15 +1936,9 @@ function init(){
       loadPlants();
     });
   }
-  if (dueFilterEl) {
-    dueFilterEl.addEventListener('change', () => {
-      saveFilterPrefs();
-      loadPlants();
-    });
-  }
-  if (archiveToggle) {
-    archiveToggle.addEventListener('change', () => {
-      archiveMode = archiveToggle.value;
+  if (showFilterEl) {
+    showFilterEl.addEventListener('change', () => {
+      archiveMode = showFilterEl.value === 'archived' ? 'archived' : 'active';
       saveFilterPrefs();
       loadPlants();
     });
