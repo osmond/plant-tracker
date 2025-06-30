@@ -872,6 +872,31 @@ button:focus {
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
+.plant-card-wrapper {
+  position: relative;
+}
+
+.swipe-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: calc(var(--spacing) * 2);
+  background-color: var(--color-success-bg);
+  border-radius: 12px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.2s;
+}
+
+.swipe-overlay .icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-success);
+}
+
 .plant-card .actions {
   margin-top: calc(var(--spacing) * 2);
   display: flex;

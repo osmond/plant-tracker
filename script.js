@@ -739,6 +739,15 @@ async function markAction(id, type, days = 0) {
     }
     loadPlants();
     loadCalendar();
+    let msg;
+    if (days > 0) {
+      msg = type === 'watered'
+        ? `Watering snoozed ${days} day${days !== 1 ? 's' : ''}`
+        : `Fertilizing snoozed ${days} day${days !== 1 ? 's' : ''}`;
+    } else {
+      msg = type === 'watered' ? 'Marked watered!' : 'Marked fertilized!';
+    }
+    showToast(msg);
   } catch (err) {
     console.error('Failed to mark action:', err);
     showToast('Failed to update plant. Please try again.', true);
@@ -746,12 +755,13 @@ async function markAction(id, type, days = 0) {
 }
 
 // --- swipe-to-complete helper ---
-function enableSwipeComplete(card, plant, waterDue, fertDue) {
+function enableSwipeComplete(card, overlay, plant, waterDue, fertDue) {
   if (!waterDue && !fertDue) return;
   let startX = null;
   let startY = null;
   let swiping = false;
   let activePointerId = null;
+  const threshold = 80;
   card.addEventListener('pointerdown', e => {
     e.preventDefault();
     startX = e.clientX;
@@ -760,6 +770,7 @@ function enableSwipeComplete(card, plant, waterDue, fertDue) {
     activePointerId = e.pointerId;
     card.setPointerCapture(activePointerId);
     card.style.transition = 'none';
+    overlay.style.transition = 'opacity 0.2s';
   });
   card.addEventListener('pointermove', e => {
     if (startX === null) return;
@@ -771,6 +782,8 @@ function enableSwipeComplete(card, plant, waterDue, fertDue) {
     if (swiping) {
       const translate = Math.max(0, dx);
       card.style.transform = `translateX(${translate}px)`;
+      const progress = Math.min(1, translate / threshold);
+      overlay.style.opacity = progress;
     }
   });
   card.addEventListener('pointerup', e => {
@@ -779,15 +792,18 @@ function enableSwipeComplete(card, plant, waterDue, fertDue) {
     const dy = e.clientY - startY;
     startX = startY = null;
     card.style.transition = '';
-    if (dx > 80 && Math.abs(dy) < 50) {
+    if (dx > threshold && Math.abs(dy) < 50) {
       card.style.transform = `translateX(100%)`;
+      overlay.style.opacity = 1;
       setTimeout(() => {
         card.style.transform = '';
+        overlay.style.opacity = 0;
         if (waterDue) markAction(plant.id, 'watered');
         if (fertDue) markAction(plant.id, 'fertilized');
       }, 200);
     } else {
       card.style.transform = '';
+      overlay.style.opacity = 0;
     }
     swiping = false;
     if (activePointerId !== null) {
@@ -800,6 +816,7 @@ function enableSwipeComplete(card, plant, waterDue, fertDue) {
     swiping = false;
     card.style.transition = '';
     card.style.transform = '';
+    overlay.style.opacity = 0;
     if (activePointerId !== null) {
       card.releasePointerCapture(activePointerId);
       activePointerId = null;
@@ -1207,6 +1224,14 @@ async function loadPlants() {
   );
 
   filtered.forEach(plant => {
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('plant-card-wrapper');
+
+    const overlay = document.createElement('div');
+    overlay.classList.add('swipe-overlay');
+    overlay.innerHTML = ICONS.check;
+    wrapper.appendChild(overlay);
+
     const card = document.createElement('div');
     card.classList.add('plant-card');
     if (viewMode !== 'text') {
@@ -1492,12 +1517,13 @@ async function loadPlants() {
     actionsDiv.appendChild(overflow);
     actionsDiv.appendChild(fileInput);
     card.appendChild(actionsDiv);
+    wrapper.appendChild(card);
 
     if (viewMode === 'list' || viewMode === 'text') {
-      enableSwipeComplete(card, plant, waterDue, fertDue);
+      enableSwipeComplete(card, overlay, plant, waterDue, fertDue);
     }
 
-    list.appendChild(card);
+    list.appendChild(wrapper);
   });
 
   // refresh room filter and datalist
