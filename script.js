@@ -1850,6 +1850,7 @@ function init(){
       btn.addEventListener('click', () => {
         viewMode = btn.dataset.view;
         applyViewMode();
+        loadPlants();
       });
     });
     applyViewMode();
