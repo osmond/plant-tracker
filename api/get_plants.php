@@ -15,13 +15,10 @@ if (!headers_sent()) {
     header('Content-Type: application/json');
 }
 
-$arch = (isset($_GET['archived']) && $_GET['archived'] === 'true') ? 1 : 0;
-
 $plants = [];
 $result = $conn->query(
-    "SELECT id, name, species, plant_type, watering_frequency, fertilizing_frequency, room, last_watered, last_fertilized, photo_url, water_amount, archived
+    "SELECT id, name, species, plant_type, watering_frequency, fertilizing_frequency, room, last_watered, last_fertilized, photo_url, water_amount
     FROM plants
-    WHERE archived = {$arch}
     ORDER BY id DESC"
 );
 if (!$result) {
