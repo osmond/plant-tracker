@@ -1290,7 +1290,7 @@ button:focus {
   cursor: pointer;
   color: var(--color-primary);
   text-decoration: underline;
-  display: none;
+  display: inline;
 }
 #archived-link.hidden { display: none; }
 
