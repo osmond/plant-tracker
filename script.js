@@ -750,22 +750,48 @@ function enableSwipeComplete(card, plant, waterDue, fertDue) {
   if (!waterDue && !fertDue) return;
   let startX = null;
   let startY = null;
+  let swiping = false;
   card.addEventListener('pointerdown', e => {
     startX = e.clientX;
     startY = e.clientY;
+    swiping = false;
+    card.style.transition = 'none';
+  });
+  card.addEventListener('pointermove', e => {
+    if (startX === null) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (!swiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 5) {
+      swiping = true;
+    }
+    if (swiping) {
+      const translate = Math.max(0, dx);
+      card.style.transform = `translateX(${translate}px)`;
+    }
   });
   card.addEventListener('pointerup', e => {
     if (startX === null) return;
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
     startX = startY = null;
+    card.style.transition = '';
     if (dx > 80 && Math.abs(dy) < 50) {
-      if (waterDue) markAction(plant.id, 'watered');
-      if (fertDue) markAction(plant.id, 'fertilized');
+      card.style.transform = `translateX(100%)`;
+      setTimeout(() => {
+        card.style.transform = '';
+        if (waterDue) markAction(plant.id, 'watered');
+        if (fertDue) markAction(plant.id, 'fertilized');
+      }, 200);
+    } else {
+      card.style.transform = '';
     }
+    swiping = false;
   });
   card.addEventListener('pointercancel', () => {
     startX = startY = null;
+    swiping = false;
+    card.style.transition = '';
+    card.style.transform = '';
   });
 }
 

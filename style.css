@@ -863,7 +863,8 @@ button:focus {
   overflow: hidden; /* clip photo when it extends to edges */
   position: relative; /* allow urgency tag overlay */
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, transform 0.2s;
+  touch-action: pan-y; /* allow horizontal swipe gestures */
 }
 
 .plant-card:hover {
