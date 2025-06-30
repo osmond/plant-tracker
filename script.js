@@ -599,6 +599,7 @@ function formatFrequency(days) {
 }
 
 function getSoonestDueDate(plant) {
+  if (plant.archived) return new Date(8640000000000000);
   const waterDate = plant.last_watered
     ? addDays(parseLocalDate(plant.last_watered), plant.watering_frequency)
     : null;
@@ -611,12 +612,14 @@ function getSoonestDueDate(plant) {
 }
 
 function needsWatering(plant, today = new Date()) {
+  if (plant.archived) return false;
   if (!plant.last_watered) return true;
   const next = addDays(parseLocalDate(plant.last_watered), plant.watering_frequency);
   return next <= today;
 }
 
 function needsFertilizing(plant, today = new Date()) {
+  if (plant.archived) return false;
   if (!plant.fertilizing_frequency) return false;
   if (!plant.last_fertilized) return true;
   const next = addDays(parseLocalDate(plant.last_fertilized), plant.fertilizing_frequency);
@@ -632,11 +635,13 @@ function waterOverdueDays(plant, today = new Date()) {
 
 // --- calendar helpers ---
 function getNextWaterDate(plant) {
+  if (plant.archived) return null;
   if (!plant.last_watered) return new Date();
   return addDays(parseLocalDate(plant.last_watered), plant.watering_frequency);
 }
 
 function getNextFertDate(plant) {
+  if (plant.archived) return null;
   if (!plant.fertilizing_frequency) return null;
   if (!plant.last_fertilized) return new Date();
   return addDays(parseLocalDate(plant.last_fertilized), plant.fertilizing_frequency);
@@ -705,7 +710,7 @@ async function loadCalendar() {
 
   plants.forEach(p=>{
     const w = getNextWaterDate(p);
-    addEvent(p,'water',w);
+    if (w) addEvent(p,'water',w);
     const f = getNextFertDate(p);
     if (f) addEvent(p,'fert',f);
   });
@@ -1358,7 +1363,8 @@ async function loadPlants() {
     waterSummary.classList.add('summary-item');
     const waterIconWrap = document.createElement('span');
     waterIconWrap.innerHTML = ICONS.water;
-    const waterNext = formatDateShort(getNextWaterDate(plant));
+    const nextWater = getNextWaterDate(plant);
+    const waterNext = nextWater ? formatDateShort(nextWater) : 'N/A';
     const waterText = document.createElement('span');
     const waterFreq = formatFrequency(plant.watering_frequency);
     waterText.textContent =
