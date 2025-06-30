@@ -9,11 +9,21 @@ if (!class_exists('MockStmt')) {
     }
 }
 
+if (!class_exists('MockResult')) {
+    class MockResult {
+        public $error = '';
+        public function fetch_assoc() { return false; }
+    }
+}
+
 if (!class_exists('MockMysqli')) {
     class MockMysqli {
         public $connect_error = '';
         public function prepare($query) {
             return new MockStmt();
+        }
+        public function query($query) {
+            return new MockResult();
         }
     }
 }
