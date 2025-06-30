@@ -751,10 +751,14 @@ function enableSwipeComplete(card, plant, waterDue, fertDue) {
   let startX = null;
   let startY = null;
   let swiping = false;
+  let activePointerId = null;
   card.addEventListener('pointerdown', e => {
+    e.preventDefault();
     startX = e.clientX;
     startY = e.clientY;
     swiping = false;
+    activePointerId = e.pointerId;
+    card.setPointerCapture(activePointerId);
     card.style.transition = 'none';
   });
   card.addEventListener('pointermove', e => {
@@ -786,12 +790,20 @@ function enableSwipeComplete(card, plant, waterDue, fertDue) {
       card.style.transform = '';
     }
     swiping = false;
+    if (activePointerId !== null) {
+      card.releasePointerCapture(activePointerId);
+      activePointerId = null;
+    }
   });
   card.addEventListener('pointercancel', () => {
     startX = startY = null;
     swiping = false;
     card.style.transition = '';
     card.style.transform = '';
+    if (activePointerId !== null) {
+      card.releasePointerCapture(activePointerId);
+      activePointerId = null;
+    }
   });
 }
 
