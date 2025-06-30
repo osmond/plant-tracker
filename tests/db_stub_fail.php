@@ -4,9 +4,6 @@ class FailMysqli {
     public function prepare($query) {
         return false; // simulate failure
     }
-    public function query($query) {
-        return false; // simulate failure
-    }
 }
 
 $conn = new FailMysqli();
