@@ -748,12 +748,17 @@ function enableSwipeComplete(card, plant, waterDue, fertDue) {
   if (!waterDue && !fertDue) return;
   let startX = null;
   let startY = null;
+  let pointerId = null;
   card.addEventListener('pointerdown', e => {
     startX = e.clientX;
     startY = e.clientY;
+    pointerId = e.pointerId;
+    card.setPointerCapture(pointerId);
   });
   card.addEventListener('pointerup', e => {
-    if (startX === null) return;
+    if (pointerId !== e.pointerId || startX === null) return;
+    card.releasePointerCapture(pointerId);
+    pointerId = null;
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
     startX = startY = null;
@@ -763,7 +768,8 @@ function enableSwipeComplete(card, plant, waterDue, fertDue) {
     }
   });
   card.addEventListener('pointercancel', () => {
-    startX = startY = null;
+    if (pointerId !== null) card.releasePointerCapture(pointerId);
+    startX = startY = pointerId = null;
   });
 }
 
