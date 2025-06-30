@@ -33,7 +33,6 @@ $water_amount            = isset($_POST['water_amount']) ? floatval($_POST['wate
 $last_watered            = $_POST['last_watered'] ?? null;
 $last_fertilized         = $_POST['last_fertilized'] ?? null;
 $photo_url               = trim($_POST['photo_url'] ?? '');
-$archived                = isset($_POST['archived']) && intval($_POST['archived']) === 1 ? 1 : 0;
 
 $errors = [];
 $namePattern = "/^[\p{L}0-9\s'-]{1,100}$/u";
@@ -94,7 +93,6 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         $dest = $uploadDir . $fileName;
 
         if (move_uploaded_file($_FILES['photo']['tmp_name'], $dest)) {
-            // archive old image if one was supplied
             if (!empty($_POST['photo_url'])) {
                 $oldPath = __DIR__ . '/../' . ltrim($_POST['photo_url'], '/\\');
                 $oldReal = realpath($oldPath);
@@ -105,16 +103,7 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
                     strpos($oldReal, $uploadsRoot) === 0 &&
                     is_file($oldReal)
                 ) {
-                    $archiveDir = $uploadsRoot . '/archive';
-                    if (!is_dir($archiveDir)) {
-                        mkdir($archiveDir, 0755, true);
-                    }
-                    $archivePath = $archiveDir . '/' . basename($oldReal);
-                    if (file_exists($archivePath)) {
-                        $info = pathinfo($oldReal);
-                        $archivePath = $archiveDir . '/' . $info['filename'] . '_' . time() . '.' . $info['extension'];
-                    }
-                    rename($oldReal, $archivePath);
+                    unlink($oldReal);
                 }
             }
             $converted = convert_to_webp($dest);
@@ -148,11 +137,10 @@ $stmt = $conn->prepare("
         last_fertilized    = ?,
         photo_url          = ?,
         water_amount       = ?,
-        archived           = ?
     WHERE id = ?
 ");
 $stmt->bind_param(
-    'ssssiisssdii',
+    'ssssiisssdi',
     $name,
     $species,
     $plant_type,
@@ -163,7 +151,6 @@ $stmt->bind_param(
     $last_fertilized,
     $photo_url,
     $water_amount,
-    $archived,
     $id
 );
 
