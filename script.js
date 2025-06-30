@@ -1536,7 +1536,7 @@ async function loadPlants() {
     card.appendChild(actionsDiv);
     wrapper.appendChild(card);
 
-    if (viewMode === 'list' || viewMode === 'text') {
+    if (viewMode === 'list') {
       enableSwipeComplete(card, overlay, plant, waterDue, fertDue);
     }
 
