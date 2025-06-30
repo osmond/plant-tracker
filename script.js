@@ -407,18 +407,16 @@ function saveFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
   const df = document.getElementById('due-filter');
-  const af = document.getElementById('archive-toggle');
   if (rf) localStorage.setItem('roomFilter', rf.value);
   if (sf) localStorage.setItem('sortPref', sf.value);
   if (df) localStorage.setItem('dueFilter', df.value);
-  if (af) localStorage.setItem('archiveMode', af.value);
+  localStorage.setItem('archiveMode', archiveMode);
 }
 
 function loadFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
   const df = document.getElementById('due-filter');
-  const af = document.getElementById('archive-toggle');
   const rVal = localStorage.getItem('roomFilter');
   const sVal = localStorage.getItem('sortPref');
   const dVal = localStorage.getItem('dueFilter');
@@ -426,10 +424,7 @@ function loadFilterPrefs() {
   if (rf) rf.value = rVal !== null ? rVal : 'all';
   if (sf) sf.value = sVal !== null ? sVal : 'due';
   if (df) df.value = dVal !== null ? dVal : 'any';
-  if (af) {
-    af.value = aVal !== null ? aVal : 'active';
-    archiveMode = af.value;
-  }
+  archiveMode = aVal !== null ? aVal : 'active';
 }
 
 function clearFilterPrefs() {
@@ -1614,7 +1609,7 @@ function init(){
   const roomFilter = document.getElementById('room-filter');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('due-filter');
-  const archiveToggle = document.getElementById('archive-toggle');
+  const archiveBtn = document.getElementById('archive-btn');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
@@ -1944,12 +1939,17 @@ function init(){
       loadPlants();
     });
   }
-  if (archiveToggle) {
-    archiveToggle.addEventListener('change', () => {
-      archiveMode = archiveToggle.value;
+  if (archiveBtn) {
+    const updateArchLabel = () => {
+      archiveBtn.textContent = archiveMode === 'archived' ? 'Show Active' : 'View Archived';
+    };
+    archiveBtn.addEventListener('click', () => {
+      archiveMode = archiveMode === 'archived' ? 'active' : 'archived';
       saveFilterPrefs();
       loadPlants();
+      updateArchLabel();
     });
+    updateArchLabel();
   }
   if (viewButtons.length) {
     viewButtons.forEach(btn => {
