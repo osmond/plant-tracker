@@ -775,6 +775,7 @@ button:focus {
   border-bottom: 1px solid var(--color-border);
   border-radius: 0;
   box-shadow: none;
+  user-select: text; /* allow highlighting text in this mode */
 }
 
 #plant-grid.text-view .plant-card:last-child {
