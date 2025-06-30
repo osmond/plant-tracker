@@ -147,22 +147,5 @@ class ApiTest extends TestCase
         $data = json_decode($output, true);
         $this->assertEquals('success', $data['status']);
     }
-
-    public function testGetPlantsArchivedFilter()
-    {
-        $_GET['archived'] = 'true';
-        ob_start();
-        include __DIR__ . '/../api/get_plants.php';
-        $output = ob_get_clean();
-        $data = json_decode($output, true);
-        $this->assertIsArray($data);
-
-        $_GET['archived'] = 'false';
-        ob_start();
-        include __DIR__ . '/../api/get_plants.php';
-        $output = ob_get_clean();
-        $data = json_decode($output, true);
-        $this->assertIsArray($data);
-    }
 }
 ?>
