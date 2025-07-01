@@ -1756,9 +1756,9 @@ async function checkArchivedLink(plantsList) {
     const res = await fetch('api/get_plants.php?archived=1');
     archivedCache = await res.json();
   }
-  const has = archivedCache.some(p => p.room === room);
-  if (has) {
-    link.textContent = 'Archived plants';
+  const count = archivedCache.filter(p => p.room === room).length;
+  if (count > 0) {
+    link.innerHTML = ICONS.archive + ` Archived (${count})`;
     link.classList.remove('hidden');
   } else {
     link.classList.add('hidden');

@@ -1335,10 +1335,24 @@ button:focus {
 }
 
 #archived-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   cursor: pointer;
-  color: var(--color-primary);
-  text-decoration: underline;
-  display: inline;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-card);
+  color: var(--color-text);
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+#archived-link:hover {
+  border-color: var(--color-primary);
+}
+#archived-link:active {
+  background: var(--color-primary);
+  color: var(--color-surface);
 }
 #archived-link.hidden { display: none; }
 
