@@ -59,6 +59,11 @@ const synonymsCache = new Map();
 const specimenPhotosCache = new Map();
 const speciesKeyCache = new Map();
 
+// register Chart.js zoom plugin if available
+if (window.Chart && window.ChartZoom) {
+  Chart.register(ChartZoom);
+}
+
 function debounce(fn, delay = 300) {
   let timer;
   return (...args) => {
@@ -185,6 +190,61 @@ function calculateET0(tmin, tmax) {
 function computeArea(diameterCm) {
   const r = diameterCm / 2;
   return Math.PI * r * r;
+}
+
+function initEt0Gauge(card) {
+  const plantId = card.dataset.plantId;
+  const canvas = card.querySelector('.et0-gauge');
+  if (!canvas || !plantId) return;
+
+  fetch(`api/get_et0_timeseries.php?plant_id=${plantId}&days=7`)
+    .then(res => res.json())
+    .then(data => {
+      const labels = data.map(d => d.date.slice(5));
+      const et0 = data.map(d => parseFloat(d.et0_mm));
+
+      new Chart(canvas.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'ET₀',
+            data: et0,
+            fill: true,
+            tension: 0.3,
+            borderWidth: 2,
+            pointRadius: 0
+          }]
+        },
+        options: {
+          responsive: false,
+          scales: {
+            x: { display: false },
+            y: { display: false }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false },
+            zoom: {
+              pan: {
+                enabled: true,
+                mode: 'x',
+                threshold: 5
+              },
+              zoom: { enabled: false }
+            }
+          },
+          interaction: {
+            intersect: false,
+            mode: 'index'
+          },
+          layout: {
+            padding: { top: 4, bottom: 4, left: 0, right: 0 }
+          }
+        }
+      });
+    })
+    .catch(() => {});
 }
 
 async function fetchScientificNames(query) {
@@ -1509,6 +1569,14 @@ async function loadPlants() {
 
     infoWrap.appendChild(summary);
     card.appendChild(infoWrap);
+
+    card.dataset.plantId = plant.id;
+    const gauge = document.createElement('canvas');
+    gauge.classList.add('et0-gauge');
+    gauge.width = 200;
+    gauge.height = 60;
+    card.appendChild(gauge);
+    initEt0Gauge(card);
 
     const actionsDiv = document.createElement('div');
     actionsDiv.classList.add('actions');

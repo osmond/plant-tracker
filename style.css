@@ -1333,6 +1333,14 @@ button:focus {
 }
 #archived-link.hidden { display: none; }
 
+.et0-gauge {
+  display: block;
+  margin: 0.5rem auto;
+  touch-action: pan-x;
+  background: rgba(0,0,0,0.03);
+  border-radius: 4px;
+}
+
 
 
 
