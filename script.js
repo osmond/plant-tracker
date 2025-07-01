@@ -300,30 +300,23 @@ function initEt0Sparkline(canvas) {
       const ctx = canvas.getContext('2d');
       const accentHex = getComputedStyle(document.documentElement)
         .getPropertyValue('--color-accent');
-      const accentRgb = hexToRgb(accentHex || '#228b22');
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0.2)`);
-      gradient.addColorStop(1, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0)`);
-
       new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
         data: {
           labels,
           datasets: [{
             data: et0,
-            fill: true,
-            backgroundColor: gradient,
-            borderColor: `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},1)`,
-            borderWidth: 1.5,
-            tension: 0.3,
-            pointRadius: et0.map((_, i) => i === et0.length - 1 ? 3 : 0),
-            pointBackgroundColor: 'tomato',
-            pointHoverRadius: 4
+            backgroundColor: accentHex || '#228b22',
+            categoryPercentage: 1.0,
+            barPercentage: 1.0
           }]
         },
         options: {
           responsive: false,
-          scales: { x: { display: false }, y: { display: false, beginAtZero: true } },
+          scales: {
+            x: { display: false },
+            y: { display: false, beginAtZero: true }
+          },
           plugins: {
             legend: { display: false },
             tooltip: {
