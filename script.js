@@ -20,9 +20,24 @@ let currentWeather = null;
 let currentWeatherIcon = null;
 let currentWeatherDesc = null;
 
-// public OpenWeather API key provided by user
-// replace with your own key after copying config.example.php
-const WEATHER_API_KEY = 'YOUR_API_KEY';
+// OpenWeather API key fetched from the server
+let WEATHER_API_KEY = null;
+
+async function fetchWeatherKey() {
+  try {
+    const res = await fetch('api/weather_key.php');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (data.key) {
+      WEATHER_API_KEY = data.key;
+    } else {
+      throw new Error('No key in response');
+    }
+  } catch (e) {
+    console.error('Failed to fetch weather API key', e);
+    showToast("Couldn't load weather API key", true);
+  }
+}
 
 // number of milliliters in one US fluid ounce
 const ML_PER_US_FL_OUNCE = 29.5735;
@@ -1074,6 +1089,10 @@ async function fetchRainData(lat, lon) {
 }
 
 function fetchWeather() {
+  if (!WEATHER_API_KEY) {
+    // Key not yet loaded or failed to load
+    return;
+  }
   const addWeather = (temp, desc, icon) => {
     currentWeather = `${temp}°F ${desc}`;
     currentWeatherIcon = `https://openweathermap.org/img/wn/${icon}@2x.png`;
@@ -1769,7 +1788,7 @@ async function checkArchivedLink(plantsList) {
 }
 
 // --- init ---
-function init(){
+async function init(){
   const showBtn = document.getElementById('show-add-form');
   const exportBtn = document.getElementById('export-all');
   const form = document.getElementById('plant-form');
@@ -2162,6 +2181,7 @@ function init(){
   }
   loadPlants();
   syncPendingActions();
+  await fetchWeatherKey();
   fetchWeather();
   setInterval(fetchWeather, WEATHER_UPDATE_INTERVAL);
 }
