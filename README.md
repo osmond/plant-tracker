@@ -5,6 +5,10 @@ plant records in a MySQL database and provides a simple web interface to track
 watering and fertilizing. The project also includes small calculators for estimating
 water requirements using local weather data.
 
+![Plant Tracker dashboard screenshot](screenshot.png)
+
+*Overview of the main interface listing plants and upcoming tasks.*
+
 ## Setup
 
 1. Clone the repository and install PHP and MySQL.
