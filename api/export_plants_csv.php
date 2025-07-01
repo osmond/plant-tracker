@@ -18,7 +18,7 @@ if (!headers_sent()) {
 
 $archived = isset($_GET['archived']) && $_GET['archived'] == '1' ? 1 : 0;
 $stmt = $conn->prepare(
-    "SELECT id, name, species, plant_type, watering_frequency, fertilizing_frequency, room, last_watered, last_fertilized, photo_url, water_amount, scientific_name, thumbnail_url, archived FROM plants WHERE archived = ? ORDER BY id DESC"
+    "SELECT id, name, species, plant_type, watering_frequency, fertilizing_frequency, room, last_watered, last_fertilized, photo_url, water_amount, archived FROM plants WHERE archived = ? ORDER BY id DESC"
 );
 if (!$stmt) {
     @http_response_code(500);
@@ -50,8 +50,6 @@ fputcsv($out, [
     'last_fertilized',
     'photo_url',
     'water_amount',
-    'scientific_name',
-    'thumbnail_url',
     'archived'
 ]);
 while ($row = $res->fetch_assoc()) {

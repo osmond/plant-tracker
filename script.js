@@ -1783,7 +1783,7 @@ async function init(){
   const overrideCheck = document.getElementById('override_water');
   const waterGroup = document.getElementById('water-amount-group');
   const roomInput = document.getElementById('room');
-  const nameInput = document.getElementById('plant-search');
+  const nameInput = document.getElementById('name');
   const speciesInput = document.getElementById('species');
   const potHelp = document.getElementById('pot_diameter_help');
   const speciesList = document.getElementById('species-list');
@@ -2158,47 +2158,3 @@ if (document.readyState === 'loading') {
 }
 
 export { loadCalendar };
-
-// === Plant Name Autocomplete (OpenFarm) ===
-;(function(){
-  const input     = document.getElementById('plant-search');
-  const list      = document.getElementById('suggestions');
-  const sciField  = document.getElementById('scientific-name');
-  const thumbField= document.getElementById('thumbnail-url');
-  const preview   = document.getElementById('thumb-preview');
-  let timer;
-
-  if (!input) return;
-
-  input.addEventListener('input', e => {
-    clearTimeout(timer);
-    const q = e.target.value.trim();
-    if (!q) return list.innerHTML = '';
-    timer = setTimeout(() => {
-      fetch(`https://openfarm.cc/api/v1/crops/?filter=${encodeURIComponent(q)}`)
-        .then(r => r.json())
-        .then(json => {
-          list.innerHTML = '';
-          (json.data || []).slice(0, 8).forEach(({attributes: a}) => {
-            const item = document.createElement('li');
-            item.textContent = a.name + (a.binomial_name ? ` (${a.binomial_name})` : '');
-            item.onclick = () => {
-              input.value      = a.name;
-              sciField.value   = a.binomial_name || '';
-              thumbField.value = a.main_image_path || '';
-              if (a.main_image_path) {
-                preview.src = a.main_image_path;
-                preview.style.display = 'block';
-              }
-              list.innerHTML = '';
-            };
-            list.appendChild(item);
-          });
-        });
-    }, 300);
-  });
-
-  document.addEventListener('click', e => {
-    if (e.target !== input) list.innerHTML = '';
-  });
-})();

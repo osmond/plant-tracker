@@ -1338,30 +1338,6 @@ button:focus {
 }
 #archived-link.hidden { display: none; }
 
-.autocomplete-list {
-  position: absolute;
-  background: #fff;
-  border: 1px solid #ccc;
-  width: calc(100% - 2px);
-  max-height: 200px;
-  overflow-y: auto;
-  margin-top: 0;
-  padding: 0;
-  list-style: none;
-  z-index: 10;
-}
-.autocomplete-list li {
-  padding: 0.5rem;
-  cursor: pointer;
-}
-.autocomplete-list li:hover {
-  background: #f0f0f0;
-}
-#thumb-preview {
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
 
 
 
