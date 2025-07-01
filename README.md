@@ -97,3 +97,7 @@ tasks (watering and fertilizing) at once. The card slides with your finger
 and smoothly snaps back if you don't pass the threshold.
 
 
+
+## Service Worker
+
+The app uses a simple service worker to cache core assets for offline access. During development you may need to update the cache when making changes. Bump the cache version in `service-worker.js` or run **Disable cache** in your browser's developer tools and reload to ensure the latest files are served.

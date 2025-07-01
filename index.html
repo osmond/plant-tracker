@@ -191,6 +191,13 @@
         <button id="next-week" class="bg-primary text-white rounded-md px-4 py-2"></button>
     </div>
     <div id="calendar" class="p-4"></div>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("service-worker.js").catch(e => console.log("Service Worker registration failed:", e));
+        });
+      }
+    </script>
 
     <script>
       const script = document.createElement('script');
