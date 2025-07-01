@@ -739,7 +739,8 @@ button:focus {
 #plant-grid.text-view {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--spacing) * 1.5);
+  /* use separators rather than spacing between entries */
+  gap: 0;
   max-width: 48rem;
   margin-left: 0;
   margin-right: auto;
@@ -811,7 +812,7 @@ button:focus {
 
 #plant-grid.text-view .plant-card {
   display: block;
-  padding-bottom: calc(var(--spacing) * 1.5);
+  padding: calc(var(--spacing) * 1.5) 0;
   margin: 0;
   background: none;
   border: none;
