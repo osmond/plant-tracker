@@ -201,58 +201,6 @@ function hexToRgb(hex) {
     b: num & 255
   };
 }
-
-          },
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              enabled: true,
-              mode: 'nearest',
-              intersect: false,
-              backgroundColor: 'rgba(255,255,255,0.9)',
-              titleColor: '#333',
-              bodyColor: '#333',
-              borderColor: '#ddd',
-              borderWidth: 1
-            },
-            annotation: {
-              annotations: {
-                todayLine: {
-                  type: 'line',
-                  scaleID: 'x',
-                  value: labels.length - 1,
-                  borderColor: 'rgba(255,99,71,0.8)',
-                  borderWidth: 1,
-                  label: { enabled: false }
-                }
-              }
-            },
-            zoom: {
-              pan: {
-                enabled: true,
-                mode: 'x',
-                threshold: 5
-              },
-              zoom: { enabled: false }
-            }
-          },
-          interaction: {
-            intersect: false,
-            mode: 'index'
-          },
-          layout: {
-            padding: { top: 2, bottom: 2, left: 0, right: 0 }
-          },
-          animation: {
-            duration: 800,
-            easing: 'easeOutQuart'
-          }
-        }
-      });
-    })
-    .catch(() => {});
-}
-
 async function fetchScientificNames(query) {
   if (!query) return [];
   if (speciesKeyCache.has(`s:${query}`)) return speciesKeyCache.get(`s:${query}`);
