@@ -2,7 +2,6 @@
 return [
     'openweather_key' => 'YOUR_API_KEY',
     'location'        => 'City,Country',
-    'ra'              => 20.0,
     'kc'              => 0.8,
     'kc_map' => [
         'succulent'  => 0.3,

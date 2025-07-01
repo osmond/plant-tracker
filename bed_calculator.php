@@ -9,6 +9,16 @@ function calculateET0(float $tmin, float $tmax, float $ra): float {
     return 0.0023 * ($tavg + 17.8) * sqrt(max(0, $tmax - $tmin)) * $ra;
 }
 
+function computeRA(float $lat, int $doy): float {
+    $gsc = 0.0820;
+    $latRad = deg2rad($lat);
+    $dr = 1 + 0.033 * cos((2 * M_PI / 365) * $doy);
+    $dec = 0.409 * sin((2 * M_PI / 365) * $doy - 1.39);
+    $ws = acos(-tan($latRad) * tan($dec));
+    return (24 * 60 / M_PI) * $gsc * $dr *
+        ($ws * sin($latRad) * sin($dec) + cos($latRad) * cos($dec) * sin($ws));
+}
+
 $area = $plant_type = $stage = null;
 $zroot = $fc = $wp = $p = $s_prev = $kr = $rain = null;
 $irrigation_l = null;
@@ -44,7 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $tmin = $weather['main']['temp_min'] - 273.15;
             $tmax = $weather['main']['temp_max'] - 273.15;
-            $et0 = calculateET0($tmin, $tmax, $config['ra']);
+            $lat = $weather['coord']['lat'] ?? null;
+            $doy = intval(date('z')) + 1;
+            $ra = $lat !== null ? computeRA(floatval($lat), $doy) : ($config['ra'] ?? 20.0);
+            $et0 = calculateET0($tmin, $tmax, $ra);
 
             $kcb = $config['bed_map'][$plant_type]['kcb'][$stage];
             $kc_soil = $config['bed_map'][$plant_type]['kc_soil'];

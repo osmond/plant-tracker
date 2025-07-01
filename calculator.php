@@ -15,6 +15,19 @@ function calculateET0(float $tmin, float $tmax, float $ra): float {
 }
 
 /**
+ * Compute extraterrestrial radiation for a given latitude and day of year.
+ */
+function computeRA(float $lat, int $doy): float {
+    $gsc = 0.0820; // MJ m^-2 min^-1
+    $latRad = deg2rad($lat);
+    $dr = 1 + 0.033 * cos((2 * M_PI / 365) * $doy);
+    $dec = 0.409 * sin((2 * M_PI / 365) * $doy - 1.39);
+    $ws = acos(-tan($latRad) * tan($dec));
+    return (24 * 60 / M_PI) * $gsc * $dr *
+        ($ws * sin($latRad) * sin($dec) + cos($latRad) * cos($dec) * sin($ws));
+}
+
+/**
  * Compute the surface area of the pot in square centimeters.
  */
 function computeArea(float $diameter_cm): float {
@@ -44,8 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tmin = $weather['main']['temp_min'] - 273.15;
             $tmax = $weather['main']['temp_max'] - 273.15;
 
-            // Calculate ET0 then adjust with crop coefficient
-            $et0 = calculateET0($tmin, $tmax, $config['ra']);
+            // Calculate RA for this latitude/day then ET0
+            $lat = $weather['coord']['lat'] ?? null;
+            $doy = intval(date('z')) + 1;
+            $ra = $lat !== null ? computeRA(floatval($lat), $doy) : ($config['ra'] ?? 20.0);
+            $et0 = calculateET0($tmin, $tmax, $ra);
             $kc = $config['kc'];
             if ($plant_type !== null && isset($config['kc_map'][$plant_type])) {
                 $kc = $config['kc_map'][$plant_type];
