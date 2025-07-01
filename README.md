@@ -64,6 +64,14 @@ php -S localhost:8000
    Then visit `http://localhost:8000/index.html` in your browser.
    **Note:** Opening `index.html` directly as a file won't work because the JavaScript needs the PHP API endpoints.
 
+## Deployment
+Deploying the app to a server running PHP is straightforward:
+
+1. Copy this repository to your host, either by cloning it with `git` or uploading the files via FTP.
+2. On the server, create `config.php` and `db.php` from their respective `*.example.php` templates and adjust the settings.
+3. Run `php scripts/run_migrations.php` to initialize the database.
+4. Ensure the `uploads/` directory is writable by the web server so image uploads work.
+
 ## Project Structure
 - `api/` holds the PHP endpoints used by the front end.
 - `uploads/` stores images you attach to plants.
