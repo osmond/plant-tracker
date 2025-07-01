@@ -21,7 +21,8 @@ let currentWeatherIcon = null;
 let currentWeatherDesc = null;
 
 // public OpenWeather API key provided by user
-const WEATHER_API_KEY = '2aa3ade8428368a141f7951420570c16';
+// replace with your own key after copying config.example.php
+const WEATHER_API_KEY = 'YOUR_API_KEY';
 
 // number of milliliters in one US fluid ounce
 const ML_PER_US_FL_OUNCE = 29.5735;
