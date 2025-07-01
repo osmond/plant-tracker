@@ -1687,13 +1687,18 @@ async function loadPlants() {
     card.appendChild(infoWrap);
 
     card.dataset.plantId = plant.id;
+    // Only show the ET₀ sparkline in grid view. The larger gauge chart
+    // previously appended here has been removed so each card displays just
+    // one chart near the tags.
     if (viewMode === 'grid') {
+      /*
       const gauge = document.createElement('canvas');
       gauge.classList.add('et0-gauge');
       gauge.width = 200;
       gauge.height = 60;
       card.appendChild(gauge);
       initEt0Gauge(card);
+      */
     }
 
     const actionsDiv = document.createElement('div');
