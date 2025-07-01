@@ -2,7 +2,7 @@
 
 Plant Tracker is a small PHP web app that helps you keep your houseplants healthy. It stores each plant in a MySQL database and lets you tick off watering and fertilizing tasks right in your browser. A couple of tiny calculators use local weather data to estimate how much water your plants need.
 
-![Plant Tracker dashboard screenshot](screenshot.png)
+
 
 *Overview of the main interface listing plants and upcoming tasks.*
 
