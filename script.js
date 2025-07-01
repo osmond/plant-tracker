@@ -7,6 +7,7 @@ let actionTimer = null;
 // show archived plants instead of active ones
 let showArchive = false;
 let archivedCache = null;
+let plantCache = [];
 
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
@@ -713,18 +714,21 @@ function getNextFertDate(plant) {
   return addDays(parseLocalDate(plant.last_fertilized), plant.fertilizing_frequency);
 }
 
-async function loadCalendar() {
-  let plants = [];
-  try {
-    const res = await fetch('api/get_plants.php');
-    if (!res.ok) {
-      throw new Error(`Request failed with status ${res.status}`);
+async function loadCalendar(plantsList = null) {
+  let plants = plantsList || plantCache;
+  if (!plants || plants.length === 0) {
+    try {
+      const res = await fetch('api/get_plants.php');
+      if (!res.ok) {
+        throw new Error(`Request failed with status ${res.status}`);
+      }
+      plants = await res.json();
+      plantCache = plants;
+    } catch (err) {
+      console.error('Failed to load calendar:', err);
+      showToast('Failed to load calendar data', true);
+      return;
     }
-    plants = await res.json();
-  } catch (err) {
-    console.error('Failed to load calendar:', err);
-    showToast('Failed to load calendar data', true);
-    return;
   }
   const container = document.getElementById('calendar');
   if (!container) return;
@@ -816,7 +820,6 @@ async function handleDrop(e,newDate,plants) {
     await updatePlantInline(plant,'last_fertilized',newLast);
     plant.last_fertilized = newLast;
   }
-  loadCalendar();
   loadPlants();
 }
 
@@ -833,7 +836,6 @@ async function markAction(id, type, days = 0, showMsg = true) {
       throw new Error(`Request failed with status ${resp.status}`);
     }
     loadPlants();
-    loadCalendar();
     let msg;
     if (days > 0) {
       msg = type === 'watered'
@@ -864,7 +866,6 @@ async function archivePlant(id, archive = true) {
     showToast(archive ? 'Plant archived!' : 'Plant restored!');
     if (showArchive && !archive) showArchive = false;
     loadPlants();
-    loadCalendar();
     checkArchivedLink();
   } catch (err) {
     console.error('Failed to update archive state:', err);
@@ -962,7 +963,6 @@ function showUndoBanner(plant) {
     banner.classList.remove('show');
     lastDeletedPlant = null;
     loadPlants();
-    loadCalendar();
   }, 5000);
 }
 
@@ -997,7 +997,6 @@ async function updatePlantInline(plant, field, newValue) {
     showToast(msg, true);
   } else {
     loadPlants();
-    loadCalendar();
   }
 }
 
@@ -1050,7 +1049,6 @@ async function duplicatePlant(plant) {
     } else {
       showToast('Plant duplicated!');
       loadPlants();
-      loadCalendar();
     }
   } finally {
     toggleLoading(false);
@@ -1247,6 +1245,7 @@ async function exportPlantsJSON() {
 async function loadPlants() {
   const res = await fetch(`api/get_plants.php${showArchive ? '?archived=1' : ''}`);
   const plants = await res.json();
+  plantCache = plants;
   const list = document.getElementById('plant-grid');
   if (list) {
     list.classList.toggle('list-view', viewMode === 'list');
@@ -1738,6 +1737,7 @@ async function loadPlants() {
   }
 
   checkArchivedLink(plants);
+  loadCalendar(plants);
 }
 
 async function checkArchivedLink(plantsList) {
@@ -1830,7 +1830,6 @@ function init(){
 
   applyViewMode();
 
-  loadCalendar();
 
   if (showBtn) {
     showBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add a Plant</span>';
@@ -2094,7 +2093,6 @@ function init(){
       showToast(editingPlantId?'Plant updated!':'Plant added!');
       resetForm();
       loadPlants();
-      loadCalendar();
     }catch{
       showToast('An error occurred. Please try again.', true);
     }finally{
