@@ -69,7 +69,9 @@ php -S localhost:8000
 
 ## Running Tests
 
-PHPUnit tests are provided for the API endpoints. Run them from the project root:
+PHPUnit tests are provided for the API endpoints. Ensure PHP is available on the
+command line and that [PHPUnit is installed](https://phpunit.de/getting-started/phpunit-10.html).
+Run them from the project root:
 
 ```bash
 phpunit
