@@ -117,6 +117,47 @@ Both rely on the coefficients defined in `config.php`.
 
 Weather data retrieved from OpenWeather is cached for one hour to limit API requests and speed up page loads. The calculators automatically use the cached response if available.
 
+## How the Watering Calculator Works
+
+### Temperature input
+We pull today’s minimum and maximum air temperatures (°C) from OpenWeatherMap and compute the average:
+
+```
+Tavg = (Tmin + Tmax) / 2
+```
+
+### Reference evapotranspiration (ET₀)
+We apply the Hargreaves equation:
+
+```
+ET0 = 0.0023 × (Tavg + 17.8) × √(Tmax – Tmin) × Ra
+```
+
+with Ra (extraterrestrial radiation) defaulting to 20 MJ·m⁻²·day⁻¹ in `config.php`.
+
+### Crop adjustment (ETc)
+Multiply ET₀ by the plant’s crop coefficient (Kc) from your `kc_map` (e.g. 0.3 for succulents, 0.8 for houseplants) to get ETc:
+
+```
+ETc = Kc × ET0
+```
+
+### Volume conversion
+Convert depth (mm) to volume (mL) using the pot’s surface area:
+
+```
+area_cm2 = π × (diameter_cm / 2)²
+water_mL = ETc × area_cm2 × 0.1
+```
+
+Finally, we convert to U.S. fluid ounces (1 oz = 29.5735 mL) and round to one decimal.
+
+### References
+- FAO-56 “Crop Evapotranspiration” (Allen et al., 1998)
+- Hargreaves & Samani (1985)
+- `script.js` (`calculateET0` function)
+- `config.php` (default Ra & Kc values)
+
 ## Basic Usage
 Use the main interface at `index.html` to add plants, mark them as watered or fertilized, and upload photos. The API endpoints under `api/` are used by the front‑end JavaScript (`script.js`) to interact with the database.
 
