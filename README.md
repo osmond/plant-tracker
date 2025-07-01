@@ -76,8 +76,9 @@ Two small utilities help estimate watering needs:
 
 Both rely on the coefficients defined in `config.php`.
 
-The interface refreshes weather data every hour to keep watering
-recommendations current.
+Weather data retrieved from OpenWeather is cached for one hour to limit API
+requests and speed up page loads. The calculators automatically use the cached
+response if available.
 
 ## Basic Usage
 
