@@ -1,10 +1,11 @@
-const CACHE_NAME = 'plant-tracker-v1';
+const CACHE_NAME = 'plant-tracker-v2';
 const ASSETS = [
   '/',
   'index.html',
   'script.js',
   'style.css',
   'favicon.svg',
+  'manifest.json',
   'screenshot.png'
 ];
 
@@ -23,7 +24,19 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  const req = event.request;
+  if (req.method === 'GET' && req.url.includes('/api/')) {
+    event.respondWith(
+      caches.open('api-cache').then(cache =>
+        fetch(req).then(res => {
+          if (res.ok) cache.put(req, res.clone());
+          return res;
+        }).catch(() => cache.match(req))
+      )
+    );
+    return;
+  }
   event.respondWith(
-    caches.match(event.request).then(response => response || fetch(event.request))
+    caches.match(req).then(response => response || fetch(req))
   );
 });
