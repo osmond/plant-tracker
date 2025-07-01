@@ -687,13 +687,6 @@ function needsFertilizing(plant, today = new Date()) {
   return next <= today;
 }
 
-function waterOverdueDays(plant, today = new Date()) {
-  if (!plant.last_watered) return Infinity;
-  const next = addDays(parseLocalDate(plant.last_watered), plant.watering_frequency);
-  const diffMs = today - next;
-  return Math.floor(diffMs / 86400000);
-}
-
 // --- calendar helpers ---
 function getNextWaterDate(plant) {
   if (!plant.last_watered) return new Date();
@@ -1516,14 +1509,6 @@ async function loadPlants() {
 
     infoWrap.appendChild(summary);
     card.appendChild(infoWrap);
-
-    const overdue = waterOverdueDays(plant, today);
-    if (overdue > 2) {
-      const warn = document.createElement('div');
-      warn.classList.add('water-warning');
-      warn.textContent = "Don't forget about me or I'll die!";
-      card.appendChild(warn);
-    }
 
     const actionsDiv = document.createElement('div');
     actionsDiv.classList.add('actions');
