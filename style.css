@@ -1339,6 +1339,7 @@ button:focus {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  margin-left: calc(var(--spacing) * 2);
   cursor: pointer;
   font-size: 0.875rem;
   padding: 0.5rem 0.75rem;
