@@ -4,6 +4,10 @@ let deleteTimer = null;
 let lastCompletedAction = null;
 let actionTimer = null;
 
+import { calculateET0, computeArea } from "./js/calc.js";
+import { parseLocalDate, addDays, formatDateShort } from "./js/dates.js";
+import { showToast, toggleLoading } from "./js/dom.js";
+
 // show archived plants instead of active ones
 let showArchive = false;
 let archivedCache = null;
@@ -179,15 +183,6 @@ function formatWaterAmount(ml) {
          `<span class="ml-line">(${mlDisplay} ml)</span>`;
 }
 
-function calculateET0(tmin, tmax) {
-  const tavg = (tmin + tmax) / 2;
-  return 0.0023 * (tavg + 17.8) * Math.sqrt(Math.max(0, tmax - tmin)) * RA;
-}
-
-function computeArea(diameterCm) {
-  const r = diameterCm / 2;
-  return Math.PI * r * r;
-}
 
 function hexToRgb(hex) {
   if (!hex) return { r: 0, g: 0, b: 0 };
@@ -470,23 +465,6 @@ const ICONS = {
   archive: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5" rx="2" ry="2"/><line x1="10" y1="12" x2="14" y2="12"/></svg>'
 };
 
-function showToast(msg, isError = false) {
-  const toast = document.getElementById('toast');
-  if (!toast) return;
-  toast.textContent = msg;
-  toast.classList.toggle('error', isError);
-  toast.classList.add('show');
-  clearTimeout(toast.hideTimeout);
-  toast.hideTimeout = setTimeout(() => {
-    toast.classList.remove('show');
-  }, 3000);
-}
-
-function toggleLoading(show) {
-  const overlay = document.getElementById('loading-overlay');
-  if (!overlay) return;
-  overlay.classList.toggle('hidden', !show);
-}
 
 // --- filter preference helpers ---
 function saveFilterPrefs() {
@@ -634,37 +612,6 @@ function validateForm(form) {
 }
 
 
-function parseLocalDate(date) {
-  if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    const [y, m, d] = date.split('-').map(Number);
-    return new Date(y, m - 1, d);
-  }
-  return new Date(date);
-}
-
-function addDays(date, days) {
-  const d = parseLocalDate(date);
-  const incr = parseInt(days, 10);
-  if (!isNaN(incr)) {
-    d.setDate(d.getDate() + incr);
-  }
-  return d;
-}
-
-function formatDateShort(dateStr) {
-  if (!dateStr) return 'never';
-  const d = parseLocalDate(dateStr);
-  if (isNaN(d)) return dateStr;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const dayToFormat = new Date(d);
-  dayToFormat.setHours(0, 0, 0, 0);
-  const diff = Math.round((dayToFormat - today) / 86400000);
-  if (diff === 0) return 'today';
-  if (diff === -1) return 'yesterday';
-  if (diff === 1) return 'tomorrow';
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-}
 
 function formatFrequency(days) {
   const n = parseInt(days, 10);
@@ -2191,3 +2138,5 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
+
+export { loadCalendar };
