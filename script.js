@@ -1171,7 +1171,7 @@ function showFormStep(){
 
 async function exportPlantsJSON() {
   try {
-    const res = await fetch('api/get_plants.php');
+    const res = await fetch(`api/get_plants.php${showArchive ? '?archived=1' : ''}`);
     if (!res.ok) throw new Error();
     const data = await res.json();
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -1179,6 +1179,24 @@ async function exportPlantsJSON() {
     const link = document.createElement('a');
     link.href = url;
     link.download = 'plants.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    showToast('Export failed. Please try again.', true);
+  }
+}
+
+async function exportPlantsCSV() {
+  try {
+    const res = await fetch(`api/export_plants_csv.php${showArchive ? '?archived=1' : ''}`);
+    if (!res.ok) throw new Error();
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'plants.csv';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1717,6 +1735,7 @@ async function checkArchivedLink(plantsList) {
 function init(){
   const showBtn = document.getElementById('show-add-form');
   const exportBtn = document.getElementById('export-json');
+  const exportCsvBtn = document.getElementById('export-csv');
   const form = document.getElementById('plant-form');
   const cancelBtn = document.getElementById('cancel-edit');
   const undoBtn = document.getElementById('undo-btn');
@@ -1784,6 +1803,10 @@ function init(){
   if (exportBtn) {
     exportBtn.innerHTML = ICONS.download + '<span class="visually-hidden">Export JSON</span>';
     exportBtn.addEventListener('click', exportPlantsJSON);
+  }
+  if (exportCsvBtn) {
+    exportCsvBtn.innerHTML = ICONS.download + '<span class="visually-hidden">Export CSV</span>';
+    exportCsvBtn.addEventListener('click', exportPlantsCSV);
   }
   if (cancelBtn) {
     cancelBtn.innerHTML = ICONS.cancel + ' Cancel';

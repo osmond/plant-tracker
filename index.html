@@ -32,6 +32,7 @@
         My Plant Tracker
         <button id="show-add-form" class="bg-primary text-white rounded-md px-4 py-2 ml-auto"></button>
         <button id="export-json" class="bg-primary text-white rounded-md px-4 py-2 ml-2"></button>
+        <button id="export-csv" class="bg-primary text-white rounded-md px-4 py-2 ml-2"></button>
         <button id="toggle-search" class="bg-primary text-white rounded-md px-4 py-2 ml-2">Search</button>
     </h1>
     <div id="summary" class="p-4 bg-card rounded-lg mb-4">
@@ -191,6 +192,23 @@
         <button id="next-week" class="bg-primary text-white rounded-md px-4 py-2"></button>
     </div>
     <div id="calendar" class="p-4"></div>
+
     <script type="module" src="script.js?v=1.0"></script>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("service-worker.js").catch(e => console.log("Service Worker registration failed:", e));
+        });
+      }
+    </script>
+
+    <script>
+      const script = document.createElement('script');
+      script.src = 'script.js?v=1.0';
+      script.async = false;
+      document.body.appendChild(script);
+    </script>
+
   </body>
 </html>
