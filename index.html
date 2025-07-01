@@ -55,14 +55,9 @@
         <fieldset class="form-section flex flex-col gap-4">
             <legend class="font-semibold">Plant Basics</legend>
             <div>
-                <label for="plant-search" class="block mb-1">Plant Name <span class="required-star" aria-hidden="true">*</span></label>
-                <input type="text" name="name" id="plant-search" autocomplete="off" placeholder="Plant Name" class="w-full border rounded-md p-2" required />
-                <ul id="suggestions" class="autocomplete-list"></ul>
-
-                <!-- hidden, populated by JS -->
-                <input type="hidden" id="scientific-name" name="scientific_name" />
-                <input type="hidden" id="thumbnail-url" name="thumbnail_url" />
-                <img id="thumb-preview" src="" alt="Plant thumbnail" style="display:none; width:50px; margin-top:0.5rem;" />
+                <label for="name" class="block mb-1">Plant Name <span class="required-star" aria-hidden="true">*</span></label>
+                <input type="text" name="name" id="name" list="common-list" placeholder="Plant Name" class="w-full border rounded-md p-2" required />
+                <datalist id="common-list"></datalist>
                 <div class="error" id="name-error"></div>
             </div>
             <div>

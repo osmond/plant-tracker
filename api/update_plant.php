@@ -33,8 +33,6 @@ $water_amount            = isset($_POST['water_amount']) ? floatval($_POST['wate
 $last_watered            = $_POST['last_watered'] ?? null;
 $last_fertilized         = $_POST['last_fertilized'] ?? null;
 $photo_url               = trim($_POST['photo_url'] ?? '');
-$scientificName          = $_POST['scientific_name'] ?? '';
-$thumbnailUrl            = $_POST['thumbnail_url'] ?? '';
 
 $errors = [];
 $namePattern = "/^[\p{L}0-9\s'-]{1,100}$/u";
@@ -138,13 +136,11 @@ $stmt = $conn->prepare("
         last_watered       = ?,
         last_fertilized    = ?,
         photo_url          = ?,
-        water_amount       = ?,
-        scientific_name    = ?,
-        thumbnail_url      = ?
+        water_amount       = ?
     WHERE id = ?
 ");
 $stmt->bind_param(
-    'ssssiisssdssi',
+    'ssssiisssdi',
     $name,
     $species,
     $plant_type,
@@ -155,8 +151,6 @@ $stmt->bind_param(
     $last_fertilized,
     $photo_url,
     $water_amount,
-    $scientificName,
-    $thumbnailUrl,
     $id
 );
 
