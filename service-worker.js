@@ -1,12 +1,11 @@
-const CACHE_NAME = 'plant-tracker-v2';
+const CACHE_NAME = 'plant-tracker-v3';
 const ASSETS = [
-  '/',
-  'index.html',
-  'script.js',
-  'style.css',
-  'favicon.svg',
-  'manifest.json',
-  'screenshot.png'
+  './index.html',
+  './script.js',
+  './style.css',
+  './favicon.svg',
+  './manifest.json',
+  './screenshot.png'
 ];
 
 self.addEventListener('install', event => {
@@ -33,6 +32,12 @@ self.addEventListener('fetch', event => {
           return res;
         }).catch(() => cache.match(req))
       )
+    );
+    return;
+  }
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      caches.match('./index.html').then(resp => resp || fetch(req))
     );
     return;
   }
