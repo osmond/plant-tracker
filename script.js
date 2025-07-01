@@ -769,6 +769,35 @@ async function handleDrop(e,newDate,plants) {
   loadPlants();
 }
 
+function savePendingAction(action) {
+  const arr = JSON.parse(localStorage.getItem('pendingActions') || '[]');
+  arr.push(action);
+  localStorage.setItem('pendingActions', JSON.stringify(arr));
+}
+
+async function syncPendingActions() {
+  if (!navigator.onLine) return;
+  const actions = JSON.parse(localStorage.getItem('pendingActions') || '[]');
+  if (actions.length === 0) return;
+  for (const act of actions) {
+    try {
+      await fetch(`api/mark_${act.type}.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `id=${act.id}&snooze_days=${act.days}`
+      });
+    } catch (e) {
+      console.error('Failed to sync action', e);
+      return;
+    }
+  }
+  localStorage.removeItem('pendingActions');
+  showToast('Offline actions synced!');
+  loadPlants();
+}
+
+window.addEventListener('online', syncPendingActions);
+
 // --- mark watered/fertilized / snooze ---
 async function markAction(id, type, days = 0, showMsg = true) {
   window.lastUpdatedPlantId = id;
@@ -795,7 +824,10 @@ async function markAction(id, type, days = 0, showMsg = true) {
     }
   } catch (err) {
     console.error('Failed to mark action:', err);
-    showToast('Failed to update plant. Please try again.', true);
+    savePendingAction({ id, type, days });
+    if (showMsg) {
+      showToast('Saved offline. Will sync when online.');
+    }
   }
 }
 
@@ -2128,6 +2160,7 @@ function init(){
     });
   }
   loadPlants();
+  syncPendingActions();
   fetchWeather();
   setInterval(fetchWeather, WEATHER_UPDATE_INTERVAL);
 }
