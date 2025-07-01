@@ -59,13 +59,6 @@ const synonymsCache = new Map();
 const specimenPhotosCache = new Map();
 const speciesKeyCache = new Map();
 
-// register Chart.js zoom plugin if available
-if (window.Chart && window.ChartZoom) {
-  Chart.register(ChartZoom);
-}
-if (window.Chart && window.ChartAnnotation) {
-  Chart.register(ChartAnnotation);
-}
 
 function debounce(fn, delay = 300) {
   let timer;
@@ -209,44 +202,6 @@ function hexToRgb(hex) {
   };
 }
 
-function initEt0Gauge(card) {
-  const plantId = card.dataset.plantId;
-  const canvas = card.querySelector('.et0-gauge');
-  if (!canvas || !plantId) return;
-
-  fetch(`api/get_et0_timeseries.php?plant_id=${plantId}&days=7`)
-    .then(res => res.json())
-    .then(data => {
-      const labels = data.map(d => d.date.slice(5));
-      const et0 = data.map(d => parseFloat(d.et0_mm));
-      const ctx = canvas.getContext('2d');
-      const accentHex = getComputedStyle(document.documentElement)
-        .getPropertyValue('--color-accent');
-      const accentRgb = hexToRgb(accentHex || '#228b22');
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0.4)`);
-      gradient.addColorStop(1, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0)`);
-
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label: 'ET₀',
-            data: et0,
-            fill: true,
-            backgroundColor: gradient,
-            borderColor: `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},1)`,
-            borderWidth: 2,
-            tension: 0.4,
-            pointRadius: 0
-          }]
-        },
-        options: {
-          responsive: false,
-          scales: {
-            x: { display: false },
-            y: { display: false }
           },
           plugins: {
             legend: { display: false },
@@ -1622,14 +1577,6 @@ async function loadPlants() {
     card.appendChild(infoWrap);
 
     card.dataset.plantId = plant.id;
-    if (viewMode === 'grid') {
-      const gauge = document.createElement('canvas');
-      gauge.classList.add('et0-gauge');
-      gauge.width = 200;
-      gauge.height = 60;
-      card.appendChild(gauge);
-      initEt0Gauge(card);
-    }
 
     const actionsDiv = document.createElement('div');
     actionsDiv.classList.add('actions');
