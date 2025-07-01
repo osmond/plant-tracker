@@ -751,7 +751,7 @@ button:focus {
   flex-direction: column;
   gap: calc(var(--spacing) * 2);
   padding: calc(var(--spacing) * 2);
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-border);
   transition: background-color 0.2s, box-shadow 0.2s;
 }
 
@@ -760,7 +760,7 @@ button:focus {
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-#plant-grid.list-view .plant-card:last-child {
+#plant-grid.list-view .plant-card-wrapper:last-child .plant-card {
   border-bottom: none;
 }
 
@@ -823,7 +823,7 @@ button:focus {
   user-select: text; /* allow highlighting text in this mode */
 }
 
-#plant-grid.text-view .plant-card:last-child {
+#plant-grid.text-view .plant-card-wrapper:last-child .plant-card {
   border-bottom: none;
 }
 #plant-grid.text-view .urgency-tag {
