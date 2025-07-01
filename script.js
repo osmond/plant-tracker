@@ -178,8 +178,8 @@ function formatWaterAmount(ml) {
   const ounces = ml / ML_PER_US_FL_OUNCE;
   const mlDisplay = Math.round(ml);
   const ozDisplay = ounces.toFixed(1).replace(/\.0$/, '');
-  return `<span class="oz-line">${ozDisplay}oz</span>` +
-         `<span class="ml-line">(${mlDisplay} ml)</span>`;
+  return `<span class="oz-line">${ozDisplay}oz</span> / ` +
+         `<span class="ml-line">${mlDisplay} ml</span>`;
 }
 
 
