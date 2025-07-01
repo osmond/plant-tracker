@@ -201,52 +201,6 @@ function hexToRgb(hex) {
     b: num & 255
   };
 }
-
-function initEt0Sparkline(canvas) {
-  const plantId = canvas.dataset.plantId;
-  if (!plantId) return;
-  fetch(`api/get_et0_timeseries.php?plant_id=${plantId}&days=7`)
-    .then(r => r.json())
-    .then(data => {
-      const et0 = data.map(d => parseFloat(d.et0_mm));
-      canvas.title = 'ET\u2080 last 7 days';
-      const ctx = canvas.getContext('2d');
-      const accentHex =
-        getComputedStyle(document.documentElement).getPropertyValue(
-          '--color-accent'
-        ) || '#228b22';
-      const color = hexToRgb(accentHex);
-
-      const bandSize = 2;
-      const maxVal = Math.max(...et0, bandSize);
-      const bands = Math.ceil(maxVal / bandSize);
-      const bandHeight = canvas.height / bands;
-      const step = canvas.width / et0.length;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let b = bands; b >= 1; b--) {
-        ctx.beginPath();
-        ctx.moveTo(0, canvas.height - bandHeight * b);
-        et0.forEach((v, i) => {
-          const capped = Math.min(
-            Math.max(v - bandSize * (b - 1), 0),
-            bandSize
-          );
-          const y =
-            canvas.height - bandHeight * b +
-            bandHeight - (capped / bandSize) * bandHeight;
-          ctx.lineTo(i * step, y);
-        });
-        ctx.lineTo(canvas.width, canvas.height - bandHeight * b);
-        ctx.closePath();
-        const alpha = 0.4 + (0.6 * b) / bands;
-        ctx.fillStyle = `rgba(${color.r},${color.g},${color.b},${alpha})`;
-        ctx.fill();
-      }
-    })
-    .catch(() => {});
-}
 async function fetchScientificNames(query) {
   if (!query) return [];
   if (speciesKeyCache.has(`s:${query}`)) return speciesKeyCache.get(`s:${query}`);
@@ -1521,23 +1475,8 @@ async function loadPlants() {
       tagList.appendChild(amtTag);
     }
 
-    const meta = document.createElement('div');
-    meta.classList.add('card-meta');
     if (tagList.childElementCount > 0) {
-      meta.appendChild(tagList);
-    }
-    if (viewMode === 'grid') {
-      const spark = document.createElement('canvas');
-      spark.classList.add('et0-sparkline');
-      spark.width = 100;
-      spark.height = 32;
-      spark.dataset.plantId = plant.id;
-      meta.appendChild(spark);
-    }
-    if (meta.childElementCount > 0) {
-      infoWrap.appendChild(meta);
-      const canvas = meta.querySelector('.et0-sparkline');
-      if (canvas) initEt0Sparkline(canvas);
+      infoWrap.appendChild(tagList);
     }
 
     const summary = document.createElement('div');
