@@ -1,18 +1,19 @@
 # Plant Tracker
 
-Plant Tracker is a lightweight PHP application for managing your houseplants. It stores
-plant records in a MySQL database and provides a simple web interface to track
-watering and fertilizing. The project also includes small calculators for estimating
-water requirements using local weather data.
+Plant Tracker is a small PHP web app that helps you keep your houseplants healthy. It stores each plant in a MySQL database and lets you tick off watering and fertilizing tasks right in your browser. A couple of tiny calculators use local weather data to estimate how much water your plants need.
 
 ![Plant Tracker dashboard screenshot](screenshot.png)
 
 *Overview of the main interface listing plants and upcoming tasks.*
 
-## Setup
+## Prerequisites
+- [PHP](https://www.php.net/manual/en/install.php)
+- [MySQL](https://dev.mysql.com/doc/refman/8.0/en/installing.html)
+- [Node.js](https://nodejs.org/en/download/)
 
-1. Clone the repository and install PHP and MySQL.
-2. Copy `config.example.php` to `config.php` and update the values:
+## Setup
+1. Clone this repository.
+2. Copy `config.example.php` to `config.php` and edit the settings, including your OpenWeather API key:
 
 ```php
 'openweather_key' => 'YOUR_API_KEY',
@@ -47,60 +48,43 @@ water requirements using local weather data.
 ```
 
    The OpenWeather API key and location are required for the water calculators.
-3. Copy `db.example.php` to `db.php` and add your MySQL credentials. Tests can
-   supply credentials via the `DB_CONFIG` environment variable using the stubs
-   under `tests/`.
+3. Copy `db.example.php` to `db.php` and add your MySQL credentials.
 4. Run the database migrations:
 
 ```bash
 php scripts/run_migrations.php
 ```
 
-5. Start a local server from the project root:
+5. Start the PHP development server and open the app:
 
 ```bash
 php -S localhost:8000
 ```
 
-   Then open `http://localhost:8000/index.html` in your browser.
+   Then visit `http://localhost:8000/index.html` in your browser.
+   **Note:** Opening `index.html` directly as a file won't work because the JavaScript needs the PHP API endpoints.
 
-   **Note:** Opening `index.html` directly as a file won't work because the
-   JavaScript needs the PHP API endpoints. Always access the app through the
-   local server above.
+## Project Structure
+- `api/` holds the PHP endpoints used by the front end.
+- `uploads/` stores images you attach to plants.
+- `scripts/` contains helper scripts such as the migration runner.
 
 ## Running Tests
-
-PHPUnit tests are provided for the API endpoints. Ensure PHP is available on the
-command line and that [PHPUnit is installed](https://phpunit.de/getting-started/phpunit-10.html).
-Run them from the project root:
+PHPUnit exercises the API code. From the project root simply run:
 
 ```bash
 phpunit
 ```
 
-The suite reads the `DB_CONFIG` environment variable to load a stubbed
-database connection. The provided stubs live under `tests/` and allow the
-API code to run without a real MySQL server. You can override the path
-explicitly when running the tests:
+It loads a stub database config from `tests/db_stub.php` unless you override `DB_CONFIG`.
+
+The JavaScript helpers use Jest. After installing the Node packages run:
 
 ```bash
-DB_CONFIG=tests/db_stub.php phpunit
-```
-
-JavaScript unit tests are written with Jest and live in the `__tests__/`
-directory. They exercise the front‑end utility functions and DOM helpers.
-Install the Node dependencies and run them with:
-
-```bash
-npm install
 npm test
 ```
 
-Together the suites validate basic input handling for the API as well as
-core front‑end behaviour.
-
 ## Calculators
-
 Two small utilities help estimate watering needs:
 
 - `calculator.php` &mdash; calculates daily water for a single pot using weather data.
@@ -108,25 +92,15 @@ Two small utilities help estimate watering needs:
 
 Both rely on the coefficients defined in `config.php`.
 
-Weather data retrieved from OpenWeather is cached for one hour to limit API
-requests and speed up page loads. The calculators automatically use the cached
-response if available.
+Weather data retrieved from OpenWeather is cached for one hour to limit API requests and speed up page loads. The calculators automatically use the cached response if available.
 
 ## Basic Usage
+Use the main interface at `index.html` to add plants, mark them as watered or fertilized, and upload photos. The API endpoints under `api/` are used by the front‑end JavaScript (`script.js`) to interact with the database.
 
-Use the main interface at `index.html` to add plants, mark them as watered or
-fertilized, and upload photos. The API endpoints under `api/` are used by the
-front‑end JavaScript (`script.js`) to interact with the database.
+In list or text view you can swipe right on a plant card to complete all due tasks (watering and fertilizing) at once. The card slides with your finger and smoothly snaps back if you don't pass the threshold.
 
-In list or text view you can swipe right on a plant card to complete all due
-tasks (watering and fertilizing) at once. The card slides with your finger
-and smoothly snaps back if you don't pass the threshold.
-
-You can also export your current plant list as JSON or CSV using the download
-buttons at the top of the page.
-
-
+You can also export your current plant list as JSON or CSV using the download buttons at the top of the page.
 
 ## Service Worker
+A small service worker caches the key pages and scripts so the app still opens when you're offline. During development you may need to disable the cache or bump the version in `service-worker.js` to pick up changes.
 
-The app uses a simple service worker to cache core assets for offline access. During development you may need to update the cache when making changes. Bump the cache version in `service-worker.js` or run **Disable cache** in your browser's developer tools and reload to ensure the latest files are served.
