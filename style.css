@@ -1333,7 +1333,6 @@ button:focus {
 }
 #archived-link.hidden { display: none; }
 
-/* Deprecated: gauge chart styles retained for reference
 .et0-gauge {
   display: block;
   width: 100%;
@@ -1349,7 +1348,6 @@ button:focus {
 #plant-grid.text-view .et0-gauge {
   display: none;
 }
-*/
 
 
 
