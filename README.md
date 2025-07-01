@@ -71,6 +71,15 @@ PHPUnit tests are provided for the API endpoints. Run them from the project root
 phpunit
 ```
 
+The suite reads the `DB_CONFIG` environment variable to load a stubbed
+database connection. The provided stubs live under `tests/` and allow the
+API code to run without a real MySQL server. You can override the path
+explicitly when running the tests:
+
+```bash
+DB_CONFIG=tests/db_stub.php phpunit
+```
+
 JavaScript unit tests are written with Jest and live in the `__tests__/`
 directory. They exercise the front‑end utility functions and DOM helpers.
 Install the Node dependencies and run them with:
