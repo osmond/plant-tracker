@@ -1237,6 +1237,11 @@ async function exportPlantsCSV() {
   }
 }
 
+async function exportPlantsBoth() {
+  await exportPlantsJSON();
+  await exportPlantsCSV();
+}
+
 // --- main render & filter loop ---
 async function loadPlants() {
   const res = await fetch(`api/get_plants.php${showArchive ? '?archived=1' : ''}`);
@@ -1765,8 +1770,7 @@ async function checkArchivedLink(plantsList) {
 // --- init ---
 function init(){
   const showBtn = document.getElementById('show-add-form');
-  const exportBtn = document.getElementById('export-json');
-  const exportCsvBtn = document.getElementById('export-csv');
+  const exportBtn = document.getElementById('export-all');
   const form = document.getElementById('plant-form');
   const cancelBtn = document.getElementById('cancel-edit');
   const undoBtn = document.getElementById('undo-btn');
@@ -1832,12 +1836,8 @@ function init(){
     showBtn.innerHTML = ICONS.plus + '<span class="visually-hidden">Add a Plant</span>';
   }
   if (exportBtn) {
-    exportBtn.innerHTML = ICONS.download + '<span class="visually-hidden">Export JSON</span>';
-    exportBtn.addEventListener('click', exportPlantsJSON);
-  }
-  if (exportCsvBtn) {
-    exportCsvBtn.innerHTML = ICONS.download + '<span class="visually-hidden">Export CSV</span>';
-    exportCsvBtn.addEventListener('click', exportPlantsCSV);
+    exportBtn.innerHTML = ICONS.download + '<span class="visually-hidden">Export</span>';
+    exportBtn.addEventListener('click', exportPlantsBoth);
   }
   if (cancelBtn) {
     cancelBtn.innerHTML = ICONS.cancel + ' Cancel';
