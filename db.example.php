@@ -1,8 +1,8 @@
 <?php
-$host = "localhost"; // Leave this as is
-$user = "u568785491_jon"; // Your actual DB user
-$pass = "yS+olgrwgD1";  // ✅ Your new password
-$dbname = "u568785491_plants"; // Your actual DB name
+$host = "localhost"; // Database host
+$user = "DB_USER";    // Your database username
+$pass = "DB_PASS";    // Your database password
+$dbname = "DB_NAME";  // Your database name
 
 $dbConfig = getenv('DB_CONFIG');
 if ($dbConfig && file_exists($dbConfig)) {
@@ -14,4 +14,3 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 ?>
-

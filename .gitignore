@@ -33,6 +33,7 @@ node_modules/
 *.swo
 *.tmp
 db.php
+config.php
 uploads/
 !uploads/.htaccess
 plant-tracker-starter.code-workspace

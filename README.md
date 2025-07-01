@@ -43,8 +43,9 @@ water requirements using local weather data.
 ```
 
    The OpenWeather API key and location are required for the water calculators.
-3. Configure your MySQL connection in `db.php` or using environment variables in
-   the testing stubs located under `tests/`.
+3. Copy `db.example.php` to `db.php` and add your MySQL credentials. Tests can
+   supply credentials via the `DB_CONFIG` environment variable using the stubs
+   under `tests/`.
 4. Run the database migrations:
 
 ```bash
