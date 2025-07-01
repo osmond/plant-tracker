@@ -113,3 +113,15 @@ You can also export your current plant list as JSON or CSV using the download bu
 ## Service Worker
 A small service worker caches the key pages and scripts so the app still opens when you're offline. During development you may need to disable the cache or bump the version in `service-worker.js` to pick up changes.
 
+<details>
+<summary>Technical TL;DR</summary>
+
+- API endpoints live under `api/` and communicate with MySQL using PDO.
+- OpenWeather data is cached by `weather_cache.php` for one hour.
+- Images you upload are stored in `uploads/` with their paths saved in the database.
+- Unit tests reside in `tests/` for PHP and `__tests__/` for JavaScript.
+- Helper scripts such as the migration runner are in `scripts/`.
+- A simple service worker provides offline support and pre-caches key files.
+
+</details>
+
