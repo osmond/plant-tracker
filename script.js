@@ -210,30 +210,40 @@ function initEt0Sparkline(canvas) {
     .then(data => {
       const et0 = data.map(d => parseFloat(d.et0_mm));
       canvas.title = 'ET\u2080 last 7 days';
-      // match canvas dimensions to the rendered size
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
       const ctx = canvas.getContext('2d');
-      const accent =
+      const accentHex =
         getComputedStyle(document.documentElement).getPropertyValue(
           '--color-accent'
         ) || '#228b22';
+      const color = hexToRgb(accentHex);
+
+      const bandSize = 2;
+      const maxVal = Math.max(...et0, bandSize);
+      const bands = Math.ceil(maxVal / bandSize);
+      const bandHeight = canvas.height / bands;
+      const step = canvas.width / et0.length;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const max = Math.max(...et0);
-      const min = Math.min(...et0);
-      const range = max - min || 1;
-      const step = canvas.width / (et0.length - 1);
 
-      ctx.beginPath();
-      et0.forEach((v, i) => {
-        const x = i * step;
-        const y = canvas.height - ((v - min) / range) * canvas.height;
-        ctx.lineTo(x, y);
-      });
-      ctx.strokeStyle = accent.trim();
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
+      for (let b = bands; b >= 1; b--) {
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height - bandHeight * b);
+        et0.forEach((v, i) => {
+          const capped = Math.min(
+            Math.max(v - bandSize * (b - 1), 0),
+            bandSize
+          );
+          const y =
+            canvas.height - bandHeight * b +
+            bandHeight - (capped / bandSize) * bandHeight;
+          ctx.lineTo(i * step, y);
+        });
+        ctx.lineTo(canvas.width, canvas.height - bandHeight * b);
+        ctx.closePath();
+        const alpha = 0.4 + (0.6 * b) / bands;
+        ctx.fillStyle = `rgba(${color.r},${color.g},${color.b},${alpha})`;
+        ctx.fill();
+      }
     })
     .catch(() => {});
 }
@@ -1519,6 +1529,8 @@ async function loadPlants() {
     if (viewMode === 'grid') {
       const spark = document.createElement('canvas');
       spark.classList.add('et0-sparkline');
+      spark.width = 100;
+      spark.height = 32;
       spark.dataset.plantId = plant.id;
       meta.appendChild(spark);
     }
