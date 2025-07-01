@@ -529,13 +529,13 @@ button:focus {
   font-size: var(--font-size-lg);
   font-weight: 600;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  display: none;
 }
 
 .toast.show {
-  display: block;
+  visibility: visible;
   opacity: 1;
 }
 

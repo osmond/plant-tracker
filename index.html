@@ -176,12 +176,12 @@
     <div id="rainfall-info" class="p-4 bg-card rounded-lg mb-4 hidden"></div>
 
     <!-- Undo delete snackbar -->
-    <div id="undo-banner" class="mb-4" role="alert">
+    <div id="undo-banner" class="mb-4" role="status" aria-live="polite" aria-hidden="true">
         <span id="undo-message">Plant deleted.</span>
         <button id="undo-btn">Undo</button>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-hidden="true"></div>
 
     <div id="plant-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4"></div>
     <button id="archived-link" type="button" class="text-sm hidden"></button>

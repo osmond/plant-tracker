@@ -4,9 +4,11 @@ export function showToast(msg, isError = false) {
   toast.textContent = msg;
   toast.classList.toggle('error', isError);
   toast.classList.add('show');
+  toast.setAttribute('aria-hidden', 'false');
   clearTimeout(toast.hideTimeout);
   toast.hideTimeout = setTimeout(() => {
     toast.classList.remove('show');
+    toast.setAttribute('aria-hidden', 'true');
   }, 3000);
 }
 
