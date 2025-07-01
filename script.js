@@ -31,7 +31,6 @@ const CM_PER_INCH = 2.54;
 const WEATHER_UPDATE_INTERVAL = 60 * 60 * 1000; // 1 hour
 
 // configuration values mirrored from config.php
-const RA = 20.0;
 const DEFAULT_KC = 0.8;
 // GBIF backbone usageKey for Plantae
 const PLANTAE_KEY = 6;
