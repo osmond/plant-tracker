@@ -295,37 +295,48 @@ function initEt0Sparkline(canvas) {
   fetch(`api/get_et0_timeseries.php?plant_id=${plantId}&days=7`)
     .then(r => r.json())
     .then(data => {
+      const labels = data.map(d => d.date.slice(5));
       const et0 = data.map(d => parseFloat(d.et0_mm));
-      canvas.title = 'ET\u2080 last 7 days';
       const ctx = canvas.getContext('2d');
       const accentHex = getComputedStyle(document.documentElement)
-        .getPropertyValue('--color-accent') || '#228b22';
-      const color = hexToRgb(accentHex);
-
-      const bandSize = 2; // mm per band
-      const maxVal = Math.max(...et0, bandSize);
-      const bands = Math.ceil(maxVal / bandSize);
-      const bandHeight = canvas.height / bands;
-      const step = canvas.width / et0.length;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let b = bands; b >= 1; b--) {
-        ctx.beginPath();
-        ctx.moveTo(0, canvas.height - bandHeight * b);
-        et0.forEach((v, i) => {
-          const capped = Math.min(Math.max(v - bandSize * (b - 1), 0), bandSize);
-          const y =
-            canvas.height - bandHeight * b +
-            bandHeight - (capped / bandSize) * bandHeight;
-          ctx.lineTo(i * step, y);
-        });
-        ctx.lineTo(canvas.width, canvas.height - bandHeight * b);
-        ctx.closePath();
-        const alpha = 0.4 + (0.6 * b) / bands;
-        ctx.fillStyle = `rgba(${color.r},${color.g},${color.b},${alpha})`;
-        ctx.fill();
-      }
+        .getPropertyValue('--color-accent');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            data: et0,
+            backgroundColor: accentHex || '#228b22',
+            categoryPercentage: 1.0,
+            barPercentage: 1.0
+          }]
+        },
+        options: {
+          responsive: false,
+          scales: {
+            x: { display: false },
+            y: { display: false, beginAtZero: true }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              displayColors: false,
+              callbacks: {
+                label: ctx => `ET₀ ${ctx.parsed.y.toFixed(2)} mm`
+              },
+              backgroundColor: 'rgba(255,255,255,0.9)',
+              borderColor: '#ddd',
+              borderWidth: 1,
+              titleColor: '#333',
+              bodyColor: '#333',
+              bodyFont: { size: 10 },
+              titleFont: { size: 10 }
+            }
+          },
+          layout: { padding: 4 },
+          animation: { duration: 300 }
+        }
+      });
     })
     .catch(() => {});
 }
