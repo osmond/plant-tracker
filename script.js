@@ -63,9 +63,6 @@ const speciesKeyCache = new Map();
 if (window.Chart && window.ChartZoom) {
   Chart.register(ChartZoom);
 }
-if (window.Chart && window.ChartAnnotation) {
-  Chart.register(ChartAnnotation);
-}
 
 function debounce(fn, delay = 300) {
   let timer;
@@ -224,7 +221,7 @@ function initEt0Gauge(card) {
         .getPropertyValue('--color-accent');
       const accentRgb = hexToRgb(accentHex || '#228b22');
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0.4)`);
+      gradient.addColorStop(0, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0.2)`);
       gradient.addColorStop(1, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0)`);
 
       new Chart(ctx, {
@@ -238,15 +235,21 @@ function initEt0Gauge(card) {
             backgroundColor: gradient,
             borderColor: `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},1)`,
             borderWidth: 2,
-            tension: 0.4,
-            pointRadius: 0
+            tension: 0.3,
+            pointRadius: et0.map((_, i) => i === et0.length - 1 ? 4 : 0),
+            pointBackgroundColor: 'tomato',
+            pointHoverRadius: 6
           }]
         },
         options: {
           responsive: false,
           scales: {
-            x: { display: false },
-            y: { display: false }
+            x: { display: false, min: 0, max: labels.length - 1 },
+            y: {
+              display: false,
+              beginAtZero: true,
+              grid: { drawBorder: true, color: 'rgba(0,0,0,0.05)' }
+            }
           },
           plugins: {
             legend: { display: false },
@@ -259,18 +262,6 @@ function initEt0Gauge(card) {
               bodyColor: '#333',
               borderColor: '#ddd',
               borderWidth: 1
-            },
-            annotation: {
-              annotations: {
-                todayLine: {
-                  type: 'line',
-                  scaleID: 'x',
-                  value: labels.length - 1,
-                  borderColor: 'rgba(255,99,71,0.8)',
-                  borderWidth: 1,
-                  label: { enabled: false }
-                }
-              }
             },
             zoom: {
               pan: {
@@ -286,11 +277,11 @@ function initEt0Gauge(card) {
             mode: 'index'
           },
           layout: {
-            padding: { top: 2, bottom: 2, left: 0, right: 0 }
+            padding: { left: 8, right: 8, top: 4, bottom: 4 }
           },
           animation: {
-            duration: 800,
-            easing: 'easeOutQuart'
+            duration: 400,
+            easing: 'easeOutCubic'
           }
         }
       });
