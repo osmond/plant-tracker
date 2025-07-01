@@ -15,25 +15,26 @@ if (!headers_sent()) {
     header('Content-Type: application/json');
 }
 
-$plantId = isset($_GET['plant_id']) ? intval($_GET['plant_id']) : 0;
-$days = isset($_GET['days']) ? max(1, min(30, intval($_GET['days']))) : 30;
-if ($plantId <= 0) {
+$plantId = isset($_POST['plant_id']) ? intval($_POST['plant_id']) : 0;
+$et0 = isset($_POST['et0_mm']) ? floatval($_POST['et0_mm']) : null;
+$water = isset($_POST['water_ml']) ? floatval($_POST['water_ml']) : null;
+
+if ($plantId <= 0 || $et0 === null || $water === null) {
     http_response_code(400);
-    echo json_encode(['error' => 'plant_id required']);
+    echo json_encode(['error' => 'invalid params']);
     return;
 }
 
 $stmt = $conn->prepare(
-    'SELECT date, et0_mm, water_ml FROM et0_log
-     WHERE plant_id = ? AND date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-     ORDER BY date'
+    'INSERT IGNORE INTO et0_log (plant_id, date, et0_mm, water_ml)
+     VALUES (?, CURDATE(), ?, ?)'
 );
 if (!$stmt) {
     http_response_code(500);
     echo json_encode(['error' => 'database error']);
     return;
 }
-$stmt->bind_param('ii', $plantId, $days);
+$stmt->bind_param('idd', $plantId, $et0, $water);
 if (!$stmt->execute()) {
     http_response_code(500);
     $response = ['error' => 'database error'];
@@ -43,12 +44,8 @@ if (!$stmt->execute()) {
     echo json_encode($response);
     return;
 }
-$res = $stmt->get_result();
-$data = [];
-while ($row = $res->fetch_assoc()) {
-    $data[] = $row;
-}
 $stmt->close();
 
-echo json_encode($data);
+http_response_code(201);
+echo json_encode(['status' => 'ok']);
 ?>
