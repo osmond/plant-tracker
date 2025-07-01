@@ -4,7 +4,7 @@ let deleteTimer = null;
 let lastCompletedAction = null;
 let actionTimer = null;
 
-import { calculateET0, computeArea } from "./js/calc.js";
+import { calculateET0, computeArea, computeRA } from "./js/calc.js";
 import { parseLocalDate, addDays, formatDateShort } from "./js/dates.js";
 import { showToast, toggleLoading } from "./js/dom.js";
 
@@ -43,6 +43,7 @@ const KC_MAP = {
 
 let weatherTminC = null;
 let weatherTmaxC = null;
+let raValue = null;
 
 // forecast rainfall totals in inches (initialized to zeros in case fetch fails)
 let rainForecastInches = [0, 0, 0];
@@ -403,7 +404,11 @@ function updateWaterAmount() {
   const plantType = typeSelect ? typeSelect.value : null;
   let kc = DEFAULT_KC;
   if (plantType && KC_MAP[plantType] !== undefined) kc = KC_MAP[plantType];
-  const et0 = calculateET0(weatherTminC, weatherTmaxC);
+  const et0 = calculateET0(
+    weatherTminC,
+    weatherTmaxC,
+    raValue !== null ? raValue : undefined
+  );
   const etc = kc * et0;
   const area = computeArea(diamCm);
   const waterMl = etc * area * 0.1;
@@ -1052,6 +1057,10 @@ function fetchWeather() {
       const data = await res.json();
       weatherTminC = (data.temp_min - 32) * 5/9;
       weatherTmaxC = (data.temp_max - 32) * 5/9;
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 0);
+      const doy = Math.floor((now - start) / 86400000);
+      raValue = computeRA(lat, doy);
       rainForecastInches = Array.isArray(data.rain) && data.rain.length === 3 ? data.rain : [0, 0, 0];
       addWeather(Math.round(data.temp), data.desc, data.icon);
       updateWaterAmount();
