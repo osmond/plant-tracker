@@ -224,7 +224,7 @@ function initEt0Gauge(card) {
       gradient.addColorStop(0, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0.2)`);
       gradient.addColorStop(1, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0)`);
 
-      new Chart(ctx, {
+  new Chart(ctx, {
         type: 'line',
         data: {
           labels,
@@ -283,6 +283,65 @@ function initEt0Gauge(card) {
             duration: 400,
             easing: 'easeOutCubic'
           }
+        }
+      });
+    })
+    .catch(() => {});
+}
+
+function initEt0Sparkline(canvas) {
+  const plantId = canvas.dataset.plantId;
+  if (!plantId) return;
+  fetch(`api/get_et0_timeseries.php?plant_id=${plantId}&days=7`)
+    .then(r => r.json())
+    .then(data => {
+      const labels = data.map(d => d.date.slice(5));
+      const et0 = data.map(d => parseFloat(d.et0_mm));
+      const ctx = canvas.getContext('2d');
+      const accentHex = getComputedStyle(document.documentElement)
+        .getPropertyValue('--color-accent');
+      const accentRgb = hexToRgb(accentHex || '#228b22');
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0.2)`);
+      gradient.addColorStop(1, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0)`);
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            data: et0,
+            fill: true,
+            backgroundColor: gradient,
+            borderColor: `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},1)`,
+            borderWidth: 1.5,
+            tension: 0.3,
+            pointRadius: et0.map((_, i) => i === et0.length - 1 ? 3 : 0),
+            pointBackgroundColor: 'tomato',
+            pointHoverRadius: 4
+          }]
+        },
+        options: {
+          responsive: false,
+          scales: { x: { display: false }, y: { display: false, beginAtZero: true } },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              displayColors: false,
+              callbacks: {
+                label: ctx => `ET₀ ${ctx.parsed.y.toFixed(2)} mm`
+              },
+              backgroundColor: 'rgba(255,255,255,0.9)',
+              borderColor: '#ddd',
+              borderWidth: 1,
+              titleColor: '#333',
+              bodyColor: '#333',
+              bodyFont: { size: 10 },
+              titleFont: { size: 10 }
+            }
+          },
+          layout: { padding: 4 },
+          animation: { duration: 300 }
         }
       });
     })
@@ -1563,8 +1622,23 @@ async function loadPlants() {
       tagList.appendChild(amtTag);
     }
 
+    const meta = document.createElement('div');
+    meta.classList.add('card-meta');
     if (tagList.childElementCount > 0) {
-      infoWrap.appendChild(tagList);
+      meta.appendChild(tagList);
+    }
+    if (viewMode === 'grid') {
+      const spark = document.createElement('canvas');
+      spark.classList.add('et0-sparkline');
+      spark.width = 100;
+      spark.height = 32;
+      spark.dataset.plantId = plant.id;
+      meta.appendChild(spark);
+    }
+    if (meta.childElementCount > 0) {
+      infoWrap.appendChild(meta);
+      const canvas = meta.querySelector('.et0-sparkline');
+      if (canvas) initEt0Sparkline(canvas);
     }
 
     const summary = document.createElement('div');
