@@ -73,6 +73,7 @@ body {
 h1, h2, h3 {
     margin-bottom: calc(var(--spacing) * 1.5);
     font-weight: 600;
+    font-family: 'Merriweather', serif;
 }
 
 h1 {
@@ -185,6 +186,7 @@ form {
   margin-bottom: calc(var(--spacing) * 1.5);
   font-weight: 600;
   font-size: 1.1rem;
+  font-family: 'Merriweather', serif;
 }
 
 .help-icon {
