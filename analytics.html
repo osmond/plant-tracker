@@ -8,22 +8,51 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#8d67d6">
   <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: 'var(--color-bg)',
+            card: 'var(--color-card)',
+            primary: '#8d67d6',
+            accent: '#ffa5d8',
+            text: 'var(--color-text)'
+          }
+        }
+      },
+      plugins: [tailwindcss.forms]
+    }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-bg text-text min-h-screen p-4">
-  <h1 class="text-2xl font-bold mb-4">Plant Analytics
-    <a href="index.html" class="ml-4 text-sm text-primary underline">Back</a>
+<body class="bg-bg text-text min-h-screen">
+  <h1 class="app-title text font-bold px-4 py-0">
+    Plant Analytics
+    <a href="index.html" class="bg-primary text-white rounded-md px-4 py-2 ml-auto">Home</a>
   </h1>
-  <div class="flex flex-wrap gap-2 mb-4">
+  <div class="p-4 flex flex-wrap gap-2 mb-4 bg-card rounded-lg">
     <select id="plantSelect" class="border p-2"></select>
     <input type="date" id="startDate" class="border p-2">
     <input type="date" id="endDate" class="border p-2">
     <button id="refresh" class="bg-primary text-white rounded-md px-3 py-2">Show</button>
   </div>
-  <canvas id="et0Chart" width="600" height="300" class="mb-4 bg-white"></canvas>
-  <div id="heatmap" class="mb-4"></div>
-  <table id="dataTable" class="min-w-full border"></table>
+  <div class="p-4">
+    <canvas id="et0Chart" width="600" height="300" class="mb-4 bg-card p-2 rounded-lg shadow"></canvas>
+    <div id="heatmap" class="mb-4"></div>
+    <table id="dataTable" class="min-w-full border bg-card rounded-lg"></table>
+  </div>
   <script type="module" src="analytics.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js").catch(e => console.log("Service Worker registration failed:", e));
+      });
+    }
+  </script>
 </body>
 </html>
