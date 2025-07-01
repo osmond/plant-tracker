@@ -130,10 +130,12 @@ function showUndoActionBanner(plant, actions, prevWater, prevFert) {
   }
   banner.classList.add('success');
   banner.classList.add('show');
+  banner.setAttribute('aria-hidden', 'false');
   clearTimeout(actionTimer);
   actionTimer = setTimeout(() => {
     banner.classList.remove('show');
     banner.classList.remove('success');
+    banner.setAttribute('aria-hidden', 'true');
     lastCompletedAction = null;
   }, 5000);
 }
@@ -947,6 +949,7 @@ function showUndoBanner(plant) {
   if (msg) msg.textContent = 'Plant deleted.';
   banner.classList.remove('success');
   banner.classList.add('show');
+  banner.setAttribute('aria-hidden', 'false');
   clearTimeout(deleteTimer);
   deleteTimer = setTimeout(async () => {
     await fetch('api/delete_plant.php', {
@@ -955,6 +958,7 @@ function showUndoBanner(plant) {
       body: `id=${plant.id}`
     });
     banner.classList.remove('show');
+    banner.setAttribute('aria-hidden', 'true');
     lastDeletedPlant = null;
     loadPlants();
   }, 5000);
@@ -1918,6 +1922,7 @@ async function init(){
   document.getElementById('undo-btn').addEventListener('click', async () => {
     const banner = document.getElementById('undo-banner');
     banner.classList.remove('show');
+    banner.setAttribute('aria-hidden', 'true');
     if (lastDeletedPlant) {
       clearTimeout(deleteTimer);
       lastDeletedPlant = null;
