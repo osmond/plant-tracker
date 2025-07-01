@@ -415,6 +415,14 @@ function updateWaterAmount() {
   const oz = waterMl / ML_PER_US_FL_OUNCE;
   waterAmtInput.value = oz.toFixed(1);
   waterAmtInput.dispatchEvent(new Event('input', { bubbles: true }));
+  if (editingPlantId) {
+    const body = new URLSearchParams({
+      plant_id: editingPlantId,
+      et0_mm: et0.toFixed(2),
+      water_ml: waterMl.toFixed(1)
+    });
+    fetch('api/log_et0.php', { method: 'POST', body }).catch(() => {});
+  }
 }
 
 function updateWateringFrequency() {

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plant Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-bg text-text min-h-screen p-4">
+  <h1 class="text-2xl font-bold mb-4">Plant Analytics
+    <a href="index.html" class="ml-4 text-sm text-primary underline">Back</a>
+  </h1>
+  <div class="flex flex-wrap gap-2 mb-4">
+    <select id="plantSelect" class="border p-2"></select>
+    <input type="date" id="startDate" class="border p-2">
+    <input type="date" id="endDate" class="border p-2">
+    <button id="refresh" class="bg-primary text-white rounded-md px-3 py-2">Show</button>
+  </div>
+  <canvas id="et0Chart" width="600" height="300" class="mb-4 bg-white"></canvas>
+  <div id="heatmap" class="mb-4"></div>
+  <table id="dataTable" class="min-w-full border"></table>
+  <script type="module" src="analytics.js"></script>
+</body>
+</html>
