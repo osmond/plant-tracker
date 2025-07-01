@@ -1,19 +1,8 @@
 <?php
 /* Garden Bed Water Calculator */
 $config = require __DIR__ . '/config.php';
+require_once __DIR__ . '/weather_cache.php';
 
-function fetchWeather(array $config): array {
-    $url = 'https://api.openweathermap.org/data/2.5/weather?q=' . urlencode($config['location']) . '&appid=' . $config['openweather_key'];
-    $json = @file_get_contents($url);
-    if ($json === false) {
-        return ['error' => 'Unable to contact weather service.'];
-    }
-    $data = json_decode($json, true);
-    if (!is_array($data)) {
-        return ['error' => 'Invalid response from weather service.'];
-    }
-    return $data;
-}
 
 function calculateET0(float $tmin, float $tmax, float $ra): float {
     $tavg = ($tmin + $tmax) / 2;
@@ -45,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $kr = floatval($_POST['kr']);
         $rain = floatval($_POST['rain_mm']);
 
-        $weather = fetchWeather($config);
+        $weather = fetchWeatherCached($config);
         if (isset($weather['error'])) {
             $error = $weather['error'];
         } elseif (!isset($weather['main']['temp_min'], $weather['main']['temp_max'])) {

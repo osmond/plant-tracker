@@ -2,29 +2,9 @@
 /* Simple Plant Water Calculator */
 // Load configuration values
 
+
 $config = require __DIR__ . '/config.php';
-
-/**
- * Fetch current weather data from OpenWeatherMap.
- *
- * @param array $config Configuration array with API key and location
- * @return array Returns weather data or an array with an 'error' key on failure
- */
-function fetchWeather(array $config): array {
-    $url = 'https://api.openweathermap.org/data/2.5/weather?q=' . urlencode($config['location']) . '&appid=' . $config['openweather_key'];
-
-    $json = @file_get_contents($url); // suppress warnings if network request fails
-    if ($json === false) {
-        return ['error' => 'Unable to contact weather service.'];
-    }
-
-    $data = json_decode($json, true);
-    if (!is_array($data)) {
-        return ['error' => 'Invalid response from weather service.'];
-    }
-
-    return $data;
-}
+require_once __DIR__ . '/weather_cache.php';
 
 /**
  * Calculate reference evapotranspiration using the Hargreaves equation.
@@ -54,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $diam = floatval($_POST['pot_diameter_cm']);
         $plant_type = isset($_POST['plant_type']) ? strval($_POST['plant_type']) : null;
-        $weather = fetchWeather($config);
+        $weather = fetchWeatherCached($config);
         if (isset($weather['error'])) {
             $error = $weather['error'];
         } elseif (!isset($weather['main']['temp_min'], $weather['main']['temp_max'])) {
