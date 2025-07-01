@@ -63,6 +63,9 @@ const speciesKeyCache = new Map();
 if (window.Chart && window.ChartZoom) {
   Chart.register(ChartZoom);
 }
+if (window.Chart && window.ChartAnnotation) {
+  Chart.register(ChartAnnotation);
+}
 
 function debounce(fn, delay = 300) {
   let timer;
@@ -192,6 +195,20 @@ function computeArea(diameterCm) {
   return Math.PI * r * r;
 }
 
+function hexToRgb(hex) {
+  if (!hex) return { r: 0, g: 0, b: 0 };
+  hex = hex.trim().replace('#', '');
+  if (hex.length === 3) {
+    hex = hex.split('').map(c => c + c).join('');
+  }
+  const num = parseInt(hex, 16);
+  return {
+    r: (num >> 16) & 255,
+    g: (num >> 8) & 255,
+    b: num & 255
+  };
+}
+
 function initEt0Gauge(card) {
   const plantId = card.dataset.plantId;
   const canvas = card.querySelector('.et0-gauge');
@@ -202,8 +219,15 @@ function initEt0Gauge(card) {
     .then(data => {
       const labels = data.map(d => d.date.slice(5));
       const et0 = data.map(d => parseFloat(d.et0_mm));
+      const ctx = canvas.getContext('2d');
+      const accentHex = getComputedStyle(document.documentElement)
+        .getPropertyValue('--color-accent');
+      const accentRgb = hexToRgb(accentHex || '#228b22');
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0.4)`);
+      gradient.addColorStop(1, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0)`);
 
-      new Chart(canvas.getContext('2d'), {
+      new Chart(ctx, {
         type: 'line',
         data: {
           labels,
@@ -211,8 +235,10 @@ function initEt0Gauge(card) {
             label: 'ET₀',
             data: et0,
             fill: true,
-            tension: 0.3,
+            backgroundColor: gradient,
+            borderColor: `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},1)`,
             borderWidth: 2,
+            tension: 0.4,
             pointRadius: 0
           }]
         },
@@ -224,7 +250,28 @@ function initEt0Gauge(card) {
           },
           plugins: {
             legend: { display: false },
-            tooltip: { enabled: false },
+            tooltip: {
+              enabled: true,
+              mode: 'nearest',
+              intersect: false,
+              backgroundColor: 'rgba(255,255,255,0.9)',
+              titleColor: '#333',
+              bodyColor: '#333',
+              borderColor: '#ddd',
+              borderWidth: 1
+            },
+            annotation: {
+              annotations: {
+                todayLine: {
+                  type: 'line',
+                  scaleID: 'x',
+                  value: labels.length - 1,
+                  borderColor: 'rgba(255,99,71,0.8)',
+                  borderWidth: 1,
+                  label: { enabled: false }
+                }
+              }
+            },
             zoom: {
               pan: {
                 enabled: true,
@@ -239,7 +286,11 @@ function initEt0Gauge(card) {
             mode: 'index'
           },
           layout: {
-            padding: { top: 4, bottom: 4, left: 0, right: 0 }
+            padding: { top: 2, bottom: 2, left: 0, right: 0 }
+          },
+          animation: {
+            duration: 800,
+            easing: 'easeOutQuart'
           }
         }
       });
