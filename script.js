@@ -20,25 +20,6 @@ let currentWeather = null;
 let currentWeatherIcon = null;
 let currentWeatherDesc = null;
 
-// OpenWeather API key fetched from the server
-let WEATHER_API_KEY = null;
-
-async function fetchWeatherKey() {
-  try {
-    const res = await fetch('api/weather_key.php');
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    if (data.key) {
-      WEATHER_API_KEY = data.key;
-    } else {
-      throw new Error('No key in response');
-    }
-  } catch (e) {
-    console.error('Failed to fetch weather API key', e);
-    showToast("Couldn't load weather API key", true);
-  }
-}
-
 // number of milliliters in one US fluid ounce
 const ML_PER_US_FL_OUNCE = 29.5735;
 const CM_PER_INCH = 2.54;
@@ -1050,49 +1031,9 @@ async function duplicatePlant(plant) {
 }
 
 // --- weather helper ---
-async function fetch3DayForecastRain(lat, lon) {
-  const url =
-    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}` +
-    `&appid=${WEATHER_API_KEY}`;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) return [0, 0, 0];
-    const json = await res.json();
-    if (!json.list) return [0, 0, 0];
-    const daily = [0, 0, 0];
-    const now = new Date();
-    for (const entry of json.list) {
-      const t = new Date(entry.dt * 1000);
-      const diff = Math.floor((t - now) / 86400000);
-      if (diff >= 0 && diff < 3) {
-        daily[diff] += (entry.rain?.['3h'] || 0) / 25.4;
-      }
-    }
-    return daily;
-  } catch (e) {
-    showToast("Couldn't fetch rainfall forecast", true);
-    return [0, 0, 0];
-  }
-}
-
-async function fetchRainData(lat, lon) {
-  try {
-    const next = await fetch3DayForecastRain(lat, lon);
-    rainForecastInches = next.length === 3 ? next : [0, 0, 0];
-    loadPlants();
-  } catch (e) {
-    console.error('Rain fetch failed', e);
-    rainForecastInches = [0, 0, 0];
-    showToast("Couldn't fetch rainfall forecast", true);
-    loadPlants();
-  }
-}
+// Weather data is fetched server-side to keep the API key private.
 
 function fetchWeather() {
-  if (!WEATHER_API_KEY) {
-    // Key not yet loaded or failed to load
-    return;
-  }
   const addWeather = (temp, desc, icon) => {
     currentWeather = `${temp}°F ${desc}`;
     currentWeatherIcon = `https://openweathermap.org/img/wn/${icon}@2x.png`;
@@ -1102,14 +1043,14 @@ function fetchWeather() {
 
   const fetchByCoords = async (lat, lon) => {
   try {
-      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${WEATHER_API_KEY}`);
+      const res = await fetch(`api/weather.php?lat=${lat}&lon=${lon}`);
       if (!res.ok) return;
       const data = await res.json();
-      weatherTminC = (data.main.temp_min - 32) * 5/9;
-      weatherTmaxC = (data.main.temp_max - 32) * 5/9;
-      addWeather(Math.round(data.main.temp), data.weather[0].main, data.weather[0].icon);
+      weatherTminC = (data.temp_min - 32) * 5/9;
+      weatherTmaxC = (data.temp_max - 32) * 5/9;
+      rainForecastInches = Array.isArray(data.rain) && data.rain.length === 3 ? data.rain : [0, 0, 0];
+      addWeather(Math.round(data.temp), data.desc, data.icon);
       updateWaterAmount();
-      fetchRainData(lat, lon);
     } catch (e) {
       console.error('Weather fetch failed', e);
       showToast("Couldn't fetch weather data; water amounts may be off", true);
@@ -2181,7 +2122,6 @@ async function init(){
   }
   loadPlants();
   syncPendingActions();
-  await fetchWeatherKey();
   fetchWeather();
   setInterval(fetchWeather, WEATHER_UPDATE_INTERVAL);
 }

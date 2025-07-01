@@ -58,7 +58,8 @@ Plant Tracker is a small PHP web app that helps you keep your houseplants health
 ```
 
    The OpenWeather API key and location are required for the water calculators.
-   `script.js` also defines a `WEATHER_API_KEY` constant. Unless you implement the automatic injection described above, set this constant to your own key as well. Leaving the placeholder in place will cause 401 errors from OpenWeather.
+   The client now calls `api/weather.php`, which proxies requests to
+   OpenWeather so the key is never exposed in the browser.
 3. Copy `db.example.php` to `db.php` and add your MySQL credentials.
 4. Run the database migrations:
 
