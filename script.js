@@ -298,26 +298,22 @@ function initEt0Sparkline(canvas) {
       const labels = data.map(d => d.date.slice(5));
       const et0 = data.map(d => parseFloat(d.et0_mm));
       const ctx = canvas.getContext('2d');
-      const accentHex = getComputedStyle(document.documentElement)
-        .getPropertyValue('--color-accent');
-      const accentRgb = hexToRgb(accentHex || '#228b22');
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0.2)`);
-      gradient.addColorStop(1, `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},0)`);
+      const accent = getComputedStyle(document.documentElement)
+        .getPropertyValue('--color-accent') || '#4CAF50';
+      const baseColor = '#888';
 
-      new Chart(ctx, {
+      const chart = new Chart(ctx, {
         type: 'line',
         data: {
           labels,
           datasets: [{
             data: et0,
-            fill: true,
-            backgroundColor: gradient,
-            borderColor: `rgba(${accentRgb.r},${accentRgb.g},${accentRgb.b},1)`,
-            borderWidth: 1.5,
+            fill: false,
+            borderColor: baseColor,
+            borderWidth: 1,
             tension: 0.3,
             pointRadius: et0.map((_, i) => i === et0.length - 1 ? 3 : 0),
-            pointBackgroundColor: 'tomato',
+            pointBackgroundColor: accent,
             pointHoverRadius: 4
           }]
         },
@@ -341,8 +337,23 @@ function initEt0Sparkline(canvas) {
             }
           },
           layout: { padding: 4 },
-          animation: { duration: 300 }
+          animation: {
+            onProgress: (anim) => {
+              const t = anim.currentStep / anim.numSteps;
+              anim.chart.data.datasets[0].borderDash = [t * 100, 100];
+            },
+            duration: 300
+          }
         }
+      });
+
+      canvas.addEventListener('mouseenter', () => {
+        chart.data.datasets[0].borderColor = accent;
+        chart.update('none');
+      });
+      canvas.addEventListener('mouseleave', () => {
+        chart.data.datasets[0].borderColor = baseColor;
+        chart.update('none');
       });
     })
     .catch(() => {});
