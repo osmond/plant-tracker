@@ -1490,7 +1490,7 @@ async function loadPlants() {
     if (!isNaN(ml) && ml > 0) {
       const amtTag = document.createElement('span');
       amtTag.classList.add('tag', 'amt-tag');
-      amtTag.textContent = `${(ml / ML_PER_US_FL_OUNCE).toFixed(1).replace(/\.0$/, '')} oz / ${Math.round(ml)} ml`;
+      amtTag.innerHTML = formatWaterAmount(ml);
       amtTag.title = amtTag.textContent;
       tagList.appendChild(amtTag);
     }
