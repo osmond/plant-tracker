@@ -71,7 +71,17 @@ PHPUnit tests are provided for the API endpoints. Run them from the project root
 phpunit
 ```
 
-The suite validates basic input handling and error cases for the API.
+JavaScript unit tests are written with Jest and live in the `__tests__/`
+directory. They exercise the front‑end utility functions and DOM helpers.
+Install the Node dependencies and run them with:
+
+```bash
+npm install
+npm test
+```
+
+Together the suites validate basic input handling for the API as well as
+core front‑end behaviour.
 
 ## Calculators
 
