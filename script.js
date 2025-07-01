@@ -1421,7 +1421,10 @@ async function loadPlants() {
       img.sizes = '(max-width: 640px) 100vw, 400px';
     }
     img.classList.add('plant-photo');
-    card.appendChild(img);
+    const photoWrap = document.createElement('div');
+    photoWrap.classList.add('photo-wrap');
+    photoWrap.appendChild(img);
+    card.appendChild(photoWrap);
 
     const infoWrap = document.createElement('div');
     infoWrap.classList.add('plant-info');
