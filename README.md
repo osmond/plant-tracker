@@ -96,6 +96,9 @@ In list or text view you can swipe right on a plant card to complete all due
 tasks (watering and fertilizing) at once. The card slides with your finger
 and smoothly snaps back if you don't pass the threshold.
 
+You can also export your current plant list as JSON or CSV using the download
+buttons at the top of the page.
+
 
 
 ## Service Worker
