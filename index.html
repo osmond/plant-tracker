@@ -162,8 +162,9 @@
             <button type="button" data-mode="tasks" class="mode-btn view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10">Tasks</button>
             <button type="button" data-mode="library" class="mode-btn view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10">All Plants</button>
         </div>
-        <div id="filter-container" class="overflow-container flex items-center gap-2 mr-4 relative">
+        <div id="filter-container" class="overflow-container flex flex-col items-start gap-2 mr-4 relative">
             <button id="filter-btn" class="bg-gray-200 rounded-md px-4 py-2 inline-flex items-center gap-2"></button>
+            <div id="quick-filters" class="flex flex-wrap gap-2"></div>
             <div id="filter-chips" class="flex flex-wrap gap-2"></div>
             <button id="filter-summary" class="text-sm filter-summary"></button>
             <div id="filter-panel" class="overflow-menu">

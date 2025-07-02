@@ -1073,6 +1073,22 @@ button:focus {
   gap: 2px;
   font-size: 0.85rem;
 }
+.quick-filter {
+  background: var(--color-chip-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.25rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.quick-filter.active {
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+}
 .filter-chip button {
   border: none;
   background: transparent;

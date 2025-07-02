@@ -27,6 +27,7 @@ let viewMode = localStorage.getItem('viewMode') || 'grid';
 // tasks vs library mode
 let mainMode = localStorage.getItem('mainMode') || 'tasks';
 let mainModeChecked = false;
+let quickFilter = null;
 // track weather info so the summary can include current conditions
 let currentWeather = null;
 let currentWeatherIcon = null;
@@ -436,7 +437,8 @@ const ICONS = {
   text: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>',
   menu: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>',
   archive: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5" rx="2" ry="2"/><line x1="10" y1="12" x2="14" y2="12"/></svg>',
-  analytics: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>'
+  analytics: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+  alert: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
   ,filter: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 4 21 4 14 12 14 19 10 19 10 12 3 4"/></svg>'
 };
 
@@ -461,12 +463,14 @@ function loadFilterPrefs() {
   if (rf) rf.value = rVal !== null ? rVal : 'all';
   if (sf) sf.value = sVal !== null ? sVal : (mainMode === 'tasks' ? 'due' : 'name');
   if (df) df.value = dVal !== null ? dVal : (mainMode === 'tasks' ? 'any' : 'all');
+  quickFilter = null;
 }
 
 function clearFilterPrefs() {
   localStorage.removeItem('roomFilter');
   localStorage.removeItem('sortPref');
   localStorage.removeItem('statusFilter');
+  quickFilter = null;
 }
 
 function saveHistoryValue(key, value) {
@@ -532,6 +536,7 @@ function updateFilterChips() {
       if (type === 'room') document.getElementById('room-filter').value = 'all';
       if (type === 'status') document.getElementById('status-filter').value = mainMode === 'tasks' ? 'any' : 'all';
       if (type === 'sort') document.getElementById('sort-toggle').value = mainMode === 'tasks' ? 'due' : 'name';
+      if (type === 'quick') quickFilter = null;
       saveFilterPrefs();
       updateFilterChips();
       loadPlants();
@@ -544,6 +549,7 @@ function updateFilterChips() {
   const defaultSort = mainMode === 'tasks' ? 'due' : 'name';
   if (status !== defaultStatus) addChip('status', `Status: ${statusLabels[status] || status}`);
   if (sort !== defaultSort) addChip('sort', `Sort: ${sortLabels[sort] || sort}`);
+  if (quickFilter === 'overdue') addChip('quick', 'Overdue');
 
   const summary = document.getElementById('filter-summary');
   const activeCount = wrap.children.length;
@@ -1330,6 +1336,10 @@ async function loadPlants() {
     if (statusFilter === 'water' && !waterDue) return false;
     if (statusFilter === 'fert' && !fertDue) return false;
     if (statusFilter === 'any' && !(waterDue || fertDue)) return false;
+    if (quickFilter === 'overdue') {
+      const soonest = getSoonestDueDate(plant);
+      if (soonest >= startOfToday) return false;
+    }
 
     if (mainMode === 'tasks') {
       const soonest = getSoonestDueDate(plant);
@@ -1851,6 +1861,7 @@ async function init(){
   const dueFilterEl = document.getElementById('status-filter');
   const filterBtn = document.getElementById('filter-btn');
   const filterPanel = document.getElementById('filter-panel');
+  const quickFilterWrap = document.getElementById('quick-filters');
   const modeButtons = document.querySelectorAll('#mode-toggle .mode-btn');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
@@ -1917,6 +1928,34 @@ async function init(){
     filterBtn.innerHTML = ICONS.filter + '<span class="visually-hidden">Filters</span>';
     filterBtn.addEventListener('click', () => {
       if (filterPanel) filterPanel.classList.toggle('show');
+    });
+  }
+  if (quickFilterWrap) {
+    const configs = [
+      { key: 'water', label: 'Water Due', icon: ICONS.water },
+      { key: 'fert', label: 'Fertilize Due', icon: ICONS.fert },
+      { key: 'overdue', label: 'Overdue', icon: ICONS.alert }
+    ];
+    configs.forEach(cfg => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'quick-filter';
+      btn.innerHTML = `${cfg.icon} ${cfg.label}`;
+      btn.addEventListener('click', () => {
+        if (cfg.key === 'overdue') {
+          quickFilter = 'overdue';
+          document.getElementById('status-filter').value = 'any';
+        } else {
+          quickFilter = null;
+          document.getElementById('status-filter').value = cfg.key;
+        }
+        mainMode = 'tasks';
+        applyMainMode();
+        saveFilterPrefs();
+        updateFilterChips();
+        loadPlants();
+      });
+      quickFilterWrap.appendChild(btn);
     });
   }
   if (toggleSearch) {
