@@ -95,15 +95,31 @@ Deploying the app to a server running PHP is straightforward:
 - `scripts/` contains helper scripts such as the migration runner.
 
 ## Running Tests
-PHPUnit exercises the API code. From the project root simply run:
+PHPUnit exercises the API code. Make sure the `phpunit` command is
+available—either by installing it globally with Composer,
+
+```bash
+composer global require phpunit/phpunit
+```
+
+or by downloading the
+[PHPUnit PHAR](https://phpunit.de/getting-started/phpunit-9.html) and running it
+with `php phpunit.phar`. Once installed, run the suite from the project root:
 
 ```bash
 phpunit
 ```
 
-It loads a stub database config from `tests/db_stub.php` unless you override `DB_CONFIG`.
+It loads a stub database config from `tests/db_stub.php` unless you override
+`DB_CONFIG`.
 
-The JavaScript helpers use Jest. After installing the Node packages run:
+The JavaScript helpers use Jest. Install the Node packages first:
+
+```bash
+npm install
+```
+
+then run:
 
 ```bash
 npm test
