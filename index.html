@@ -151,35 +151,30 @@
     </form>
 
     <div class="toolbar my-4 p-4">
-        <div class="toolbar__search" id="search-container">
-            <label for="search-input" class="sr-only">Search Plants</label>
-            <input type="text" id="search-input" placeholder="Search by name or species" class="w-full p-2 border rounded-md" />
-        </div>
+        <label for="search-input" class="sr-only">Search Plants</label>
+        <input type="text" id="search-input" class="toolbar__search" placeholder="Search by name or species" />
 
-        <div class="toolbar__chips">
-            <button id="status-chip" type="button" class="chip active">Needs Care</button>
-            <div id="quick-filters" class="flex flex-wrap gap-2"></div>
-            <div id="sort-chips" class="flex gap-2"></div>
-            <select id="sort-toggle" class="hidden">
-                <option value="name">Name (A-Z)</option>
-                <option value="name-desc">Name (Z-A)</option>
-                <option value="due" selected>Due Date</option>
-                <option value="added">Date Added</option>
-            </select>
-            <div id="filter-container" class="overflow-container relative flex items-center gap-2">
-                <button id="filter-btn" class="hidden sm:inline-flex bg-gray-200 rounded-md p-2 items-center" aria-label="Filters"></button>
-                <span id="filter-summary" class="filter-summary"></span>
-                <div id="filter-panel" class="overflow-menu">
-                    <select id="room-filter" class="border rounded-md">
-                        <option value="all" selected>All Rooms</option>
-                    </select>
-                    <select id="status-filter" class="border rounded-md hidden">
-                        <option value="all">Status: All</option>
-                        <option value="water">Watering</option>
-                        <option value="fert">Fertilizing</option>
-                        <option value="any" selected>Needs Care</option>
-                    </select>
-                </div>
+        <button id="status-chip" type="button" class="chip active">Needs Care</button>
+        <div id="quick-filters" class="flex flex-wrap gap-2 toolbar__chips"></div>
+        <div id="sort-chips" class="flex gap-2 toolbar__chips"></div>
+        <select id="sort-toggle" class="hidden">
+            <option value="name">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="due" selected>Due Date</option>
+            <option value="added">Date Added</option>
+        </select>
+        <div id="filter-container" class="overflow-container relative">
+            <button id="filter-btn" class="filter-btn" data-count="0" aria-label="Filters"></button>
+            <div id="filter-panel" class="overflow-menu">
+                <select id="room-filter" class="border rounded-md">
+                    <option value="all" selected>All Rooms</option>
+                </select>
+                <select id="status-filter" class="border rounded-md hidden">
+                    <option value="all">Status: All</option>
+                    <option value="water">Watering</option>
+                    <option value="fert">Fertilizing</option>
+                    <option value="any" selected>Needs Care</option>
+                </select>
             </div>
         </div>
 
