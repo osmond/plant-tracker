@@ -166,6 +166,8 @@ In list or text view you can swipe right on a plant card to complete all due tas
 You can also export your current plant list as JSON or CSV using the download buttons at the top of the page.
 The new **Analytics** link opens a page with charts of historical ET₀ and water use.
 
+The plant form offers live type-ahead suggestions for the name and species fields. These come from [OpenFarm](https://openfarm.cc) and require outbound access to `openfarm.cc`. If no suggestions appear, ensure your firewall or proxy allows requests to that domain or temporarily disable the feature.
+
 ## Service Worker
 A small service worker caches the key pages and scripts so the app still opens when you're offline. During development you may need to disable the cache or bump the version in `service-worker.js` to pick up changes.
 
