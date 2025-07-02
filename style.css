@@ -26,6 +26,7 @@
   --color-highlight: #faf089;
   --color-warning: #d69e2e;
   --color-success: #38a169;
+  --color-chip-bg: #ecfdf5;
   /* action button colors */
   --color-sprout-bg: #E8F5E9;  /* Green 50 – soft background */
   --color-plant: #388E3C;      /* Green 600 – vibrant leaf */
@@ -352,6 +353,24 @@ button:focus {
     color: var(--color-surface);
     filter: brightness(90%);
     transform: none;
+}
+
+#view-toggle {
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  #view-toggle {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    justify-content: center;
+    padding: calc(var(--spacing) * 1.5);
+    background: var(--color-card);
+    border-top: 1px solid var(--color-border);
+    z-index: 20;
+  }
 }
 .visually-hidden {
     position: absolute !important;
@@ -997,6 +1016,11 @@ button:focus {
   gap: calc(var(--spacing) * 2);
 }
 
+#filter-container {
+  margin-right: calc(var(--spacing) * 2);
+  position: relative;
+}
+
 .overflow-menu {
   display: none;
   position: absolute;
@@ -1016,7 +1040,7 @@ button:focus {
   content: '';
   position: absolute;
   top: 100%;
-  left: 1rem;
+  left: 2.25rem;
   border-width: 6px;
   border-style: solid;
   border-color: var(--color-border) transparent transparent transparent;
@@ -1025,7 +1049,7 @@ button:focus {
   content: '';
   position: absolute;
   top: 100%;
-  left: 1rem;
+  left: 2.25rem;
   transform: translateY(-1px);
   border-width: 5px;
   border-style: solid;
@@ -1033,7 +1057,7 @@ button:focus {
 }
 
 .filter-chip {
-  background: var(--color-bg);
+  background: var(--color-chip-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 0.25rem 0.5rem;
@@ -1051,6 +1075,15 @@ button:focus {
   cursor: pointer;
 }
 
+.filter-summary {
+  display: none;
+  background: var(--color-chip-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+}
+
 #filter-panel {
   left: 0;
   right: auto;
@@ -1059,6 +1092,10 @@ button:focus {
 @media (max-width: 640px) {
   #filter-chips {
     display: none;
+  }
+  #filter-summary {
+    display: inline-flex;
+    align-items: center;
   }
 }
 
