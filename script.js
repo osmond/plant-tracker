@@ -24,8 +24,6 @@ let plantCache = [];
 
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
-// list shows all plants by default
-let quickFilter = null;
 // track weather info so the summary can include current conditions
 let currentWeather = null;
 let currentWeatherIcon = null;
@@ -357,7 +355,12 @@ function updateWaterAmount() {
   const unitSelect = document.getElementById('pot_diameter_unit');
   const typeSelect = document.getElementById('plant_type');
   const waterAmtInput = document.getElementById('water_amount');
+
   const autoDisplay = document.getElementById('auto-water-oz');
+
+  const overrideCheck = document.getElementById('override_water');
+  const autoWater = document.getElementById('auto-water-oz');
+
   if (!diamInput || !waterAmtInput) return;
   const diam = parseFloat(diamInput.value);
   if (isNaN(diam) || weatherTminC === null || weatherTmaxC === null) return;
@@ -375,10 +378,18 @@ function updateWaterAmount() {
   const area = computeArea(diamCm);
   const waterMl = etc * area * 0.1;
   const oz = waterMl / ML_PER_US_FL_OUNCE;
+
   const ozStr = oz.toFixed(1);
   waterAmtInput.value = ozStr;
   if (autoDisplay) autoDisplay.textContent = ozStr;
   waterAmtInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+  if (!overrideCheck || !overrideCheck.checked) {
+    waterAmtInput.value = oz.toFixed(1);
+    waterAmtInput.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  if (autoWater) autoWater.textContent = oz.toFixed(1);
+
   if (editingPlantId) {
     const body = new URLSearchParams({
       plant_id: editingPlantId,
@@ -464,14 +475,12 @@ function loadFilterPrefs() {
   if (rf) rf.value = rVal !== null ? rVal : 'all';
   if (sf) sf.value = sVal !== null ? sVal : 'due';
   if (df) df.value = dVal !== null ? dVal : 'any';
-  quickFilter = null;
 }
 
 function clearFilterPrefs() {
   localStorage.removeItem('roomFilter');
   localStorage.removeItem('sortPref');
   localStorage.removeItem('statusFilter');
-  quickFilter = null;
 }
 
 function saveHistoryValue(key, value) {
@@ -519,19 +528,11 @@ function updateFilterChips() {
   if (room !== 'all') activeCount++;
   if (status !== defaultStatus) activeCount++;
   if (sort !== defaultSort) activeCount++;
-  if (quickFilter === 'overdue') activeCount++;
-
-  const summaryText = activeCount
-    ? `${activeCount} filter${activeCount > 1 ? 's' : ''} applied`
-    : 'No filters';
 
   const filterBtn = document.getElementById('filter-btn');
   if (filterBtn) {
     filterBtn.innerHTML = ICONS.filter;
-  }
-  const summaryEl = document.getElementById('filter-summary');
-  if (summaryEl) {
-    summaryEl.textContent = summaryText;
+    filterBtn.setAttribute('data-count', activeCount);
   }
 }
 
@@ -1315,10 +1316,6 @@ async function loadPlants() {
     if (statusFilter === 'water' && !waterDue) return false;
     if (statusFilter === 'fert' && !fertDue) return false;
     if (statusFilter === 'any' && !(waterDue || fertDue)) return false;
-    if (quickFilter === 'overdue') {
-      const soonest = getSoonestDueDate(plant);
-      if (soonest >= startOfToday) return false;
-    }
     return true;
   });
 
@@ -1824,19 +1821,15 @@ async function init(){
   const form = document.getElementById('plant-form');
   const cancelBtn = document.getElementById('cancel-edit');
   const undoBtn = document.getElementById('undo-btn');
-  const searchContainer = document.getElementById('search-container');
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
   const roomFilter = document.getElementById('room-filter');
   const archivedLink = document.getElementById('archived-link');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('status-filter');
   const statusChip = document.getElementById('status-chip');
-  const sortChipsWrap = document.getElementById('sort-chips');
   const filterBtn = document.getElementById('filter-btn');
-  const filterSummary = document.getElementById('filter-summary');
   const filterBtnMobile = document.getElementById('filter-btn-mobile');
   const filterPanel = document.getElementById('filter-panel');
-  const quickFilterWrap = document.getElementById('quick-filters');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
@@ -1911,76 +1904,10 @@ async function init(){
       if (filterPanel) filterPanel.classList.toggle('show');
     });
   }
-  if (quickFilterWrap) {
-    const configs = [
-      { key: 'water', label: 'Water Due', icon: ICONS.water },
-      { key: 'fert', label: 'Fertilize Due', icon: ICONS.fert },
-      { key: 'overdue', label: 'Overdue', icon: ICONS.alert }
-    ];
-    configs.forEach(cfg => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'chip outline';
-      btn.dataset.filter = cfg.key;
-      btn.innerHTML = `${cfg.icon} ${cfg.label}`;
-      btn.addEventListener('click', () => {
-        const isActive = btn.classList.toggle('active');
-        document.querySelectorAll('#quick-filters .chip').forEach(b => {
-          if (b !== btn) b.classList.remove('active');
-        });
-        statusChip.classList.remove('active');
-        if (isActive) {
-          if (cfg.key === 'overdue') {
-            quickFilter = 'overdue';
-            dueFilterEl.value = 'any';
-          } else {
-            quickFilter = null;
-            dueFilterEl.value = cfg.key;
-          }
-        } else {
-          quickFilter = null;
-          dueFilterEl.value = 'any';
-          statusChip.classList.add('active');
-        }
-        saveFilterPrefs();
-        updateFilterChips();
-        loadPlants();
-      });
-      quickFilterWrap.appendChild(btn);
-    });
-  }
-  if (sortChipsWrap && sortToggle) {
-    const sortConfigs = [
-      { value: 'name', label: 'A\u2192Z' },
-      { value: 'name-desc', label: 'Z\u2192A' },
-      { value: 'due', label: 'Due Date' },
-      { value: 'added', label: 'Date Added' }
-    ];
-    sortConfigs.forEach(cfg => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'chip outline sort-chip';
-      btn.dataset.value = cfg.value;
-      btn.textContent = cfg.label;
-      btn.addEventListener('click', () => {
-        sortToggle.value = cfg.value;
-        saveFilterPrefs();
-        loadPlants();
-        updateFilterChips();
-        document
-          .querySelectorAll('.sort-chip')
-          .forEach(b => b.classList.toggle('active', b.dataset.value === cfg.value));
-      });
-      if (sortToggle.value === cfg.value) btn.classList.add('active');
-      sortChipsWrap.appendChild(btn);
-    });
-  }
   if (statusChip && dueFilterEl) {
     if (dueFilterEl.value === 'any') statusChip.classList.add('active');
     statusChip.addEventListener('click', () => {
       const active = statusChip.classList.toggle('active');
-      document.querySelectorAll('#quick-filters .chip').forEach(b => b.classList.remove('active'));
-      quickFilter = null;
       dueFilterEl.value = active ? 'any' : 'all';
       saveFilterPrefs();
       updateFilterChips();
@@ -2089,6 +2016,7 @@ async function init(){
       if (autoWaterDisplay) autoWaterDisplay.classList.toggle('hidden', checked);
       if (!checked && waterAmtInput) {
         waterAmtInput.value = '';
+        updateWaterAmount();
       }
     });
   }
@@ -2218,22 +2146,15 @@ async function init(){
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
-      document
-        .querySelectorAll('.sort-chip')
-        .forEach(b => b.classList.toggle('active', b.dataset.value === sortToggle.value));
       if (filterPanel) filterPanel.classList.remove('show');
     });
   }
   if (dueFilterEl) {
     dueFilterEl.addEventListener('change', () => {
-      quickFilter = null;
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
       statusChip.classList.toggle('active', dueFilterEl.value === 'any');
-      document.querySelectorAll('#quick-filters .chip').forEach(b => {
-        b.classList.toggle('active', b.dataset.filter === dueFilterEl.value);
-      });
       if (filterPanel) filterPanel.classList.remove('show');
     });
   }

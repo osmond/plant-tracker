@@ -178,6 +178,14 @@ The previous OpenFarm integration was removed because that service is no longer
 available. Ensure outbound access to `api.inaturalist.org` is allowed or the
 suggestions and images won't appear.
 
+Below the **Water Amount** field you'll now see an **Auto-calculated** line
+showing the recommended volume in ounces and milliliters. This value updates
+whenever you change the pot diameter, pick a different plant type, or when new
+weather data is retrieved. The `Override auto-calculate` checkbox reveals the
+water amount input so you can enter your own value. When editing a plant that
+already has a custom amount saved, the box starts checked and your value is
+preserved until you clear it.
+
 ## Service Worker
 A small service worker caches the key pages and scripts so the app still opens when you're offline. During development you may need to disable the cache or bump the version in `service-worker.js` to pick up changes.
 
