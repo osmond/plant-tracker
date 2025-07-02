@@ -158,7 +158,10 @@
     </form>
 
     <div id="toolbar" class="my-4 flex flex-wrap items-center gap-4 p-4">
-
+        <div id="mode-toggle" class="view-toggle-group inline-flex rounded-lg border border-gray-300 overflow-hidden">
+            <button type="button" data-mode="tasks" class="mode-btn view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10">Tasks</button>
+            <button type="button" data-mode="library" class="mode-btn view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10">Library</button>
+        </div>
         <div id="filter-container" class="overflow-container flex items-center gap-2 mr-4 relative">
             <button id="filter-btn" class="bg-gray-200 rounded-md px-4 py-2 inline-flex items-center gap-2"></button>
             <div id="filter-chips" class="flex flex-wrap gap-2"></div>
@@ -173,21 +176,20 @@
                     <option value="fert">Fertilizing</option>
                     <option value="any" selected>Needs Care</option>
                 </select>
-                <select id="sort-toggle" class="border rounded-md">
-                    <option value="name">Name (A-Z)</option>
-                    <option value="name-desc">Name (Z-A)</option>
-                    <option value="due" selected>Due Date</option>
-                    <option value="added">Date Added</option>
-                </select>
             </div>
         </div>
+        <select id="sort-toggle" class="border rounded-md mr-4">
+            <option value="name">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="due" selected>Due Date</option>
+            <option value="added">Date Added</option>
+        </select>
         <div id="view-toggle" class="view-toggle-group inline-flex rounded-lg border border-gray-300 overflow-hidden ml-auto">
             <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
             <button type="button" data-view="list" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
             <button type="button" data-view="text" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
         </div>
     </div>
-    <div id="urgent-bar" class="summary-banner"></div>
     <div id="rainfall-info" class="p-4 bg-card rounded-lg mb-4 hidden"></div>
 
     <!-- Undo delete snackbar -->
