@@ -29,10 +29,6 @@ const WEATHER_UPDATE_INTERVAL = 60 * 60 * 1000; // 1 hour
 
 // configuration values mirrored from config.php
 const DEFAULT_KC = 0.8;
-// GBIF backbone usageKey for Plantae
-const PLANTAE_KEY = 6;
-// number of specimen photos to show for taxonomy lookup
-const SPECIMEN_PHOTO_LIMIT = 8;
 const KC_MAP = {
   succulent: 0.3,
   houseplant: 0.8,
@@ -54,12 +50,9 @@ let userWaterFreqEdited = false;
 let calendarStartDate = new Date();
 calendarStartDate.setHours(0, 0, 0, 0);
 
-// simple in-memory caches for taxonomy lookups
-const classificationCache = new Map();
-const commonNamesCache = new Map();
-const synonymsCache = new Map();
-const specimenPhotosCache = new Map();
-const speciesKeyCache = new Map();
+// simple in-memory caches for plant lookups
+const openFarmCache = new Map();
+const plantInfoCache = new Map();
 
 
 function debounce(fn, delay = 300) {
@@ -198,122 +191,14 @@ function hexToRgb(hex) {
 }
 async function fetchScientificNames(query) {
   if (!query) return [];
-  if (speciesKeyCache.has(`s:${query}`)) return speciesKeyCache.get(`s:${query}`);
+  if (openFarmCache.has(query)) return openFarmCache.get(query);
   try {
-    const params = new URLSearchParams({
-      q: query,
-      limit: '10',
-      kingdomKey: PLANTAE_KEY,
-      rank: 'SPECIES',
-      status: 'ACCEPTED'
-    });
-    const res = await fetch(`https://api.gbif.org/v1/species/search?${params}`);
+    const res = await fetch(`https://openfarm.cc/api/v1/crops/?filter=${encodeURIComponent(query)}`);
     if (!res.ok) return [];
     const json = await res.json();
-    const names = (json.results || [])
-      .map(r => r.scientificName)
-      .filter(Boolean);
-    speciesKeyCache.set(`s:${query}`, names);
+    const names = [...new Set((json.data || []).map(c => c.attributes.binomial_name).filter(Boolean))];
+    openFarmCache.set(query, names);
     return names;
-  } catch (e) {
-    return [];
-  }
-}
-
-async function fetchCommonNameSuggestions(query) {
-  if (!query) return [];
-  const key = await getSpeciesKey(query);
-  if (!key) return [];
-  return fetchCommonNames(key);
-}
-
-async function getSpeciesKey(name) {
-  if (!name) return null;
-  if (speciesKeyCache.has(name)) return speciesKeyCache.get(name);
-  try {
-    const res = await fetch(
-      `https://api.gbif.org/v1/species/match?name=${encodeURIComponent(name)}`
-    );
-    if (!res.ok) return null;
-    const json = await res.json();
-    const key = json.usageKey || null;
-    speciesKeyCache.set(name, key);
-    return key;
-  } catch (e) {
-    return null;
-  }
-}
-
-async function fetchClassification(key) {
-  if (!key) return '';
-  if (classificationCache.has(key)) return classificationCache.get(key);
-  try {
-    const res = await fetch(`https://api.gbif.org/v1/species/${key}`);
-    if (!res.ok) return '';
-    const json = await res.json();
-    const parts = [
-      json.kingdom,
-      json.phylum,
-      json.class,
-      json.order,
-      json.family,
-      json.genus,
-      json.species,
-    ];
-    const out = parts.filter(Boolean).join(' \u203a ');
-    classificationCache.set(key, out);
-    return out;
-  } catch (e) {
-    return '';
-  }
-}
-
-async function fetchCommonNames(key) {
-  if (!key) return [];
-  if (commonNamesCache.has(key)) return commonNamesCache.get(key);
-  try {
-    const res = await fetch(`https://api.gbif.org/v1/species/${key}/vernacularNames`);
-    if (!res.ok) return [];
-    const json = await res.json();
-    const names = [...new Set((json.results || []).map(r => r.vernacularName).filter(Boolean))];
-    commonNamesCache.set(key, names);
-    return names;
-  } catch (e) {
-    return [];
-  }
-}
-
-async function fetchSynonyms(key) {
-  if (!key) return [];
-  if (synonymsCache.has(key)) return synonymsCache.get(key);
-  try {
-    const res = await fetch(`https://api.gbif.org/v1/species/${key}/synonyms`);
-    if (!res.ok) return [];
-    const json = await res.json();
-    const arr = Array.isArray(json) ? json : json.results || [];
-    const names = [...new Set(arr.map(r => r.scientificName).filter(Boolean))];
-    synonymsCache.set(key, names);
-    return names;
-  } catch (e) {
-    return [];
-  }
-}
-
-async function fetchSpecimenPhotos(key) {
-  if (!key) return [];
-  if (specimenPhotosCache.has(key)) return specimenPhotosCache.get(key);
-  try {
-    const imgRes = await fetch(
-      `https://api.gbif.org/v1/occurrence/search?taxonKey=${key}&mediaType=StillImage&limit=${SPECIMEN_PHOTO_LIMIT}`
-    );
-    if (!imgRes.ok) return [];
-    const data = await imgRes.json();
-    const photos = (data.results || [])
-      .flatMap(o => o.media || [])
-      .map(m => m.identifier)
-      .filter(Boolean);
-    specimenPhotosCache.set(key, photos);
-    return photos;
   } catch (e) {
     return [];
   }
@@ -323,71 +208,35 @@ async function showTaxonomyInfo(name) {
   const infoEl = document.getElementById('taxonomy-info');
   if (!infoEl) return;
   infoEl.textContent = '';
-  const key = await getSpeciesKey(name);
-  if (!key) {
-    showToast("Couldn't fetch taxonomy data", true);
+  if (!name) return;
+
+  if (plantInfoCache.has(name)) {
+    infoEl.innerHTML = plantInfoCache.get(name);
     return;
   }
-  const [classification, common, syn, photos] = await Promise.all([
-    fetchClassification(key),
-    fetchCommonNames(key),
-    fetchSynonyms(key),
-    fetchSpecimenPhotos(key),
-  ]);
-  if (classification) {
-    const div = document.createElement('div');
-    const strong = document.createElement('strong');
-    strong.textContent = 'Classification:';
-    div.appendChild(strong);
-    div.appendChild(document.createTextNode(' ' + classification));
-    infoEl.appendChild(div);
-  }
-  if (common && common.length) {
-    const div = document.createElement('div');
-    const strong = document.createElement('strong');
-    strong.textContent = 'Common Names:';
-    div.appendChild(strong);
-    div.appendChild(document.createTextNode(' ' + common.join(', ')));
-    infoEl.appendChild(div);
-  }
-  if (syn && syn.length) {
-    const div = document.createElement('div');
-    const strong = document.createElement('strong');
-    strong.textContent = 'Synonyms:';
-    div.appendChild(strong);
-    div.appendChild(document.createTextNode(' ' + syn.join(', ')));
-    infoEl.appendChild(div);
-  }
-  if (photos && photos.length) {
-    const gallery = document.createElement('div');
-    gallery.classList.add('specimen-gallery');
-    photos.forEach(url => {
-      const img = document.createElement('img');
-      img.src = url;
-      img.alt = name + ' specimen';
-      img.loading = 'lazy';
 
-      // allow user to select a specimen photo
-      img.addEventListener('click', () => {
-        // remove previous selection
-        gallery.querySelectorAll('img').forEach(i => i.classList.remove('selected'));
-        img.classList.add('selected');
-
-        const photoUrlInput = document.getElementById('photo_url');
-        if (photoUrlInput) photoUrlInput.value = url;
-
-        const drop = document.getElementById('photo-drop');
-        if (drop) {
-          drop.textContent = 'Using specimen photo';
-          drop.style.backgroundImage = `url(${url})`;
-          drop.style.backgroundSize = 'cover';
-          drop.style.color = 'white';
-        }
-      });
-
-      gallery.appendChild(img);
-    });
-    infoEl.appendChild(gallery);
+  try {
+    const res = await fetch(`https://openfarm.cc/api/v1/crops/?filter=${encodeURIComponent(name)}`);
+    if (!res.ok) return;
+    const json = await res.json();
+    const crop = (json.data || [])[0];
+    if (!crop) return;
+    const attr = crop.attributes || {};
+    const parts = [];
+    if (attr.binomial_name) {
+      parts.push(`<div><strong>Scientific Name:</strong> ${attr.binomial_name}</div>`);
+    }
+    if (attr.description) {
+      parts.push(`<div>${attr.description}</div>`);
+    }
+    if (attr.main_image_path) {
+      parts.push(`<div class="specimen-gallery"><img src="${attr.main_image_path}" alt="${attr.name || name}" loading="lazy"></div>`);
+    }
+    const html = parts.join('');
+    infoEl.innerHTML = html;
+    plantInfoCache.set(name, html);
+  } catch (e) {
+    // ignore network errors
   }
 }
 
