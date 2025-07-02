@@ -56,8 +56,13 @@
             <legend class="font-semibold">Plant Basics</legend>
             <div>
                 <label for="name" class="block mb-1">Plant Name <span class="required-star" aria-hidden="true">*</span></label>
-                <input type="text" name="name" id="name" list="common-list" placeholder="Plant Name" class="w-full border rounded-md p-2" required />
-                <datalist id="common-list"></datalist>
+                <div class="relative">
+                    <input type="text" name="name" id="name" placeholder="Plant Name" class="w-full border rounded-md p-2" autocomplete="off" required />
+                    <ul id="name-suggestions" class="suggestions"></ul>
+                </div>
+                <input type="hidden" name="sci_name" id="sci_name">
+                <input type="hidden" name="image_url" id="image_url">
+                <img id="name-preview" class="mt-2 w-16 h-16 hidden" alt="preview">
                 <div class="error" id="name-error"></div>
             </div>
             <div>
