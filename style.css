@@ -362,19 +362,6 @@ button:focus {
 
 
 @media (max-width: 640px) {
-  #bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: calc(var(--spacing) * 1.5);
-    background: var(--color-card);
-    border-top: 1px solid var(--color-border);
-    z-index: 20;
-  }
   #view-toggle {
     position: static;
     bottom: auto;
@@ -384,9 +371,6 @@ button:focus {
     background: none;
     border-top: none;
     justify-content: center;
-  }
-  body {
-    padding-bottom: calc(var(--spacing) * 7);
   }
 }
 .visually-hidden {
