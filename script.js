@@ -2070,4 +2070,4 @@ if (document.readyState === 'loading') {
   init();
 }
 
-export { loadCalendar };
+export { loadCalendar, focusPlantId };
