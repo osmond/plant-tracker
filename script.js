@@ -1354,6 +1354,8 @@ async function loadPlants() {
   const startOfTomorrow = addDays(startOfToday,1);
   const startOfDayAfterTomorrow = addDays(startOfTomorrow,1);
 
+  if (list) list.classList.add('list-updating');
+
   list.innerHTML = '';
   const filtered = plants.filter(plant => {
     if (selectedRoom !== 'all' && plant.room !== selectedRoom) return false;
@@ -1851,6 +1853,9 @@ async function loadPlants() {
 
   checkArchivedLink(plants);
   loadCalendar(plants);
+  if (list) {
+    requestAnimationFrame(() => list.classList.remove('list-updating'));
+  }
 }
 
 async function checkArchivedLink(plantsList) {
