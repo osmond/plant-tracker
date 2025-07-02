@@ -45,6 +45,10 @@
             <input type="text" id="search-input" placeholder="Search by name or species" class="w-full p-2 border rounded-md" />
         </div>
     </div>
+    <div id="status-row" class="mb-4 flex flex-wrap items-center gap-2">
+        <button id="status-chip" type="button" class="quick-filter">Status: Needs Care \u25BC</button>
+        <div id="quick-filters" class="flex flex-wrap gap-2"></div>
+    </div>
 
 
     <form id="plant-form" class="flex flex-col gap-6 p-4 bg-card rounded-lg shadow hidden" enctype="multipart/form-data">
@@ -159,14 +163,13 @@
         
         <div id="filter-container" class="overflow-container flex flex-col items-start gap-2 mr-4 relative">
             <button id="filter-btn" class="hidden sm:inline-flex bg-gray-200 rounded-md px-4 py-2 items-center gap-2"></button>
-            <div id="quick-filters" class="flex flex-wrap gap-2"></div>
             <div id="filter-chips" class="flex flex-wrap gap-2"></div>
             <button id="filter-summary" class="text-sm filter-summary"></button>
             <div id="filter-panel" class="overflow-menu">
                 <select id="room-filter" class="border rounded-md">
                     <option value="all" selected>All Rooms</option>
                 </select>
-                <select id="status-filter" class="border rounded-md">
+                <select id="status-filter" class="border rounded-md hidden">
                     <option value="all">Status: All</option>
                     <option value="water">Watering</option>
                     <option value="fert">Fertilizing</option>
@@ -175,7 +178,8 @@
             </div>
         </div>
         <div id="display-controls" class="flex items-center gap-2 ml-auto">
-            <select id="sort-toggle" class="border rounded-md">
+            <div id="sort-chips" class="flex gap-2"></div>
+            <select id="sort-toggle" class="hidden">
                 <option value="name">Name (A-Z)</option>
                 <option value="name-desc">Name (Z-A)</option>
                 <option value="due" selected>Due Date</option>

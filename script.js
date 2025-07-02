@@ -513,7 +513,7 @@ function updateFilterChips() {
   const room = document.getElementById('room-filter')?.value || 'all';
   const status = document.getElementById('status-filter')?.value || 'all';
   const sort = document.getElementById('sort-toggle')?.value || 'due';
-  const statusLabels = { water: 'Watering', fert: 'Fertilizing', any: 'Needs Care', all: 'All' };
+  const statusLabelsLocal = { water: 'Watering', fert: 'Fertilizing', any: 'Needs Care', all: 'All' };
   const sortLabels = { 'name': 'Name \u25B2', 'name-desc': 'Name \u25BC', 'due': 'Due Date', 'added': 'Date Added' };
   function addChip(type, label) {
     const span = document.createElement('span');
@@ -537,7 +537,7 @@ function updateFilterChips() {
   if (room !== 'all') addChip('room', room);
   const defaultStatus = 'all';
   const defaultSort = 'due';
-  if (status !== defaultStatus) addChip('status', `Status: ${statusLabels[status] || status}`);
+  if (status !== defaultStatus) addChip('status', `Status: ${statusLabelsLocal[status] || status}`);
   if (sort !== defaultSort) addChip('sort', `Sort: ${sortLabels[sort] || sort}`);
   if (quickFilter === 'overdue') addChip('quick', 'Overdue');
 
@@ -1831,6 +1831,8 @@ async function init(){
   const archivedLink = document.getElementById('archived-link');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('status-filter');
+  const statusChip = document.getElementById('status-chip');
+  const sortChipsWrap = document.getElementById('sort-chips');
   const filterBtn = document.getElementById('filter-btn');
   const filterBtnMobile = document.getElementById('filter-btn-mobile');
   const filterPanel = document.getElementById('filter-panel');
@@ -1859,6 +1861,15 @@ async function init(){
   const sciNameInput = document.getElementById('scientific_name');
   const imageUrlInput = document.getElementById('thumbnail_url');
   const previewImg = document.getElementById('name-preview');
+
+  const statusCycle = ['any','all','water','fert','overdue'];
+  const statusLabels = {
+    any: 'Needs Care',
+    all: 'All Plants',
+    water: 'Water Due',
+    fert: 'Fertilize Due',
+    overdue: 'Overdue'
+  };
 
   // populate datalists from saved history
   const savedRooms = loadHistoryValues('rooms');
@@ -1929,8 +1940,62 @@ async function init(){
         saveFilterPrefs();
         updateFilterChips();
         loadPlants();
+        if (statusChip) {
+          const val = quickFilter === 'overdue' ? 'overdue' : dueFilterEl.value;
+          statusChip.textContent = `Status: ${statusLabels[val]} \u25BC`;
+        }
       });
       quickFilterWrap.appendChild(btn);
+    });
+  }
+  if (sortChipsWrap && sortToggle) {
+    const sortConfigs = [
+      { value: 'name', label: 'A\u2192Z' },
+      { value: 'name-desc', label: 'Z\u2192A' },
+      { value: 'due', label: 'Due Date' },
+      { value: 'added', label: 'Date Added' }
+    ];
+    sortConfigs.forEach(cfg => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'quick-filter sort-chip';
+      btn.dataset.value = cfg.value;
+      btn.textContent = cfg.label;
+      btn.addEventListener('click', () => {
+        sortToggle.value = cfg.value;
+        saveFilterPrefs();
+        loadPlants();
+        updateFilterChips();
+        document
+          .querySelectorAll('.sort-chip')
+          .forEach(b => b.classList.toggle('active', b.dataset.value === cfg.value));
+      });
+      if (sortToggle.value === cfg.value) btn.classList.add('active');
+      sortChipsWrap.appendChild(btn);
+    });
+  }
+  if (statusChip && dueFilterEl) {
+    function updateStatusChip() {
+      const val = quickFilter === 'overdue' ? 'overdue' : dueFilterEl.value;
+      statusChip.textContent = `Status: ${statusLabels[val]} \u25BC`;
+    }
+    updateStatusChip();
+    statusChip.addEventListener('click', () => {
+      let current = quickFilter === 'overdue' ? 'overdue' : dueFilterEl.value;
+      let idx = statusCycle.indexOf(current);
+      idx = (idx + 1) % statusCycle.length;
+      const next = statusCycle[idx];
+      if (next === 'overdue') {
+        quickFilter = 'overdue';
+        dueFilterEl.value = 'any';
+      } else {
+        quickFilter = null;
+        dueFilterEl.value = next;
+      }
+      saveFilterPrefs();
+      updateFilterChips();
+      loadPlants();
+      updateStatusChip();
     });
   }
   if (submitBtn) {
@@ -2162,6 +2227,9 @@ async function init(){
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
+      document
+        .querySelectorAll('.sort-chip')
+        .forEach(b => b.classList.toggle('active', b.dataset.value === sortToggle.value));
       if (filterPanel) filterPanel.classList.remove('show');
     });
   }
@@ -2170,6 +2238,10 @@ async function init(){
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
+      if (statusChip) {
+        const val = quickFilter === 'overdue' ? 'overdue' : dueFilterEl.value;
+        statusChip.textContent = `Status: ${statusLabels[val]} \u25BC`;
+      }
       if (filterPanel) filterPanel.classList.remove('show');
     });
   }
