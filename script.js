@@ -1225,6 +1225,9 @@ async function loadPlants() {
 
   const sortBy = document.getElementById('sort-toggle').value || 'name';
   filtered.sort((a, b) => {
+    if (sortBy === 'name-desc') {
+      return b.name.localeCompare(a.name);
+    }
     if (sortBy === 'due') {
       return getSoonestDueDate(a) - getSoonestDueDate(b);
     }
