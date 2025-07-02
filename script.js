@@ -525,7 +525,11 @@ function updateFilterChips() {
 
   const filterBtn = document.getElementById('filter-btn');
   if (filterBtn) {
-    filterBtn.innerHTML = `${ICONS.filter} ${summaryText}`;
+    filterBtn.innerHTML = ICONS.filter;
+  }
+  const summaryEl = document.getElementById('filter-summary');
+  if (summaryEl) {
+    summaryEl.textContent = summaryText;
   }
 }
 
@@ -1815,6 +1819,7 @@ async function init(){
   const statusChip = document.getElementById('status-chip');
   const sortChipsWrap = document.getElementById('sort-chips');
   const filterBtn = document.getElementById('filter-btn');
+  const filterSummary = document.getElementById('filter-summary');
   const filterBtnMobile = document.getElementById('filter-btn-mobile');
   const filterPanel = document.getElementById('filter-panel');
   const quickFilterWrap = document.getElementById('quick-filters');
@@ -1908,7 +1913,7 @@ async function init(){
     configs.forEach(cfg => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'quick-filter';
+      btn.className = 'quick-filter outline';
       btn.innerHTML = `${cfg.icon} ${cfg.label}`;
       btn.addEventListener('click', () => {
         if (cfg.key === 'overdue') {
@@ -1939,7 +1944,7 @@ async function init(){
     sortConfigs.forEach(cfg => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'quick-filter sort-chip';
+      btn.className = 'quick-filter outline sort-chip';
       btn.dataset.value = cfg.value;
       btn.textContent = cfg.label;
       btn.addEventListener('click', () => {
