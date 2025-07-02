@@ -1851,9 +1851,7 @@ async function init(){
   const form = document.getElementById('plant-form');
   const cancelBtn = document.getElementById('cancel-edit');
   const undoBtn = document.getElementById('undo-btn');
-  const toggleSearch = document.getElementById('toggle-search');
   const searchContainer = document.getElementById('search-container');
-  const closeSearch = document.getElementById('close-search');
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
   const roomFilter = document.getElementById('room-filter');
   const archivedLink = document.getElementById('archived-link');
@@ -1958,30 +1956,6 @@ async function init(){
       quickFilterWrap.appendChild(btn);
     });
   }
-  if (toggleSearch) {
-    toggleSearch.innerHTML = ICONS.search + '<span class="visually-hidden">Search</span>';
-    toggleSearch.addEventListener('click', () => {
-      if (form) {
-        form.style.display = 'none';
-        if (showBtn) showBtn.style.display = 'inline-block';
-        const cancel = document.getElementById('cancel-edit');
-        if (cancel) cancel.style.display = 'none';
-      }
-      if (searchContainer) searchContainer.classList.remove('hidden');
-      toggleSearch.style.display = 'none';
-      const input = document.getElementById('search-input');
-      if (input) input.focus();
-    });
-  }
-  if (closeSearch) {
-    closeSearch.innerHTML = ICONS.cancel + '<span class="visually-hidden">Close Search</span>';
-    closeSearch.addEventListener('click', () => {
-      if (searchContainer) searchContainer.classList.add('hidden');
-      toggleSearch.style.display = 'inline-block';
-      document.getElementById('search-input').value = '';
-      loadPlants();
-    });
-  }
   if (submitBtn) {
     submitBtn.innerHTML = ICONS.plus + ' Add Plant';
   }
@@ -1993,10 +1967,6 @@ async function init(){
   }
   if (showBtn && form) {
     showBtn.addEventListener('click', () => {
-      if (searchContainer) {
-        searchContainer.classList.add('hidden');
-        toggleSearch.style.display = 'inline-block';
-      }
       form.style.display = 'block';
       showBtn.style.display = 'none';
       const cancel = document.getElementById('cancel-edit');
