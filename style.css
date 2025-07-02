@@ -71,29 +71,6 @@ body {
     max-width: 100%;
 }
 
-.skip-link {
-    position: absolute;
-    left: -999px;
-    top: auto;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-}
-
-.skip-link:focus {
-    position: static;
-    width: auto;
-    height: auto;
-    clip: auto;
-    padding: calc(var(--spacing));
-    background: var(--color-primary);
-    color: var(--color-surface);
-    border-radius: var(--radius);
-    z-index: 100;
-}
-
 h1, h2, h3 {
     margin-bottom: calc(var(--spacing) * 1.5);
     font-weight: 600;
