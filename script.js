@@ -8,6 +8,9 @@ import { calculateET0, computeArea, computeRA } from "./js/calc.js";
 import { parseLocalDate, addDays, formatDateShort } from "./js/dates.js";
 import { showToast, toggleLoading } from "./js/dom.js";
 
+const indexParams = new URLSearchParams(window.location.search);
+const focusPlantId = indexParams.get('plant_id');
+
 // show archived plants instead of active ones
 let showArchive = false;
 let archivedCache = null;
@@ -1230,6 +1233,7 @@ async function loadPlants() {
   filtered.forEach(plant => {
     const wrapper = document.createElement('div');
     wrapper.classList.add('plant-card-wrapper');
+    wrapper.id = `plant-${plant.id}`;
 
     const overlay = document.createElement('div');
     overlay.classList.add('swipe-overlay');
@@ -1564,6 +1568,15 @@ async function loadPlants() {
 
     list.appendChild(wrapper);
   });
+
+  if (focusPlantId) {
+    const el = document.getElementById(`plant-${focusPlantId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('just-updated');
+      setTimeout(() => el.classList.remove('just-updated'), 2000);
+    }
+  }
 
   // refresh room filter and datalist
 
