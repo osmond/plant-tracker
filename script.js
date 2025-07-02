@@ -513,8 +513,8 @@ function updateFilterChips() {
   const room = document.getElementById('room-filter')?.value || 'all';
   const due = document.getElementById('due-filter')?.value || (mainMode === 'tasks' ? 'any' : 'all');
   const sort = document.getElementById('sort-toggle')?.value || (mainMode === 'tasks' ? 'due' : 'name');
-  const dueLabels = { water: 'Needs Watering', fert: 'Needs Fertilizing', any: 'Needs Care', all: 'All' };
-  const sortLabels = { 'name': 'A–Z', 'name-desc': 'Z–A', 'due': 'Due Date', 'added': 'Date Added' };
+  const dueLabels = { water: 'Watering Due', fert: 'Fertilizing Due', any: 'Needs Care', all: 'All' };
+  const sortLabels = { 'name': 'Name \u25B2', 'name-desc': 'Name \u25BC', 'due': 'Due Date', 'added': 'Date Added' };
   function addChip(type, label) {
     const span = document.createElement('span');
     span.className = 'filter-chip';
@@ -536,8 +536,8 @@ function updateFilterChips() {
   if (room !== 'all') addChip('room', room);
   const defaultDue = mainMode === 'tasks' ? 'any' : 'all';
   const defaultSort = mainMode === 'tasks' ? 'due' : 'name';
-  if (due !== defaultDue) addChip('due', dueLabels[due] || due);
-  if (sort !== defaultSort) addChip('sort', sortLabels[sort] || sort);
+  if (due !== defaultDue) addChip('due', `Due: ${dueLabels[due] || due}`);
+  if (sort !== defaultSort) addChip('sort', `Sort: ${sortLabels[sort] || sort}`);
 }
 
 
