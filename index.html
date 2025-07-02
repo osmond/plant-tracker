@@ -39,16 +39,7 @@
         <!-- counts will go here -->
     </div>
 
-    <div id="search-container" class="mb-4 flex items-center gap-2">
-        <label for="search-input" class="sr-only">Search Plants</label>
-        <div class="relative flex-grow">
-            <input type="text" id="search-input" placeholder="Search by name or species" class="w-full p-2 border rounded-md" />
-        </div>
-    </div>
-    <div id="status-row" class="mb-4 flex flex-wrap items-center gap-2">
-        <button id="status-chip" type="button" class="quick-filter">Status: Needs Care \u25BC</button>
-        <div id="quick-filters" class="flex flex-wrap gap-2"></div>
-    </div>
+
 
 
     <form id="plant-form" class="flex flex-col gap-6 p-4 bg-card rounded-lg shadow hidden" enctype="multipart/form-data">
@@ -160,8 +151,25 @@
     </form>
 
     <div id="toolbar" class="my-4 flex flex-wrap items-center gap-4 p-4">
-        
-        <div id="filter-container" class="overflow-container flex flex-col items-start gap-2 mr-4 relative">
+        <div id="search-container" class="flex items-center gap-2">
+            <label for="search-input" class="sr-only">Search Plants</label>
+            <div class="relative">
+                <input type="text" id="search-input" placeholder="Search by name or species" class="w-full p-2 border rounded-md" />
+            </div>
+        </div>
+
+        <button id="status-chip" type="button" class="quick-filter">Status: Needs Care \u25BC</button>
+        <div id="quick-filters" class="flex flex-wrap gap-2"></div>
+
+        <div id="sort-chips" class="flex gap-2"></div>
+        <select id="sort-toggle" class="hidden">
+            <option value="name">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="due" selected>Due Date</option>
+            <option value="added">Date Added</option>
+        </select>
+
+        <div id="filter-container" class="overflow-container flex flex-wrap items-center gap-2 relative">
             <button id="filter-btn" class="hidden sm:inline-flex bg-gray-200 rounded-md px-4 py-2 items-center gap-2"></button>
             <div id="filter-chips" class="flex flex-wrap gap-2"></div>
             <button id="filter-summary" class="text-sm filter-summary"></button>
@@ -177,19 +185,11 @@
                 </select>
             </div>
         </div>
-        <div id="display-controls" class="flex items-center gap-2 ml-auto">
-            <div id="sort-chips" class="flex gap-2"></div>
-            <select id="sort-toggle" class="hidden">
-                <option value="name">Name (A-Z)</option>
-                <option value="name-desc">Name (Z-A)</option>
-                <option value="due" selected>Due Date</option>
-                <option value="added">Date Added</option>
-            </select>
-            <div id="view-toggle" class="view-toggle-group rounded-lg border border-gray-300 overflow-hidden">
-                <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
-                <button type="button" data-view="list" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
-                <button type="button" data-view="text" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
-            </div>
+
+        <div id="view-toggle" class="view-toggle-group rounded-lg border border-gray-300 overflow-hidden ml-auto">
+            <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
+            <button type="button" data-view="list" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
+            <button type="button" data-view="text" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
         </div>
     </div>
     <div id="rainfall-info" class="p-4 bg-card rounded-lg mb-4 hidden"></div>

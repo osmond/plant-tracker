@@ -359,12 +359,6 @@ button:focus {
   margin-left: 0;
 }
 
-#display-controls {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 2);
-}
 
 @media (max-width: 640px) {
   #bottom-bar {
@@ -1114,7 +1108,8 @@ button:focus {
 }
 
 .filter-summary {
-  display: none;
+  display: inline-flex;
+  align-items: center;
   background: var(--color-chip-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
