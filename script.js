@@ -25,7 +25,6 @@ let plantCache = [];
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
 // list shows all plants by default
-let mainMode = 'library';
 let quickFilter = null;
 // track weather info so the summary can include current conditions
 let currentWeather = null;
@@ -461,7 +460,7 @@ function loadFilterPrefs() {
   const dVal = localStorage.getItem('statusFilter');
   if (rf) rf.value = rVal !== null ? rVal : 'all';
   if (sf) sf.value = sVal !== null ? sVal : 'due';
-  if (df) df.value = dVal !== null ? dVal : 'all';
+  if (df) df.value = dVal !== null ? dVal : 'any';
   quickFilter = null;
 }
 
@@ -508,9 +507,9 @@ function applyViewMode() {
 
 function updateFilterChips() {
   const room = document.getElementById('room-filter')?.value || 'all';
-  const status = document.getElementById('status-filter')?.value || 'all';
+  const status = document.getElementById('status-filter')?.value || 'any';
   const sort = document.getElementById('sort-toggle')?.value || 'due';
-  const defaultStatus = 'all';
+  const defaultStatus = 'any';
   const defaultSort = 'due';
 
   let activeCount = 0;
@@ -1848,14 +1847,6 @@ async function init(){
   const imageUrlInput = document.getElementById('thumbnail_url');
   const previewImg = document.getElementById('name-preview');
 
-  const statusCycle = ['any','all','water','fert','overdue'];
-  const statusLabels = {
-    any: 'Needs Care',
-    all: 'All Plants',
-    water: 'Water Due',
-    fert: 'Fertilize Due',
-    overdue: 'Overdue'
-  };
 
   // populate datalists from saved history
   const savedRooms = loadHistoryValues('rooms');
@@ -1913,23 +1904,31 @@ async function init(){
     configs.forEach(cfg => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'quick-filter outline';
+      btn.className = 'chip outline';
+      btn.dataset.filter = cfg.key;
       btn.innerHTML = `${cfg.icon} ${cfg.label}`;
       btn.addEventListener('click', () => {
-        if (cfg.key === 'overdue') {
-          quickFilter = 'overdue';
-          document.getElementById('status-filter').value = 'any';
+        const isActive = btn.classList.toggle('active');
+        document.querySelectorAll('#quick-filters .chip').forEach(b => {
+          if (b !== btn) b.classList.remove('active');
+        });
+        statusChip.classList.remove('active');
+        if (isActive) {
+          if (cfg.key === 'overdue') {
+            quickFilter = 'overdue';
+            dueFilterEl.value = 'any';
+          } else {
+            quickFilter = null;
+            dueFilterEl.value = cfg.key;
+          }
         } else {
           quickFilter = null;
-          document.getElementById('status-filter').value = cfg.key;
+          dueFilterEl.value = 'any';
+          statusChip.classList.add('active');
         }
         saveFilterPrefs();
         updateFilterChips();
         loadPlants();
-        if (statusChip) {
-          const val = quickFilter === 'overdue' ? 'overdue' : dueFilterEl.value;
-          statusChip.textContent = `Status: ${statusLabels[val]} \u25BC`;
-        }
       });
       quickFilterWrap.appendChild(btn);
     });
@@ -1944,7 +1943,7 @@ async function init(){
     sortConfigs.forEach(cfg => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'quick-filter outline sort-chip';
+      btn.className = 'chip outline sort-chip';
       btn.dataset.value = cfg.value;
       btn.textContent = cfg.label;
       btn.addEventListener('click', () => {
@@ -1961,27 +1960,15 @@ async function init(){
     });
   }
   if (statusChip && dueFilterEl) {
-    function updateStatusChip() {
-      const val = quickFilter === 'overdue' ? 'overdue' : dueFilterEl.value;
-      statusChip.textContent = `Status: ${statusLabels[val]} \u25BC`;
-    }
-    updateStatusChip();
+    if (dueFilterEl.value === 'any') statusChip.classList.add('active');
     statusChip.addEventListener('click', () => {
-      let current = quickFilter === 'overdue' ? 'overdue' : dueFilterEl.value;
-      let idx = statusCycle.indexOf(current);
-      idx = (idx + 1) % statusCycle.length;
-      const next = statusCycle[idx];
-      if (next === 'overdue') {
-        quickFilter = 'overdue';
-        dueFilterEl.value = 'any';
-      } else {
-        quickFilter = null;
-        dueFilterEl.value = next;
-      }
+      const active = statusChip.classList.toggle('active');
+      document.querySelectorAll('#quick-filters .chip').forEach(b => b.classList.remove('active'));
+      quickFilter = null;
+      dueFilterEl.value = active ? 'any' : 'all';
       saveFilterPrefs();
       updateFilterChips();
       loadPlants();
-      updateStatusChip();
     });
   }
   if (submitBtn) {
@@ -2221,13 +2208,14 @@ async function init(){
   }
   if (dueFilterEl) {
     dueFilterEl.addEventListener('change', () => {
+      quickFilter = null;
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
-      if (statusChip) {
-        const val = quickFilter === 'overdue' ? 'overdue' : dueFilterEl.value;
-        statusChip.textContent = `Status: ${statusLabels[val]} \u25BC`;
-      }
+      statusChip.classList.toggle('active', dueFilterEl.value === 'any');
+      document.querySelectorAll('#quick-filters .chip').forEach(b => {
+        b.classList.toggle('active', b.dataset.filter === dueFilterEl.value);
+      });
       if (filterPanel) filterPanel.classList.remove('show');
     });
   }

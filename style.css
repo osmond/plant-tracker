@@ -1032,19 +1032,50 @@ button:focus {
   gap: calc(var(--spacing) * 2);
 }
 
-.toolbar__group {
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+}
+
+.toolbar__search {
+  flex: 1 1 250px;
+}
+
+.toolbar__chips {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: calc(var(--spacing));
 }
 
-.toolbar__group:not(:last-child) {
-  margin-right: calc(var(--spacing) * 2);
+.toolbar__view {
+  margin-left: auto;
+  display: flex;
 }
 
-.toolbar__group--actions {
-  margin-left: auto;
+.toolbar__view button {
+  margin: 0;
+}
+
+.chip {
+  background: var(--color-chip-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.25rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.chip.active,
+.chip.filled {
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
 }
 
 .filter-summary {
@@ -1498,7 +1529,7 @@ button:focus {
 }
 
 @media (max-width: 640px) {
-  .toolbar__group--search {
+  .toolbar__search {
     flex-basis: 100%;
   }
 }

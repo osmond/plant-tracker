@@ -150,20 +150,15 @@
         </div>
     </form>
 
-    <div id="toolbar" class="toolbar my-4 p-4">
-        <div class="toolbar__group toolbar__group--search" id="search-container">
+    <div class="toolbar my-4 p-4">
+        <div class="toolbar__search" id="search-container">
             <label for="search-input" class="sr-only">Search Plants</label>
-            <div class="relative w-full">
-                <input type="text" id="search-input" placeholder="Search by name or species" class="w-full p-2 border rounded-md" />
-            </div>
+            <input type="text" id="search-input" placeholder="Search by name or species" class="w-full p-2 border rounded-md" />
         </div>
 
-        <div class="toolbar__group toolbar__group--filters">
-            <button id="status-chip" type="button" class="quick-filter filled">Status: Needs Care \u25BC</button>
+        <div class="toolbar__chips">
+            <button id="status-chip" type="button" class="chip active">Needs Care</button>
             <div id="quick-filters" class="flex flex-wrap gap-2"></div>
-        </div>
-
-        <div class="toolbar__group toolbar__group--sort">
             <div id="sort-chips" class="flex gap-2"></div>
             <select id="sort-toggle" class="hidden">
                 <option value="name">Name (A-Z)</option>
@@ -171,9 +166,6 @@
                 <option value="due" selected>Due Date</option>
                 <option value="added">Date Added</option>
             </select>
-        </div>
-
-        <div class="toolbar__group toolbar__group--actions">
             <div id="filter-container" class="overflow-container relative flex items-center gap-2">
                 <button id="filter-btn" class="hidden sm:inline-flex bg-gray-200 rounded-md p-2 items-center" aria-label="Filters"></button>
                 <span id="filter-summary" class="filter-summary"></span>
@@ -189,11 +181,12 @@
                     </select>
                 </div>
             </div>
-            <div id="view-toggle" class="view-toggle-group rounded-lg border border-gray-300 overflow-hidden">
-                <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
-                <button type="button" data-view="list" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
-                <button type="button" data-view="text" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
-            </div>
+        </div>
+
+        <div class="toolbar__view" id="view-toggle">
+            <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
+            <button type="button" data-view="list" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
+            <button type="button" data-view="text" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
         </div>
     </div>
     <div id="rainfall-info" class="p-4 bg-card rounded-lg mb-4 hidden"></div>
