@@ -518,17 +518,10 @@ function updateFilterChips() {
   if (sort !== defaultSort) activeCount++;
   if (quickFilter === 'overdue') activeCount++;
 
-  const summaryText = activeCount
-    ? `${activeCount} filter${activeCount > 1 ? 's' : ''} applied`
-    : 'No filters';
-
   const filterBtn = document.getElementById('filter-btn');
   if (filterBtn) {
     filterBtn.innerHTML = ICONS.filter;
-  }
-  const summaryEl = document.getElementById('filter-summary');
-  if (summaryEl) {
-    summaryEl.textContent = summaryText;
+    filterBtn.setAttribute('data-count', activeCount);
   }
 }
 
@@ -1809,7 +1802,6 @@ async function init(){
   const form = document.getElementById('plant-form');
   const cancelBtn = document.getElementById('cancel-edit');
   const undoBtn = document.getElementById('undo-btn');
-  const searchContainer = document.getElementById('search-container');
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
   const roomFilter = document.getElementById('room-filter');
   const archivedLink = document.getElementById('archived-link');
@@ -1818,7 +1810,6 @@ async function init(){
   const statusChip = document.getElementById('status-chip');
   const sortChipsWrap = document.getElementById('sort-chips');
   const filterBtn = document.getElementById('filter-btn');
-  const filterSummary = document.getElementById('filter-summary');
   const filterBtnMobile = document.getElementById('filter-btn-mobile');
   const filterPanel = document.getElementById('filter-panel');
   const quickFilterWrap = document.getElementById('quick-filters');
