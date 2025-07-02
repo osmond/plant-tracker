@@ -314,11 +314,12 @@ button:focus {
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     overflow: hidden;
+    background: var(--color-card);
 }
 
 
 .view-toggle-btn {
-    background: var(--color-bg);
+    background: var(--color-card);
     color: var(--color-text);
     border: none;
     padding: 0.5rem 0.75rem;
@@ -1034,6 +1035,17 @@ button:focus {
 
 .toolbar__search {
   flex: 1 1 250px;
+  padding: 0.5rem;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.toolbar select {
+  padding: 0.5rem;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
 }
 
 .toolbar__chips {
