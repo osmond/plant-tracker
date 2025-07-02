@@ -7,6 +7,7 @@
 --color-bg: #f1f8e9;
  --color-card: #ffffff;
  --color-surface: #ffffff;
+ --color-toolbar: rgba(255,255,255,0.8);
 
  --color-border: #a5d6a7;
 
@@ -1030,7 +1031,7 @@ button:focus {
   gap: calc(var(--spacing) * 2);
   position: sticky;
   top: 0;
-  background: var(--color-bg);
+  background: var(--color-toolbar);
   z-index: 20;
 }
 
