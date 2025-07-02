@@ -1362,15 +1362,6 @@ button:focus {
   background: var(--color-highlight);
 }
 
-/* analytics */
-#et0Chart {
-  width: 100%;
-}
-
-#dataTable {
-  width: 100%;
-}
-
 
 
 
