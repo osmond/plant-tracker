@@ -1833,7 +1833,6 @@ async function init(){
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('status-filter');
   const statusChip = document.getElementById('status-chip');
-  const filterBtnMobile = document.getElementById('filter-btn-mobile');
   const filterPanel = document.getElementById('filter-panel');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
@@ -1896,12 +1895,6 @@ async function init(){
   }
   if (undoBtn) {
     undoBtn.innerHTML = ICONS.undo + ' Undo';
-  }
-  if (filterBtnMobile) {
-    filterBtnMobile.innerHTML = ICONS.filter + '<span class="visually-hidden">Filters</span>';
-    filterBtnMobile.addEventListener('click', () => {
-      if (filterPanel) filterPanel.classList.toggle('show');
-    });
   }
   if (statusChip && dueFilterEl) {
     if (dueFilterEl.value === 'any') statusChip.classList.add('active');
