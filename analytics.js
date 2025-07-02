@@ -1,5 +1,7 @@
 const ctx = document.getElementById('et0Chart').getContext('2d');
 let et0Chart;
+const urlParams = new URLSearchParams(window.location.search);
+const initialPlantId = urlParams.get('plant_id');
 
 function setDefaultDatesToCurrentWeek() {
   const today = new Date();
@@ -17,6 +19,9 @@ function setDefaultDatesToCurrentWeek() {
 }
 
 const backLink = document.getElementById('backLink');
+if (backLink && initialPlantId) {
+  backLink.href = `index.html#plant-${initialPlantId}`;
+}
 setDefaultDatesToCurrentWeek();
 
 function drawChart(data) {
@@ -123,6 +128,10 @@ async function loadPlants() {
     opt.textContent = p.name;
     sel.appendChild(opt);
   });
+  if (initialPlantId) {
+    sel.value = initialPlantId;
+    await loadTimeseries();
+  }
 }
 
 document.getElementById('refresh').addEventListener('click', loadTimeseries);
