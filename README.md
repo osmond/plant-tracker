@@ -166,8 +166,9 @@ In list or text view you can swipe right on a plant card to complete all due tas
 You can also export your current plant list as JSON or CSV using the download buttons at the top of the page.
 The new **Analytics** link opens a page with charts of historical ET₀ and water use.
 
-The plant form offers live type-ahead suggestions and thumbnail previews for the
-name and species fields. Both pieces of data are fetched from the
+The plant form offers live suggestions for scientific names as you type a common
+plant name. Selecting a scientific name fills the field and loads a thumbnail
+preview fetched from the
 [iNaturalist](https://api.inaturalist.org) API. The previous OpenFarm integration
 was removed because that service is no longer available. Ensure outbound access
 to `api.inaturalist.org` is allowed or the suggestions and images won't appear.
