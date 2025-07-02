@@ -947,6 +947,14 @@ button:focus {
 .plant-card-wrapper {
   position: relative;
   --swipe-progress: 0;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#plant-grid.list-updating .plant-card-wrapper {
+  opacity: 0;
+  transform: translateY(10px);
 }
 
 .swipe-overlay {
