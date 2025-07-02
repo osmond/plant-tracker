@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/tailwind.css">
 </head>
 <body class="bg-bg text-text min-h-screen">
+    <a href="#main" class="skip-link">Skip to content</a>
     <h1 class="app-title text font-bold px-4 py-0">
         My Plant Tracker
         <button id="show-add-form" class="bg-primary text-white rounded-md px-4 py-2 ml-auto"></button>
@@ -23,8 +24,7 @@
         <!-- counts will go here -->
     </div>
 
-
-
+    <main id="main">
 
     <form id="plant-form" class="flex flex-col gap-6 p-4 bg-card rounded-lg shadow hidden" enctype="multipart/form-data">
 
@@ -187,6 +187,7 @@
     </div>
     <div id="calendar" class="p-4"></div>
 
+    </main>
 
     <script type="module" src="script.js"></script>
 
