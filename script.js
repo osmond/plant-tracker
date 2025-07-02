@@ -9,7 +9,13 @@ import { parseLocalDate, addDays, formatDateShort } from "./js/dates.js";
 import { showToast, toggleLoading } from "./js/dom.js";
 
 const indexParams = new URLSearchParams(window.location.search);
-const focusPlantId = indexParams.get('plant_id');
+let focusPlantId = null;
+const hashMatch = location.hash.match(/^#plant-(\d+)/);
+if (hashMatch) {
+  focusPlantId = hashMatch[1];
+} else {
+  focusPlantId = indexParams.get('plant_id');
+}
 
 // show archived plants instead of active ones
 let showArchive = false;
@@ -1582,6 +1588,7 @@ async function loadPlants() {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       el.classList.add('just-updated');
       setTimeout(() => el.classList.remove('just-updated'), 2000);
+      history.replaceState(null, '', location.pathname + '#plant-' + focusPlantId);
     }
   }
 

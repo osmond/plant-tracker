@@ -20,7 +20,7 @@ function setDefaultDatesToCurrentWeek() {
 
 const backLink = document.getElementById('backLink');
 if (backLink && initialPlantId) {
-  backLink.href = `index.html?plant_id=${initialPlantId}#plant-${initialPlantId}`;
+  backLink.href = `index.html#plant-${initialPlantId}`;
 }
 setDefaultDatesToCurrentWeek();
 
