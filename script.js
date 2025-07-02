@@ -290,10 +290,17 @@ async function showTaxonomyInfo(name) {
 
     let img = photos[0] || '';
     if (photos.length) {
-      const imgsHtml = photos.slice(0, 10).map((url, idx) =>
-        `<img src="${url}" alt="${taxon.name || name}" loading="lazy"${idx === 0 ? ' class="selected"' : ''}>`
-      ).join('');
-      parts.push(`<div class="specimen-gallery">${imgsHtml}</div>`);
+      const galleryDiv = document.createElement('div');
+      galleryDiv.className = 'specimen-gallery';
+      photos.slice(0, 10).forEach((url, idx) => {
+        const imgEl = document.createElement('img');
+        imgEl.src = url;
+        imgEl.alt = taxon.name || name;
+        imgEl.loading = 'lazy';
+        if (idx === 0) imgEl.classList.add('selected');
+        galleryDiv.appendChild(imgEl);
+      });
+      parts.push(galleryDiv.outerHTML);
       if (imageUrlInput) imageUrlInput.value = img;
       if (previewImg && img) {
         previewImg.src = img;
