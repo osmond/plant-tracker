@@ -1808,7 +1808,6 @@ async function init(){
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('status-filter');
   const statusChip = document.getElementById('status-chip');
-  const sortChipsWrap = document.getElementById('sort-chips');
   const filterBtn = document.getElementById('filter-btn');
   const filterBtnMobile = document.getElementById('filter-btn-mobile');
   const filterPanel = document.getElementById('filter-panel');
@@ -1922,32 +1921,6 @@ async function init(){
         loadPlants();
       });
       quickFilterWrap.appendChild(btn);
-    });
-  }
-  if (sortChipsWrap && sortToggle) {
-    const sortConfigs = [
-      { value: 'name', label: 'A\u2192Z' },
-      { value: 'name-desc', label: 'Z\u2192A' },
-      { value: 'due', label: 'Due Date' },
-      { value: 'added', label: 'Date Added' }
-    ];
-    sortConfigs.forEach(cfg => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'chip outline sort-chip';
-      btn.dataset.value = cfg.value;
-      btn.textContent = cfg.label;
-      btn.addEventListener('click', () => {
-        sortToggle.value = cfg.value;
-        saveFilterPrefs();
-        loadPlants();
-        updateFilterChips();
-        document
-          .querySelectorAll('.sort-chip')
-          .forEach(b => b.classList.toggle('active', b.dataset.value === cfg.value));
-      });
-      if (sortToggle.value === cfg.value) btn.classList.add('active');
-      sortChipsWrap.appendChild(btn);
     });
   }
   if (statusChip && dueFilterEl) {
@@ -2191,9 +2164,6 @@ async function init(){
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
-      document
-        .querySelectorAll('.sort-chip')
-        .forEach(b => b.classList.toggle('active', b.dataset.value === sortToggle.value));
       if (filterPanel) filterPanel.classList.remove('show');
     });
   }
