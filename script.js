@@ -2062,6 +2062,7 @@ async function init(){
       waterGroup.classList.toggle('hidden', !overrideCheck.checked);
       if (!overrideCheck.checked && waterAmtInput) {
         waterAmtInput.value = '';
+        updateWaterAmount();
       }
     });
   }
