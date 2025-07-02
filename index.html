@@ -58,9 +58,6 @@
                 <div class="relative">
                     <input type="text" name="name" id="name" placeholder="Plant Name" class="w-full border rounded-md p-2" autocomplete="off" required />
                 </div>
-                <input type="hidden" name="scientific_name" id="scientific_name">
-                <input type="hidden" name="thumbnail_url" id="thumbnail_url">
-                <img id="name-preview" class="mt-2 w-16 h-16 hidden" alt="preview">
                 <div class="error" id="name-error"></div>
             </div>
             <div>
@@ -85,6 +82,9 @@
                 <datalist id="species-list"></datalist>
                 <div class="error" id="species-error"></div>
                 <div id="taxonomy-info" class="taxonomy-info"></div>
+                <input type="hidden" name="scientific_name" id="scientific_name">
+                <input type="hidden" name="thumbnail_url" id="thumbnail_url">
+                <img id="name-preview" class="mt-2 w-16 h-16 hidden" alt="preview">
             </div>
         </fieldset>
 
