@@ -1032,8 +1032,30 @@ button:focus {
   gap: calc(var(--spacing) * 2);
 }
 
-#filter-container {
+.toolbar__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing));
+}
+
+.toolbar__group:not(:last-child) {
   margin-right: calc(var(--spacing) * 2);
+}
+
+.toolbar__group--actions {
+  margin-left: auto;
+}
+
+.filter-summary {
+  background: var(--color-chip-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+#filter-container {
   position: relative;
 }
 
@@ -1093,6 +1115,12 @@ button:focus {
   font-size: 0.85rem;
   cursor: pointer;
 }
+.quick-filter.outline {
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.quick-filter.filled,
 .quick-filter.active {
   background: var(--color-primary);
   color: var(--color-surface);
@@ -1467,6 +1495,12 @@ button:focus {
 
 .suggestions li:hover {
   background: var(--color-highlight);
+}
+
+@media (max-width: 640px) {
+  .toolbar__group--search {
+    flex-basis: 100%;
+  }
 }
 
 
