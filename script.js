@@ -1316,6 +1316,7 @@ async function loadPlants() {
   const startOfDayAfterTomorrow = addDays(startOfTomorrow,1);
 
   list.innerHTML = '';
+  let needsCareCount = 0;
   const filtered = plants.filter(plant => {
     if (selectedRoom !== 'all' && plant.room !== selectedRoom) return false;
     const haystack = (plant.name + ' ' + plant.species).toLowerCase();
@@ -1323,6 +1324,7 @@ async function loadPlants() {
 
     const waterDue = needsWatering(plant, today);
     const fertDue = needsFertilizing(plant, today);
+    if (waterDue || fertDue) needsCareCount++;
     if (statusFilter === 'water' && !waterDue) return false;
     if (statusFilter === 'fert' && !fertDue) return false;
     if (statusFilter === 'any' && !(waterDue || fertDue)) return false;
@@ -1387,6 +1389,12 @@ async function loadPlants() {
   summaryEl.appendChild(row1);
   summaryEl.appendChild(row2);
   summaryEl.classList.add('show');
+
+  const statusChip = document.getElementById('status-chip');
+  if (statusChip) {
+    statusChip.textContent = 'Needs Care' +
+      (statusChip.classList.contains('active') ? ` (${needsCareCount})` : '');
+  }
 
   const sortBy = document.getElementById('sort-toggle').value || 'due';
   filtered.sort((a, b) => {
