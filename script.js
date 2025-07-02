@@ -384,6 +384,7 @@ const ICONS = {
   menu: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>',
   archive: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5" rx="2" ry="2"/><line x1="10" y1="12" x2="14" y2="12"/></svg>',
   analytics: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>'
+  ,filter: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 4 21 4 14 12 14 19 10 19 10 12 3 4"/></svg>'
 };
 
 
@@ -445,6 +446,38 @@ function applyViewMode() {
     btn.classList.toggle('active', btn.dataset.view === viewMode);
   });
   localStorage.setItem('viewMode', viewMode);
+}
+
+function updateFilterChips() {
+  const wrap = document.getElementById('filter-chips');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const room = document.getElementById('room-filter')?.value || 'all';
+  const due = document.getElementById('due-filter')?.value || 'any';
+  const sort = document.getElementById('sort-toggle')?.value || 'due';
+  const dueLabels = { water: 'Needs Watering', fert: 'Needs Fertilizing', any: 'Needs Care', all: 'All' };
+  const sortLabels = { 'name': 'A–Z', 'name-desc': 'Z–A', 'due': 'Due Date', 'added': 'Date Added' };
+  function addChip(type, label) {
+    const span = document.createElement('span');
+    span.className = 'filter-chip';
+    span.textContent = label;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.innerHTML = ICONS.cancel;
+    btn.addEventListener('click', () => {
+      if (type === 'room') document.getElementById('room-filter').value = 'all';
+      if (type === 'due') document.getElementById('due-filter').value = 'any';
+      if (type === 'sort') document.getElementById('sort-toggle').value = 'due';
+      saveFilterPrefs();
+      updateFilterChips();
+      loadPlants();
+    });
+    span.appendChild(btn);
+    wrap.appendChild(span);
+  }
+  if (room !== 'all') addChip('room', room);
+  if (due !== 'any') addChip('due', dueLabels[due] || due);
+  if (sort !== 'due') addChip('sort', sortLabels[sort] || sort);
 }
 
 
@@ -1702,6 +1735,8 @@ async function init(){
   const archivedLink = document.getElementById('archived-link');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('due-filter');
+  const filterBtn = document.getElementById('filter-btn');
+  const filterPanel = document.getElementById('filter-panel');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
@@ -1746,6 +1781,7 @@ async function init(){
   showFormStep(1);
 
   applyViewMode();
+  updateFilterChips();
 
 
   if (showBtn) {
@@ -1760,6 +1796,12 @@ async function init(){
   }
   if (undoBtn) {
     undoBtn.innerHTML = ICONS.undo + ' Undo';
+  }
+  if (filterBtn) {
+    filterBtn.innerHTML = ICONS.filter + '<span class="visually-hidden">Filters</span>';
+    filterBtn.addEventListener('click', () => {
+      if (filterPanel) filterPanel.classList.toggle('show');
+    });
   }
   if (toggleSearch) {
     toggleSearch.innerHTML = ICONS.search + '<span class="visually-hidden">Search</span>';
@@ -2009,18 +2051,24 @@ async function init(){
       saveFilterPrefs();
       loadPlants();
       checkArchivedLink();
+      updateFilterChips();
+      if (filterPanel) filterPanel.classList.remove('show');
     });
   }
   if (sortToggle) {
     sortToggle.addEventListener('change', () => {
       saveFilterPrefs();
       loadPlants();
+      updateFilterChips();
+      if (filterPanel) filterPanel.classList.remove('show');
     });
   }
   if (dueFilterEl) {
     dueFilterEl.addEventListener('change', () => {
       saveFilterPrefs();
       loadPlants();
+      updateFilterChips();
+      if (filterPanel) filterPanel.classList.remove('show');
     });
   }
 

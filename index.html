@@ -157,22 +157,28 @@
         </div>
     </form>
 
-    <div class="my-4 flex flex-wrap gap-2 p-4">
-        <select id="room-filter" class="border rounded-md">
-            <option value="all" selected>All Rooms</option>
-        </select>
-        <select id="sort-toggle" class="border rounded-md">
-            <option value="name">Sort by: Name (A-Z)</option>
-            <option value="name-desc">Sort by: Name (Z-A)</option>
-            <option value="due" selected>Sort by: Due Date</option>
-            <option value="added">Sort by: Date Added</option>
-        </select>
-        <select id="due-filter" class="border rounded-md">
-            <option value="all">Show: All</option>
-            <option value="water">Needs Watering</option>
-            <option value="fert">Needs Fertilizing</option>
-            <option value="any" selected>Needs Care</option>
-        </select>
+    <div class="my-4 flex flex-wrap items-center justify-between p-4">
+        <div id="filter-container" class="overflow-container flex items-center gap-2">
+            <button id="filter-btn" class="bg-gray-200 rounded-md px-4 py-2 inline-flex items-center gap-2"></button>
+            <div id="filter-chips" class="flex flex-wrap gap-2"></div>
+            <div id="filter-panel" class="overflow-menu">
+                <select id="room-filter" class="border rounded-md">
+                    <option value="all" selected>All Rooms</option>
+                </select>
+                <select id="due-filter" class="border rounded-md">
+                    <option value="all">Show: All</option>
+                    <option value="water">Needs Watering</option>
+                    <option value="fert">Needs Fertilizing</option>
+                    <option value="any" selected>Needs Care</option>
+                </select>
+                <select id="sort-toggle" class="border rounded-md">
+                    <option value="name">Sort by: Name (A-Z)</option>
+                    <option value="name-desc">Sort by: Name (Z-A)</option>
+                    <option value="due" selected>Sort by: Due Date</option>
+                    <option value="added">Sort by: Date Added</option>
+                </select>
+            </div>
+        </div>
         <div id="view-toggle" class="view-toggle-group inline-flex rounded-lg border border-gray-300 overflow-hidden">
             <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
             <button type="button" data-view="list" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
