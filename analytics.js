@@ -18,10 +18,6 @@ function setDefaultDatesToCurrentWeek() {
   if (endInput && !endInput.value) endInput.value = toISO(end);
 }
 
-const backLink = document.getElementById('backLink');
-if (backLink && initialPlantId) {
-  backLink.href = `index.html#plant-${initialPlantId}`;
-}
 setDefaultDatesToCurrentWeek();
 
 function drawChart(data) {

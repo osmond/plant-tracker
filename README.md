@@ -182,8 +182,7 @@ Use the main interface at `index.html` to add plants, mark them as watered or fe
 In list or text view you can swipe right on a plant card to complete all due tasks (watering and fertilizing) at once. The card slides with your finger and smoothly snaps back if you don't pass the threshold.
 
 You can also export your current plant list as JSON or CSV using the download buttons at the top of the page.
-The new **Analytics** link opens a page with charts of historical ET₀ and water use.
-It links back to the main interface using the same `#plant-{id}` fragment so you return to the plant you were analyzing.
+The **Analytics** link now opens the analytics page in a new tab with charts of historical ET₀ and water use.
 
 The plant form offers live suggestions for scientific names as you type a common
 plant name. Selecting a scientific name fills the field and loads a thumbnail
