@@ -547,7 +547,25 @@ function updateFilterChips() {
   const summary = document.getElementById('filter-summary');
   const activeCount = wrap.children.length;
   if (summary) {
-    summary.textContent = activeCount ? `${activeCount} filter${activeCount > 1 ? 's' : ''} applied` : 'No filters';
+    if (activeCount === 0) {
+      summary.textContent = 'No filters';
+    } else if (activeCount === 1) {
+      let icon = '';
+      let label = '';
+      if (room !== 'all' && status === defaultStatus && sort === defaultSort) {
+        icon = ICONS.room;
+        label = `Room: ${room}`;
+      } else if (status !== defaultStatus && room === 'all' && sort === defaultSort) {
+        icon = status === 'water' ? ICONS.water : status === 'fert' ? ICONS.fert : ICONS.filter;
+        label = `Due: ${statusLabels[status] || status}`;
+      } else if (sort !== defaultSort && room === 'all' && status === defaultStatus) {
+        icon = ICONS.list;
+        label = `Sort: ${sortLabels[sort] || sort}`;
+      }
+      summary.innerHTML = icon ? `${icon} ${label}` : `${activeCount} filter applied`;
+    } else {
+      summary.textContent = `${activeCount} filter${activeCount > 1 ? 's' : ''} applied`;
+    }
   }
   if (activeCount > 1) {
     const reset = document.createElement('span');
