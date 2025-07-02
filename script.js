@@ -1746,6 +1746,7 @@ async function loadPlants() {
 
       const clearHash = () => {
         history.replaceState(null, '', location.pathname);
+        focusPlantId = null;
         document.removeEventListener('click', clearHash);
       };
       document.addEventListener('click', clearHash, { once: true });
@@ -2230,4 +2231,4 @@ if (document.readyState === 'loading') {
   init();
 }
 
-export { loadCalendar, focusPlantId };
+export { loadCalendar, focusPlantId, loadPlants };
