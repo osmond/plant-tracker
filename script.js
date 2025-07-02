@@ -51,7 +51,7 @@ let calendarStartDate = new Date();
 calendarStartDate.setHours(0, 0, 0, 0);
 
 // simple in-memory caches for plant lookups
-const openFarmCache = new Map();
+const iNatCache = new Map();
 const plantInfoCache = new Map();
 
 
@@ -191,13 +191,13 @@ function hexToRgb(hex) {
 }
 async function fetchScientificNames(query) {
   if (!query) return [];
-  if (openFarmCache.has(query)) return openFarmCache.get(query);
+  if (iNatCache.has(query)) return iNatCache.get(query);
   try {
-    const res = await fetch(`https://openfarm.cc/api/v1/crops/?filter=${encodeURIComponent(query)}`);
+    const res = await fetch(`https://api.inaturalist.org/v1/taxa/autocomplete?q=${encodeURIComponent(query)}`);
     if (!res.ok) return [];
     const json = await res.json();
-    const names = [...new Set((json.data || []).map(c => c.attributes.binomial_name).filter(Boolean))];
-    openFarmCache.set(query, names);
+    const names = [...new Set((json.results || []).map(t => t.name).filter(Boolean))];
+    iNatCache.set(query, names);
     return names;
   } catch (e) {
     return [];
@@ -216,21 +216,20 @@ async function showTaxonomyInfo(name) {
   }
 
   try {
-    const res = await fetch(`https://openfarm.cc/api/v1/crops/?filter=${encodeURIComponent(name)}`);
+    const res = await fetch(`https://api.inaturalist.org/v1/taxa/autocomplete?q=${encodeURIComponent(name)}`);
     if (!res.ok) return;
     const json = await res.json();
-    const crop = (json.data || [])[0];
-    if (!crop) return;
-    const attr = crop.attributes || {};
+    const taxon = (json.results || [])[0];
+    if (!taxon) return;
     const parts = [];
-    if (attr.binomial_name) {
-      parts.push(`<div><strong>Scientific Name:</strong> ${attr.binomial_name}</div>`);
+    if (taxon.preferred_common_name) {
+      parts.push(`<div><strong>Common Name:</strong> ${taxon.preferred_common_name}</div>`);
     }
-    if (attr.description) {
-      parts.push(`<div>${attr.description}</div>`);
+    if (taxon.name) {
+      parts.push(`<div><strong>Scientific Name:</strong> ${taxon.name}</div>`);
     }
-    if (attr.main_image_path) {
-      parts.push(`<div class="specimen-gallery"><img src="${attr.main_image_path}" alt="${attr.name || name}" loading="lazy"></div>`);
+    if (taxon.default_photo && taxon.default_photo.square_url) {
+      parts.push(`<div class="specimen-gallery"><img src="${taxon.default_photo.square_url}" alt="${taxon.name || name}" loading="lazy"></div>`);
     }
     const html = parts.join('');
     infoEl.innerHTML = html;
@@ -245,14 +244,14 @@ async function lookupPlants(query) {
   suggestionList.innerHTML = '';
   if (!query) return;
   try {
-    const res = await fetch(`https://openfarm.cc/api/v1/crops/?filter=${encodeURIComponent(query)}`);
+    const res = await fetch(`https://api.inaturalist.org/v1/taxa/autocomplete?q=${encodeURIComponent(query)}`);
     if (!res.ok) return;
     const json = await res.json();
-    (json.data || []).forEach(crop => {
+    (json.results || []).forEach(taxon => {
       const li = document.createElement('li');
-      li.textContent = crop.attributes.name;
-      li.dataset.sci = crop.attributes.binomial_name || '';
-      li.dataset.img = crop.attributes.main_image_path || '';
+      li.textContent = taxon.preferred_common_name || taxon.name;
+      li.dataset.sci = taxon.name || '';
+      li.dataset.img = (taxon.default_photo && taxon.default_photo.square_url) || '';
       suggestionList.appendChild(li);
     });
   } catch (e) {

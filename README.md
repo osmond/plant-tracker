@@ -168,9 +168,9 @@ The new **Analytics** link opens a page with charts of historical ET₀ and wate
 
 The plant form offers live type-ahead suggestions and thumbnail previews for the
 name and species fields. Both pieces of data are fetched from the
-[OpenFarm](https://openfarm.cc) API. The previous GBIF integration has been
-removed, so the app no longer contacts `api.gbif.org`. Ensure outbound access to
-`openfarm.cc` is allowed or the suggestions and images won't appear.
+[iNaturalist](https://api.inaturalist.org) API. The previous OpenFarm integration
+was removed because that service is no longer available. Ensure outbound access
+to `api.inaturalist.org` is allowed or the suggestions and images won't appear.
 
 ## Service Worker
 A small service worker caches the key pages and scripts so the app still opens when you're offline. During development you may need to disable the cache or bump the version in `service-worker.js` to pick up changes.
