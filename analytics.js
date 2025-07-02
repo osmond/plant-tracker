@@ -31,8 +31,6 @@ function drawChart(data) {
       ]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
       scales: {
         y1: { type: 'linear', position: 'left' },
         y2: { type: 'linear', position: 'right' }
