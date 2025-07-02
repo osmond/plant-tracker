@@ -1628,6 +1628,8 @@ async function loadPlants() {
     analyticsLink.innerHTML = ICONS.analytics + '<span class="visually-hidden">Analytics</span>';
     analyticsLink.title = 'Analytics';
     analyticsLink.href = `analytics.html?plant_id=${plant.id}`;
+    analyticsLink.target = '_blank';
+    analyticsLink.rel = 'noopener';
     actionsDiv.appendChild(analyticsLink);
 
     const fileInput = document.createElement('input');
