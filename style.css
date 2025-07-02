@@ -7,7 +7,6 @@
 --color-bg: #f1f8e9;
  --color-card: #ffffff;
  --color-surface: #ffffff;
- --color-toolbar: rgba(255,255,255,0.8);
 
  --color-border: #a5d6a7;
 
@@ -442,12 +441,6 @@ button:focus {
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.1); }
-}
-
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  25% { transform: translateX(-2px); }
-  75% { transform: translateX(2px); }
 }
 #undo-banner {
   position: fixed;
@@ -948,14 +941,6 @@ button:focus {
 .plant-card-wrapper {
   position: relative;
   --swipe-progress: 0;
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-#plant-grid.list-updating .plant-card-wrapper {
-  opacity: 0;
-  transform: translateY(10px);
 }
 
 .swipe-overlay {
@@ -1029,10 +1014,6 @@ button:focus {
   flex-wrap: wrap;
   align-items: center;
   gap: calc(var(--spacing) * 2);
-  position: sticky;
-  top: 0;
-  background: var(--color-toolbar);
-  z-index: 20;
 }
 
 #filter-container {
@@ -1053,9 +1034,6 @@ button:focus {
   z-index: 10;
   flex-direction: column;
   gap: var(--spacing);
-  opacity: 0;
-  transform: translateY(-5px);
-  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
 }
 
 .overflow-menu::before {
@@ -1088,26 +1066,6 @@ button:focus {
   gap: 2px;
   font-size: 0.85rem;
 }
-.room-chip {
-  background: var(--color-edit-bg);
-}
-.status-water-chip {
-  background: var(--color-water-bg);
-  color: var(--color-water);
-}
-.status-fert-chip {
-  background: var(--color-sprout-bg);
-  color: var(--color-plant);
-}
-.status-any-chip {
-  background: var(--color-warning-bg);
-}
-.sort-chip {
-  background: var(--color-chip-bg);
-}
-.reset-chip {
-  background: var(--color-warning-bg);
-}
 .filter-chip button {
   border: none;
   background: transparent;
@@ -1139,18 +1097,10 @@ button:focus {
     display: inline-flex;
     align-items: center;
   }
-  #sort-toggle {
-    display: none;
-  }
-  #filter-panel #sort-toggle {
-    display: block;
-  }
 }
 
 .overflow-menu.show {
   display: flex;
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .plant-info {
@@ -1410,14 +1360,6 @@ button:focus {
 .urgency-future {
   background-color: rgba(56, 161, 105, 0.9);
   transform-origin: right top;
-}
-
-.animate-alert {
-  animation: shake 0.4s ease-in-out;
-}
-
-.plant-card:not(.due-overdue):not(.due-today):not(.due-future) {
-  opacity: 0.6;
 }
 
 .loading-overlay {

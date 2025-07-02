@@ -24,6 +24,8 @@ let plantCache = [];
 
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
+// tasks vs library mode
+let mainMode = localStorage.getItem('mainMode') || 'tasks';
 // track weather info so the summary can include current conditions
 let currentWeather = null;
 let currentWeatherIcon = null;
@@ -425,9 +427,7 @@ const ICONS = {
   search: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
   calendar: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
   rain: '<svg class="icon icon-rain" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16" y1="13" x2="16" y2="21"/><line x1="8" y1="13" x2="8" y2="21"/><line x1="12" y1="15" x2="12" y2="23"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>',
-  room: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V3h18v18"/><path d="M9 21V9h6v12"/></svg>',
   download: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
-  alert: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
   left: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
   right: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>',
   list: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3" y2="6"/><line x1="3" y1="12" x2="3" y2="12"/><line x1="3" y1="18" x2="3" y2="18"/></svg>',
@@ -458,8 +458,8 @@ function loadFilterPrefs() {
   const sVal = localStorage.getItem('sortPref');
   const dVal = localStorage.getItem('statusFilter');
   if (rf) rf.value = rVal !== null ? rVal : 'all';
-  if (sf) sf.value = sVal !== null ? sVal : 'due';
-  if (df) df.value = dVal !== null ? dVal : 'any';
+  if (sf) sf.value = sVal !== null ? sVal : (mainMode === 'tasks' ? 'due' : 'name');
+  if (df) df.value = dVal !== null ? dVal : (mainMode === 'tasks' ? 'any' : 'all');
 }
 
 function clearFilterPrefs() {
@@ -500,34 +500,37 @@ function applyViewMode() {
   localStorage.setItem('viewMode', viewMode);
 }
 
+function applyMainMode() {
+  document.querySelectorAll('#mode-toggle .mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === mainMode);
+  });
+  const df = document.getElementById('status-filter');
+  const sort = document.getElementById('sort-toggle');
+  if (df) df.value = mainMode === 'tasks' ? 'any' : 'all';
+  if (sort) sort.value = mainMode === 'tasks' ? 'due' : (localStorage.getItem('sortPref') || 'name');
+  localStorage.setItem('mainMode', mainMode);
+}
 
 function updateFilterChips() {
   const wrap = document.getElementById('filter-chips');
   if (!wrap) return;
   wrap.innerHTML = '';
   const room = document.getElementById('room-filter')?.value || 'all';
-  const status = document.getElementById('status-filter')?.value || 'any';
-  const sort = document.getElementById('sort-toggle')?.value || 'due';
+  const status = document.getElementById('status-filter')?.value || (mainMode === 'tasks' ? 'any' : 'all');
+  const sort = document.getElementById('sort-toggle')?.value || (mainMode === 'tasks' ? 'due' : 'name');
   const statusLabels = { water: 'Watering', fert: 'Fertilizing', any: 'Needs Care', all: 'All' };
   const sortLabels = { 'name': 'Name \u25B2', 'name-desc': 'Name \u25BC', 'due': 'Due Date', 'added': 'Date Added' };
-  function addChip(type, label, icon, extraClass) {
+  function addChip(type, label) {
     const span = document.createElement('span');
     span.className = 'filter-chip';
-    span.classList.add(`${type}-chip`);
-    if (extraClass) span.classList.add(extraClass);
-    if (icon) {
-      const iconWrap = document.createElement('span');
-      iconWrap.innerHTML = icon;
-      span.appendChild(iconWrap);
-    }
-    span.appendChild(document.createTextNode(' ' + label));
+    span.textContent = label;
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.innerHTML = ICONS.cancel;
     btn.addEventListener('click', () => {
       if (type === 'room') document.getElementById('room-filter').value = 'all';
-      if (type === 'status') document.getElementById('status-filter').value = 'any';
-      if (type === 'sort') document.getElementById('sort-toggle').value = 'due';
+      if (type === 'status') document.getElementById('status-filter').value = mainMode === 'tasks' ? 'any' : 'all';
+      if (type === 'sort') document.getElementById('sort-toggle').value = mainMode === 'tasks' ? 'due' : 'name';
       saveFilterPrefs();
       updateFilterChips();
       loadPlants();
@@ -535,56 +538,16 @@ function updateFilterChips() {
     span.appendChild(btn);
     wrap.appendChild(span);
   }
-  if (room !== 'all') addChip('room', room, ICONS.room);
-  const defaultStatus = 'any';
-  const defaultSort = 'due';
-  if (status !== defaultStatus) {
-    const icon = status === 'water' ? ICONS.water : status === 'fert' ? ICONS.fert : ICONS.filter;
-    const cls = status === 'water' ? 'status-water-chip' : status === 'fert' ? 'status-fert-chip' : 'status-any-chip';
-    addChip('status', `Status: ${statusLabels[status] || status}`, icon, cls);
-  }
-  if (sort !== defaultSort) addChip('sort', `Sort: ${sortLabels[sort] || sort}`, ICONS.list);
+  if (room !== 'all') addChip('room', room);
+  const defaultStatus = mainMode === 'tasks' ? 'any' : 'all';
+  const defaultSort = mainMode === 'tasks' ? 'due' : 'name';
+  if (status !== defaultStatus) addChip('status', `Status: ${statusLabels[status] || status}`);
+  if (sort !== defaultSort) addChip('sort', `Sort: ${sortLabels[sort] || sort}`);
 
   const summary = document.getElementById('filter-summary');
   const activeCount = wrap.children.length;
   if (summary) {
-    if (activeCount === 0) {
-      summary.textContent = 'No filters';
-    } else if (activeCount === 1) {
-      let icon = '';
-      let label = '';
-      if (room !== 'all' && status === defaultStatus && sort === defaultSort) {
-        icon = ICONS.room;
-        label = `Room: ${room}`;
-      } else if (status !== defaultStatus && room === 'all' && sort === defaultSort) {
-        icon = status === 'water' ? ICONS.water : status === 'fert' ? ICONS.fert : ICONS.filter;
-        label = `Due: ${statusLabels[status] || status}`;
-      } else if (sort !== defaultSort && room === 'all' && status === defaultStatus) {
-        icon = ICONS.list;
-        label = `Sort: ${sortLabels[sort] || sort}`;
-      }
-      summary.innerHTML = icon ? `${icon} ${label}` : `${activeCount} filter applied`;
-    } else {
-      summary.textContent = `${activeCount} filter${activeCount > 1 ? 's' : ''} applied`;
-    }
-  }
-  if (activeCount > 1) {
-    const reset = document.createElement('span');
-    reset.className = 'filter-chip reset-chip';
-    reset.textContent = 'Clear All';
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.innerHTML = ICONS.cancel;
-    btn.addEventListener('click', () => {
-      document.getElementById('room-filter').value = 'all';
-      document.getElementById('status-filter').value = defaultStatus;
-      document.getElementById('sort-toggle').value = defaultSort;
-      saveFilterPrefs();
-      updateFilterChips();
-      loadPlants();
-    });
-    reset.appendChild(btn);
-    wrap.appendChild(reset);
+    summary.textContent = activeCount ? `${activeCount} filter${activeCount > 1 ? 's' : ''} applied` : 'No filters';
   }
 }
 
@@ -1298,17 +1261,6 @@ async function loadPlants() {
   const res = await fetch(`api/get_plants.php${showArchive ? '?archived=1' : ''}`);
   const plants = await res.json();
   plantCache = plants;
-  const roomCounts = {};
-  const statusCounts = { water: 0, fert: 0, any: 0 };
-  const today = new Date();
-  plants.forEach(p => {
-    if (p.room) roomCounts[p.room] = (roomCounts[p.room] || 0) + 1;
-    const w = needsWatering(p, today);
-    const f = needsFertilizing(p, today);
-    if (w) statusCounts.water++;
-    if (f) statusCounts.fert++;
-    if (w || f) statusCounts.any++;
-  });
   const list = document.getElementById('plant-grid');
   if (list) {
     list.classList.toggle('list-view', viewMode === 'list');
@@ -1345,6 +1297,7 @@ async function loadPlants() {
     }
   }
   const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
+  const today = new Date();
   const todayStr = today.toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
@@ -1354,26 +1307,6 @@ async function loadPlants() {
   startOfToday.setHours(0,0,0,0);
   const startOfTomorrow = addDays(startOfToday,1);
   const startOfDayAfterTomorrow = addDays(startOfTomorrow,1);
-
-
-  let dueToday = 0;
-  plants.forEach(p => {
-    const soonest = getSoonestDueDate(p);
-    if (soonest >= startOfToday && soonest < startOfTomorrow) dueToday++;
-  });
-  const urgentEl = document.getElementById('urgent-bar');
-  if (urgentEl) {
-    if (dueToday > 0) {
-      urgentEl.innerHTML = `${ICONS.alert} ${dueToday} task${dueToday !== 1 ? 's' : ''} due today`;
-      urgentEl.classList.add('show');
-    } else {
-      urgentEl.classList.remove('show');
-      urgentEl.innerHTML = '';
-    }
-  }
-
-  if (list) list.classList.add('list-updating');
-
 
   list.innerHTML = '';
   const filtered = plants.filter(plant => {
@@ -1386,6 +1319,11 @@ async function loadPlants() {
     if (statusFilter === 'water' && !waterDue) return false;
     if (statusFilter === 'fert' && !fertDue) return false;
     if (statusFilter === 'any' && !(waterDue || fertDue)) return false;
+
+    if (mainMode === 'tasks') {
+      const soonest = getSoonestDueDate(plant);
+      if (soonest >= startOfDayAfterTomorrow) return false;
+    }
 
     return true;
   });
@@ -1449,7 +1387,7 @@ async function loadPlants() {
   summaryEl.appendChild(row2);
   summaryEl.classList.add('show');
 
-  const sortBy = document.getElementById('sort-toggle').value || 'due';
+  const sortBy = document.getElementById('sort-toggle').value || (mainMode === 'tasks' ? 'due' : 'name');
   filtered.sort((a, b) => {
     if (sortBy === 'name-desc') {
       return b.name.localeCompare(a.name);
@@ -1489,15 +1427,15 @@ async function loadPlants() {
     let urgencyClass = '';
     let urgencyText = '';
     if (!showArchive) {
-        if (soonest < startOfToday) {
-          card.classList.add('due-overdue', 'animate-alert');
-          urgencyClass = 'urgency-overdue';
-          const overdueDays = Math.floor((startOfToday - soonest) / 86400000);
-          urgencyText = `Overdue by ${overdueDays} day${overdueDays !== 1 ? 's' : ''}`;
-        } else if (soonest < startOfTomorrow) {
-          card.classList.add('due-today', 'animate-alert');
-          urgencyClass = 'urgency-today';
-          urgencyText = 'Due Today';
+      if (soonest < startOfToday) {
+        card.classList.add('due-overdue');
+        urgencyClass = 'urgency-overdue';
+        const overdueDays = Math.floor((startOfToday - soonest) / 86400000);
+        urgencyText = `Overdue by ${overdueDays} day${overdueDays !== 1 ? 's' : ''}`;
+      } else if (soonest < startOfTomorrow) {
+        card.classList.add('due-today');
+        urgencyClass = 'urgency-today';
+        urgencyText = 'Due Today';
       } else if (soonest < startOfDayAfterTomorrow) {
         card.classList.add('due-future');
         urgencyClass = 'urgency-future';
@@ -1795,9 +1733,6 @@ async function loadPlants() {
     actionsDiv.appendChild(fileInput);
     card.appendChild(actionsDiv);
     wrapper.appendChild(card);
-    if (card.classList.contains('animate-alert')) {
-      setTimeout(() => card.classList.remove('animate-alert'), 600);
-    }
 
     if (viewMode === 'list') {
       enableSwipeComplete(card, overlay, plant, waterDue, fertDue);
@@ -1834,11 +1769,12 @@ async function loadPlants() {
   const filter = document.getElementById('room-filter');
   if (filter) {
     const current = filter.value;
-    filter.innerHTML = `<option value="all">All Rooms (${plants.length})</option>`;
+    filter.innerHTML = '<option value="all">All Rooms</option>';
     rooms.forEach(r => {
+
       const opt = document.createElement('option');
       opt.value = r;
-      opt.textContent = `${r} (${roomCounts[r] || 0})`;
+      opt.textContent = r;
       filter.appendChild(opt);
     });
 
@@ -1857,24 +1793,8 @@ async function loadPlants() {
     });
   }
 
-  const dueFilterEl = document.getElementById('status-filter');
-  if (dueFilterEl) {
-    const current = dueFilterEl.value;
-    dueFilterEl.innerHTML = `
-      <option value="all">Status: All (${plants.length})</option>
-      <option value="water">Watering (${statusCounts.water})</option>
-      <option value="fert">Fertilizing (${statusCounts.fert})</option>
-      <option value="any">Needs Care (${statusCounts.any})</option>`;
-    if (Array.from(dueFilterEl.options).some(o => o.value === current)) {
-      dueFilterEl.value = current;
-    }
-  }
-
   checkArchivedLink(plants);
   loadCalendar(plants);
-  if (list) {
-    requestAnimationFrame(() => list.classList.remove('list-updating'));
-  }
 }
 
 async function checkArchivedLink(plantsList) {
@@ -1920,6 +1840,7 @@ async function init(){
   const dueFilterEl = document.getElementById('status-filter');
   const filterBtn = document.getElementById('filter-btn');
   const filterPanel = document.getElementById('filter-panel');
+  const modeButtons = document.querySelectorAll('#mode-toggle .mode-btn');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
@@ -1961,6 +1882,7 @@ async function init(){
 
   // apply saved preferences before initial load
   loadFilterPrefs();
+  applyMainMode();
   showFormStep(1);
 
   applyViewMode();
@@ -2255,7 +2177,18 @@ async function init(){
     });
   }
 
-
+  if (modeButtons.length) {
+    modeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        mainMode = btn.dataset.mode;
+        applyMainMode();
+        saveFilterPrefs();
+        updateFilterChips();
+        loadPlants();
+      });
+    });
+    applyMainMode();
+  }
 
   if (viewButtons.length) {
     viewButtons.forEach(btn => {
