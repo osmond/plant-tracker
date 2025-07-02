@@ -439,19 +439,19 @@ const ICONS = {
 function saveFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
-  const df = document.getElementById('due-filter');
+  const df = document.getElementById('status-filter');
   if (rf) localStorage.setItem('roomFilter', rf.value);
   if (sf) localStorage.setItem('sortPref', sf.value);
-  if (df) localStorage.setItem('dueFilter', df.value);
+  if (df) localStorage.setItem('statusFilter', df.value);
 }
 
 function loadFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
-  const df = document.getElementById('due-filter');
+  const df = document.getElementById('status-filter');
   const rVal = localStorage.getItem('roomFilter');
   const sVal = localStorage.getItem('sortPref');
-  const dVal = localStorage.getItem('dueFilter');
+  const dVal = localStorage.getItem('statusFilter');
   if (rf) rf.value = rVal !== null ? rVal : 'all';
   if (sf) sf.value = sVal !== null ? sVal : (mainMode === 'tasks' ? 'due' : 'name');
   if (df) df.value = dVal !== null ? dVal : (mainMode === 'tasks' ? 'any' : 'all');
@@ -460,7 +460,7 @@ function loadFilterPrefs() {
 function clearFilterPrefs() {
   localStorage.removeItem('roomFilter');
   localStorage.removeItem('sortPref');
-  localStorage.removeItem('dueFilter');
+  localStorage.removeItem('statusFilter');
 }
 
 function saveHistoryValue(key, value) {
@@ -499,7 +499,7 @@ function applyMainMode() {
   document.querySelectorAll('#mode-toggle .mode-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.mode === mainMode);
   });
-  const df = document.getElementById('due-filter');
+  const df = document.getElementById('status-filter');
   const sort = document.getElementById('sort-toggle');
   if (df) df.value = mainMode === 'tasks' ? 'any' : 'all';
   if (sort) sort.value = mainMode === 'tasks' ? 'due' : (localStorage.getItem('sortPref') || 'name');
@@ -511,9 +511,9 @@ function updateFilterChips() {
   if (!wrap) return;
   wrap.innerHTML = '';
   const room = document.getElementById('room-filter')?.value || 'all';
-  const due = document.getElementById('due-filter')?.value || (mainMode === 'tasks' ? 'any' : 'all');
+  const status = document.getElementById('status-filter')?.value || (mainMode === 'tasks' ? 'any' : 'all');
   const sort = document.getElementById('sort-toggle')?.value || (mainMode === 'tasks' ? 'due' : 'name');
-  const dueLabels = { water: 'Watering Due', fert: 'Fertilizing Due', any: 'Needs Care', all: 'All' };
+  const statusLabels = { water: 'Watering', fert: 'Fertilizing', any: 'Needs Care', all: 'All' };
   const sortLabels = { 'name': 'Name \u25B2', 'name-desc': 'Name \u25BC', 'due': 'Due Date', 'added': 'Date Added' };
   function addChip(type, label) {
     const span = document.createElement('span');
@@ -524,7 +524,7 @@ function updateFilterChips() {
     btn.innerHTML = ICONS.cancel;
     btn.addEventListener('click', () => {
       if (type === 'room') document.getElementById('room-filter').value = 'all';
-      if (type === 'due') document.getElementById('due-filter').value = mainMode === 'tasks' ? 'any' : 'all';
+      if (type === 'status') document.getElementById('status-filter').value = mainMode === 'tasks' ? 'any' : 'all';
       if (type === 'sort') document.getElementById('sort-toggle').value = mainMode === 'tasks' ? 'due' : 'name';
       saveFilterPrefs();
       updateFilterChips();
@@ -534,10 +534,16 @@ function updateFilterChips() {
     wrap.appendChild(span);
   }
   if (room !== 'all') addChip('room', room);
-  const defaultDue = mainMode === 'tasks' ? 'any' : 'all';
+  const defaultStatus = mainMode === 'tasks' ? 'any' : 'all';
   const defaultSort = mainMode === 'tasks' ? 'due' : 'name';
-  if (due !== defaultDue) addChip('due', `Due: ${dueLabels[due] || due}`);
+  if (status !== defaultStatus) addChip('status', `Status: ${statusLabels[status] || status}`);
   if (sort !== defaultSort) addChip('sort', `Sort: ${sortLabels[sort] || sort}`);
+
+  const summary = document.getElementById('filter-summary');
+  const activeCount = wrap.children.length;
+  if (summary) {
+    summary.textContent = activeCount ? `${activeCount} filter${activeCount > 1 ? 's' : ''} applied` : 'No filters';
+  }
 }
 
 
@@ -1245,8 +1251,8 @@ async function loadPlants() {
     list.classList.toggle('text-view', viewMode === 'text');
   }
   const selectedRoom = document.getElementById('room-filter').value;
-  const dueFilter = document.getElementById('due-filter')
-    ? document.getElementById('due-filter').value
+  const statusFilter = document.getElementById('status-filter')
+    ? document.getElementById('status-filter').value
     : 'all';
 
   const rainEl = document.getElementById('rainfall-info');
@@ -1294,9 +1300,9 @@ async function loadPlants() {
 
     const waterDue = needsWatering(plant, today);
     const fertDue = needsFertilizing(plant, today);
-    if (dueFilter === 'water' && !waterDue) return false;
-    if (dueFilter === 'fert' && !fertDue) return false;
-    if (dueFilter === 'any' && !(waterDue || fertDue)) return false;
+    if (statusFilter === 'water' && !waterDue) return false;
+    if (statusFilter === 'fert' && !fertDue) return false;
+    if (statusFilter === 'any' && !(waterDue || fertDue)) return false;
 
     if (mainMode === 'tasks') {
       const soonest = getSoonestDueDate(plant);
@@ -1810,7 +1816,7 @@ async function init(){
   const roomFilter = document.getElementById('room-filter');
   const archivedLink = document.getElementById('archived-link');
   const sortToggle = document.getElementById('sort-toggle');
-  const dueFilterEl = document.getElementById('due-filter');
+  const dueFilterEl = document.getElementById('status-filter');
   const filterBtn = document.getElementById('filter-btn');
   const filterPanel = document.getElementById('filter-panel');
   const modeButtons = document.querySelectorAll('#mode-toggle .mode-btn');
