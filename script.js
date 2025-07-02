@@ -1679,8 +1679,8 @@ async function init(){
   const potHelp = document.getElementById('pot_diameter_help');
   const speciesList = document.getElementById('species-list');
   const suggestionList = document.getElementById('name-suggestions');
-  const sciNameInput = document.getElementById('sci_name');
-  const imageUrlInput = document.getElementById('image_url');
+  const sciNameInput = document.getElementById('scientific_name');
+  const imageUrlInput = document.getElementById('thumbnail_url');
   const previewImg = document.getElementById('name-preview');
 
   // populate datalists from saved history
