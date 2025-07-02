@@ -218,12 +218,27 @@ async function fetchScientificNames(query) {
 
 async function showTaxonomyInfo(name) {
   const infoEl = document.getElementById('taxonomy-info');
+  const imageUrlInput = document.getElementById('thumbnail_url');
+  const sciNameInput = document.getElementById('scientific_name');
+  const previewImg = document.getElementById('name-preview');
   if (!infoEl) return;
   infoEl.textContent = '';
-  if (!name) return;
+  if (!name) {
+    if (imageUrlInput) imageUrlInput.value = '';
+    if (sciNameInput) sciNameInput.value = '';
+    if (previewImg) previewImg.classList.add('hidden');
+    return;
+  }
 
   if (plantInfoCache.has(name)) {
-    infoEl.innerHTML = plantInfoCache.get(name);
+    const cached = plantInfoCache.get(name);
+    infoEl.innerHTML = cached.html;
+    if (imageUrlInput) imageUrlInput.value = cached.img || '';
+    if (sciNameInput) sciNameInput.value = cached.sci || name;
+    if (previewImg && cached.img) {
+      previewImg.src = cached.img;
+      previewImg.classList.remove('hidden');
+    }
     return;
   }
 
@@ -240,12 +255,24 @@ async function showTaxonomyInfo(name) {
     if (taxon.name) {
       parts.push(`<div><strong>Scientific Name:</strong> ${taxon.name}</div>`);
     }
+    let img = '';
     if (taxon.default_photo && taxon.default_photo.square_url) {
-      parts.push(`<div class="specimen-gallery"><img src="${taxon.default_photo.square_url}" alt="${taxon.name || name}" loading="lazy"></div>`);
+      img = taxon.default_photo.square_url;
+      parts.push(`<div class="specimen-gallery"><img src="${img}" alt="${taxon.name || name}" loading="lazy"></div>`);
+      if (imageUrlInput) imageUrlInput.value = img;
+      if (previewImg) {
+        previewImg.src = img;
+        previewImg.classList.remove('hidden');
+      }
+    } else if (imageUrlInput) {
+      imageUrlInput.value = '';
+      if (previewImg) previewImg.classList.add('hidden');
     }
+    const sci = taxon.name || name;
+    if (sciNameInput) sciNameInput.value = sci;
     const html = parts.join('');
     infoEl.innerHTML = html;
-    plantInfoCache.set(name, html);
+    plantInfoCache.set(name, { html, img, sci });
   } catch (e) {
     // ignore network errors
   }
@@ -1892,26 +1919,21 @@ async function init(){
       }
     });
   }
-  if (nameInput && suggestionList) {
-    nameInput.addEventListener('input', () => {
-      debouncedLookupPlants(nameInput.value.trim());
-    });
-    suggestionList.addEventListener('click', e => {
-      const li = e.target.closest('li');
-      if (!li) return;
-      nameInput.value = li.textContent;
-      if (sciNameInput) sciNameInput.value = li.dataset.sci || '';
-      if (imageUrlInput) imageUrlInput.value = li.dataset.img || '';
-      suggestionList.innerHTML = '';
-      if (previewImg) {
-        if (li.dataset.img) {
-          previewImg.src = li.dataset.img;
-          previewImg.classList.remove('hidden');
-        } else {
-          previewImg.classList.add('hidden');
-        }
+  if (nameInput && speciesInput && speciesList) {
+    let lastNameQuery = '';
+    nameInput.addEventListener('input', debounce(async () => {
+      const query = nameInput.value.trim();
+      if (query === lastNameQuery) return;
+      lastNameQuery = query;
+      if (!query) {
+        speciesList.innerHTML = '';
+        return;
       }
-    });
+      const names = await fetchScientificNames(query);
+      speciesList.innerHTML = names
+        .map(n => `<option value="${n}"></option>`)
+        .join('');
+    }, 300));
   }
   if (speciesInput && speciesList) {
     let lastQuery = '';
