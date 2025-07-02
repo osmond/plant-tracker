@@ -1127,6 +1127,13 @@ function populateForm(plant) {
   form.last_fertilized.value = plant.last_fertilized;
   const photoUrlInput = document.getElementById('photo_url');
   if (photoUrlInput) photoUrlInput.value = plant.photo_url || '';
+  const thumbInput = document.getElementById('thumbnail_url');
+  if (thumbInput) thumbInput.value = plant.thumbnail_url || '';
+  const previewImg = document.getElementById('name-preview');
+  if (previewImg && plant.thumbnail_url) {
+    previewImg.src = plant.thumbnail_url;
+    previewImg.classList.remove('hidden');
+  }
   editingPlantId = plant.id;
 
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -1422,9 +1429,10 @@ async function loadPlants() {
     }
 
     const img = document.createElement('img');
-    img.src = plant.photo_url ||
+    const photoSrc = plant.photo_url || plant.thumbnail_url ||
       'https://placehold.co/600x600?text=Add+Photo';
-    if (plant.photo_url) {
+    img.src = photoSrc;
+    if (plant.photo_url || plant.thumbnail_url) {
       img.alt = plant.name;
     } else {
       img.alt = 'No photo available for ' + plant.name;
@@ -1432,9 +1440,9 @@ async function loadPlants() {
     img.loading = 'lazy';
     img.width = 300;
     img.height = 300;
-    if (plant.photo_url && plant.photo_url.endsWith('.webp')) {
-      const base = plant.photo_url.slice(0, -5);
-      img.srcset = `${base}-400.webp 400w, ${plant.photo_url} 800w`;
+    if (photoSrc.endsWith('.webp')) {
+      const base = photoSrc.slice(0, -5);
+      img.srcset = `${base}-400.webp 400w, ${photoSrc} 800w`;
       img.sizes = '(max-width: 640px) 100vw, 400px';
     }
     img.classList.add('plant-photo');
