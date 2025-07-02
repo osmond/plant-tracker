@@ -1608,7 +1608,9 @@ async function loadPlants() {
     analyticsLink.classList.add('action-btn');
     analyticsLink.innerHTML = ICONS.analytics + '<span class="visually-hidden">Analytics</span>';
     analyticsLink.title = 'Analytics';
-    analyticsLink.href = `analytics.html?plant_id=${plant.id}`;
+    analyticsLink.href = 'analytics.html';
+    analyticsLink.target = '_blank';
+    analyticsLink.rel = 'noopener';
     actionsDiv.appendChild(analyticsLink);
 
     const fileInput = document.createElement('input');
