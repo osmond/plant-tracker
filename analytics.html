@@ -46,13 +46,15 @@
     </div>
 
     <h2 class="font-semibold mb-2">ET₀ Chart</h2>
-    <div class="bg-gray-50 p-4 rounded-lg mb-4">
-      <canvas id="et0Chart" width="600" height="300" class="mb-4"></canvas>
-      <div id="heatmap" class=""></div>
-    </div>
+      <div class="bg-gray-50 p-4 rounded-lg mb-4">
+        <canvas id="et0Chart" class="mb-4 w-full h-64 sm:h-72"></canvas>
+        <div id="heatmap" class=""></div>
+      </div>
 
-    <h2 class="font-semibold mb-2">Data</h2>
-    <table id="dataTable" class="min-w-full text-sm w-full border-collapse"></table>
+      <h2 class="font-semibold mb-2">Data</h2>
+      <div class="overflow-x-auto">
+        <table id="dataTable" class="min-w-full text-sm w-full border-collapse"></table>
+      </div>
   </div>
   <script type="module" src="analytics.js"></script>
   <script>
