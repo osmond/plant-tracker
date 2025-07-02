@@ -502,7 +502,7 @@ function applyViewMode() {
 }
 
 function applyMainMode() {
-  document.querySelectorAll('#mode-toggle .mode-btn').forEach(btn => {
+  document.querySelectorAll('.mode-toggle .mode-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.mode === mainMode);
   });
   const df = document.getElementById('status-filter');
@@ -1842,6 +1842,7 @@ async function init(){
   const cancelBtn = document.getElementById('cancel-edit');
   const undoBtn = document.getElementById('undo-btn');
   const toggleSearch = document.getElementById('toggle-search');
+  const toggleSearchMobile = document.getElementById("toggle-search-mobile");
   const searchContainer = document.getElementById('search-container');
   const closeSearch = document.getElementById('close-search');
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
@@ -1850,8 +1851,9 @@ async function init(){
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('status-filter');
   const filterBtn = document.getElementById('filter-btn');
+  const filterBtnMobile = document.getElementById("filter-btn-mobile");
   const filterPanel = document.getElementById('filter-panel');
-  const modeButtons = document.querySelectorAll('#mode-toggle .mode-btn');
+  const modeButtons = document.querySelectorAll('.mode-toggle .mode-btn');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
@@ -1919,6 +1921,12 @@ async function init(){
       if (filterPanel) filterPanel.classList.toggle('show');
     });
   }
+  if (filterBtnMobile) {
+    filterBtnMobile.innerHTML = ICONS.filter + '<span class="visually-hidden">Filters</span>';
+    filterBtnMobile.addEventListener('click', () => {
+      if (filterPanel) filterPanel.classList.toggle('show');
+    });
+  }
   if (toggleSearch) {
     toggleSearch.innerHTML = ICONS.search + '<span class="visually-hidden">Search</span>';
     toggleSearch.addEventListener('click', () => {
@@ -1930,6 +1938,23 @@ async function init(){
       }
       if (searchContainer) searchContainer.classList.remove('hidden');
       toggleSearch.style.display = 'none';
+        if (toggleSearchMobile) toggleSearchMobile.style.display = 'none';
+      const input = document.getElementById('search-input');
+      if (input) input.focus();
+    });
+  }
+  if (toggleSearchMobile) {
+    toggleSearchMobile.innerHTML = ICONS.search + '<span class="visually-hidden">Search</span>';
+    toggleSearchMobile.addEventListener('click', () => {
+      if (form) {
+        form.style.display = 'none';
+        if (showBtn) showBtn.style.display = 'inline-block';
+        const cancel = document.getElementById('cancel-edit');
+        if (cancel) cancel.style.display = 'none';
+      }
+      if (searchContainer) searchContainer.classList.remove('hidden');
+      if (toggleSearch) toggleSearch.style.display = 'none';
+      toggleSearchMobile.style.display = 'none';
       const input = document.getElementById('search-input');
       if (input) input.focus();
     });
@@ -1939,6 +1964,7 @@ async function init(){
     closeSearch.addEventListener('click', () => {
       if (searchContainer) searchContainer.classList.add('hidden');
       toggleSearch.style.display = 'inline-block';
+        if (toggleSearchMobile) toggleSearchMobile.style.display = 'inline-block';
       document.getElementById('search-input').value = '';
       loadPlants();
     });
@@ -1957,6 +1983,7 @@ async function init(){
       if (searchContainer) {
         searchContainer.classList.add('hidden');
         toggleSearch.style.display = 'inline-block';
+          if (toggleSearchMobile) toggleSearchMobile.style.display = 'inline-block';
       }
       form.style.display = 'block';
       showBtn.style.display = 'none';

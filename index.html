@@ -34,7 +34,7 @@
         My Plant Tracker
         <button id="show-add-form" class="bg-primary text-white rounded-md px-4 py-2 ml-auto"></button>
         <button id="export-all" class="bg-primary text-white rounded-md px-4 py-2 ml-2"></button>
-        <button id="toggle-search" class="bg-primary text-white rounded-md px-4 py-2 ml-2">Search</button>
+        <button id="toggle-search" class="hidden sm:inline-block bg-primary text-white rounded-md px-4 py-2 ml-2">Search</button>
     </h1>
     <div id="summary" class="p-4 bg-card rounded-lg mb-4">
         <!-- counts will go here -->
@@ -153,17 +153,17 @@
 
         <div class="flex gap-2 justify-end mt-4 sticky bottom-0 bg-card p-4">
             <button type="button" id="cancel-edit" class="bg-gray-200 rounded-md px-4 py-2 hidden inline-flex items-center gap-2">Cancel</button>
-            <button type="submit" id="submit-btn" class="bg-primary text-white rounded-md px-4 py-2 inline-flex items-center gap-2">Add Plant</button>
+            <button type="submit" id="submit-btn" class="bg-primary text-white rounded-md px-4 py-2 items-center gap-2">Add Plant</button>
         </div>
     </form>
 
     <div id="toolbar" class="my-4 flex flex-wrap items-center gap-4 p-4">
-        <div id="mode-toggle" class="view-toggle-group inline-flex rounded-lg border border-gray-300 overflow-hidden">
+        <div id="mode-toggle" class="mode-toggle hidden sm:inline-flex view-toggle-group rounded-lg border border-gray-300 overflow-hidden">
             <button type="button" data-mode="tasks" class="mode-btn view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10">Tasks</button>
             <button type="button" data-mode="library" class="mode-btn view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10">All Plants</button>
         </div>
         <div id="filter-container" class="overflow-container flex items-center gap-2 mr-4 relative">
-            <button id="filter-btn" class="bg-gray-200 rounded-md px-4 py-2 inline-flex items-center gap-2"></button>
+            <button id="filter-btn" class="hidden sm:inline-flex bg-gray-200 rounded-md px-4 py-2 items-center gap-2"></button>
             <div id="filter-chips" class="flex flex-wrap gap-2"></div>
             <button id="filter-summary" class="text-sm filter-summary"></button>
             <div id="filter-panel" class="overflow-menu">
@@ -185,7 +185,7 @@
                 <option value="due" selected>Due Date</option>
                 <option value="added">Date Added</option>
             </select>
-            <div id="view-toggle" class="view-toggle-group inline-flex rounded-lg border border-gray-300 overflow-hidden">
+            <div id="view-toggle" class="view-toggle-group rounded-lg border border-gray-300 overflow-hidden">
                 <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
                 <button type="button" data-view="list" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
                 <button type="button" data-view="text" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
@@ -212,6 +212,15 @@
         <button id="next-week" class="bg-primary text-white rounded-md px-4 py-2"></button>
     </div>
     <div id="calendar" class="p-4"></div>
+    <div id="bottom-bar" class="sm:hidden fixed bottom-0 left-0 right-0 flex justify-around items-center bg-card border-t p-2">
+        <div id="mode-toggle-mobile" class="mode-toggle view-toggle-group rounded-lg border border-gray-300 overflow-hidden">
+            <button type="button" data-mode="tasks" class="mode-btn view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10">Tasks</button>
+            <button type="button" data-mode="library" class="mode-btn view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10">All Plants</button>
+        </div>
+        <button id="toggle-search-mobile" class="bg-primary text-white rounded-md p-2"></button>
+        <button id="filter-btn-mobile" class="bg-gray-200 rounded-md p-2"></button>
+    </div>
+
 
     <script type="module" src="script.js?v=1.0"></script>
 
