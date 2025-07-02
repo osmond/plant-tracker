@@ -1517,3 +1517,13 @@ button:focus {
 
 
 
+
+@media (max-width: 640px) {
+  #show-add-form {
+    position: fixed;
+    bottom: calc(var(--spacing) * 3);
+    right: calc(var(--spacing) * 3);
+    z-index: 900;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+}
