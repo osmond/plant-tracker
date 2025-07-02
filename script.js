@@ -357,6 +357,8 @@ function updateWaterAmount() {
   const unitSelect = document.getElementById('pot_diameter_unit');
   const typeSelect = document.getElementById('plant_type');
   const waterAmtInput = document.getElementById('water_amount');
+  const overrideCheck = document.getElementById('override_water');
+  const autoWater = document.getElementById('auto-water-oz');
   if (!diamInput || !waterAmtInput) return;
   const diam = parseFloat(diamInput.value);
   if (isNaN(diam) || weatherTminC === null || weatherTmaxC === null) return;
@@ -374,8 +376,11 @@ function updateWaterAmount() {
   const area = computeArea(diamCm);
   const waterMl = etc * area * 0.1;
   const oz = waterMl / ML_PER_US_FL_OUNCE;
-  waterAmtInput.value = oz.toFixed(1);
-  waterAmtInput.dispatchEvent(new Event('input', { bubbles: true }));
+  if (!overrideCheck || !overrideCheck.checked) {
+    waterAmtInput.value = oz.toFixed(1);
+    waterAmtInput.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  if (autoWater) autoWater.textContent = oz.toFixed(1);
   if (editingPlantId) {
     const body = new URLSearchParams({
       plant_id: editingPlantId,
