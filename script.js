@@ -507,44 +507,25 @@ function applyViewMode() {
 
 
 function updateFilterChips() {
-  const wrap = document.getElementById('filter-chips');
-  if (!wrap) return;
-  wrap.innerHTML = '';
   const room = document.getElementById('room-filter')?.value || 'all';
   const status = document.getElementById('status-filter')?.value || 'all';
   const sort = document.getElementById('sort-toggle')?.value || 'due';
-  const statusLabelsLocal = { water: 'Watering', fert: 'Fertilizing', any: 'Needs Care', all: 'All' };
-  const sortLabels = { 'name': 'Name \u25B2', 'name-desc': 'Name \u25BC', 'due': 'Due Date', 'added': 'Date Added' };
-  function addChip(type, label) {
-    const span = document.createElement('span');
-    span.className = 'filter-chip';
-    span.textContent = label;
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.innerHTML = ICONS.cancel;
-    btn.addEventListener('click', () => {
-      if (type === 'room') document.getElementById('room-filter').value = 'all';
-      if (type === 'status') document.getElementById('status-filter').value = 'all';
-      if (type === 'sort') document.getElementById('sort-toggle').value = 'due';
-      if (type === 'quick') quickFilter = null;
-      saveFilterPrefs();
-      updateFilterChips();
-      loadPlants();
-    });
-    span.appendChild(btn);
-    wrap.appendChild(span);
-  }
-  if (room !== 'all') addChip('room', room);
   const defaultStatus = 'all';
   const defaultSort = 'due';
-  if (status !== defaultStatus) addChip('status', `Status: ${statusLabelsLocal[status] || status}`);
-  if (sort !== defaultSort) addChip('sort', `Sort: ${sortLabels[sort] || sort}`);
-  if (quickFilter === 'overdue') addChip('quick', 'Overdue');
 
-  const summary = document.getElementById('filter-summary');
-  const activeCount = wrap.children.length;
-  if (summary) {
-    summary.textContent = activeCount ? `${activeCount} filter${activeCount > 1 ? 's' : ''} applied` : 'No filters';
+  let activeCount = 0;
+  if (room !== 'all') activeCount++;
+  if (status !== defaultStatus) activeCount++;
+  if (sort !== defaultSort) activeCount++;
+  if (quickFilter === 'overdue') activeCount++;
+
+  const summaryText = activeCount
+    ? `${activeCount} filter${activeCount > 1 ? 's' : ''} applied`
+    : 'No filters';
+
+  const filterBtn = document.getElementById('filter-btn');
+  if (filterBtn) {
+    filterBtn.innerHTML = `${ICONS.filter} ${summaryText}`;
   }
 }
 
@@ -1907,10 +1888,10 @@ async function init(){
     undoBtn.innerHTML = ICONS.undo + ' Undo';
   }
   if (filterBtn) {
-    filterBtn.innerHTML = ICONS.filter + '<span class="visually-hidden">Filters</span>';
     filterBtn.addEventListener('click', () => {
       if (filterPanel) filterPanel.classList.toggle('show');
     });
+    updateFilterChips();
   }
   if (filterBtnMobile) {
     filterBtnMobile.innerHTML = ICONS.filter + '<span class="visually-hidden">Filters</span>';
