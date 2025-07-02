@@ -1,7 +1,9 @@
 const CACHE_NAME = 'plant-tracker-v3';
 const ASSETS = [
   './index.html',
+  './analytics.html',
   './script.js',
+  './analytics.js',
   './style.css',
   './favicon.svg',
   './manifest.json',
@@ -41,7 +43,11 @@ self.addEventListener('fetch', event => {
   }
   if (req.mode === 'navigate') {
     event.respondWith(
-      caches.match('./index.html').then(resp => resp || fetch(req))
+      fetch(req).catch(() => {
+        const fallback = req.url.includes('analytics') ?
+          './analytics.html' : './index.html';
+        return caches.match(fallback);
+      })
     );
     return;
   }
