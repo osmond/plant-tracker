@@ -1097,10 +1097,6 @@ button:focus {
   display: inline-block;
 }
 
-#filter-container {
-  position: relative;
-}
-
 .overflow-menu {
   display: none;
   position: absolute;
