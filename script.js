@@ -278,11 +278,16 @@ async function showTaxonomyInfo(name) {
       if (detailRes.ok) {
         const detailJson = await detailRes.json();
         const detail = (detailJson.results || [])[0] || {};
-        photos = (detail.taxon_photos || []).map(tp => tp.photo && tp.photo.square_url).filter(Boolean);
+        // prefer the medium variant for sharper thumbnails, falling back to
+        // square if it is unavailable
+        photos = (detail.taxon_photos || []).map(tp => {
+          const p = tp.photo || {};
+          return p.medium_url || p.square_url;
+        }).filter(Boolean);
       }
     } catch (e) {}
-    if (!photos.length && taxon.default_photo && taxon.default_photo.square_url) {
-      photos = [taxon.default_photo.square_url];
+    if (!photos.length && taxon.default_photo) {
+      photos = [taxon.default_photo.medium_url || taxon.default_photo.square_url];
     }
 
     let img = photos[0] || '';
@@ -337,7 +342,7 @@ async function lookupPlants(query) {
       const li = document.createElement('li');
       li.textContent = taxon.preferred_common_name || taxon.name;
       li.dataset.sci = taxon.name || '';
-      li.dataset.img = (taxon.default_photo && taxon.default_photo.square_url) || '';
+      li.dataset.img = (taxon.default_photo && (taxon.default_photo.medium_url || taxon.default_photo.square_url)) || '';
       suggestionList.appendChild(li);
     });
   } catch (e) {

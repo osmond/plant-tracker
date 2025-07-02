@@ -172,9 +172,11 @@ It links back to the main interface using the same `#plant-{id}` fragment so you
 The plant form offers live suggestions for scientific names as you type a common
 plant name. Selecting a scientific name fills the field and loads a thumbnail
 preview fetched from the
-[iNaturalist](https://api.inaturalist.org) API. The previous OpenFarm integration
-was removed because that service is no longer available. Ensure outbound access
-to `api.inaturalist.org` is allowed or the suggestions and images won't appear.
+[iNaturalist](https://api.inaturalist.org) API. Thumbnails now use the API's
+`medium_url` variant (~368×500 pixels) so they remain sharp when displayed.
+The previous OpenFarm integration was removed because that service is no longer
+available. Ensure outbound access to `api.inaturalist.org` is allowed or the
+suggestions and images won't appear.
 
 ## Service Worker
 A small service worker caches the key pages and scripts so the app still opens when you're offline. During development you may need to disable the cache or bump the version in `service-worker.js` to pick up changes.
