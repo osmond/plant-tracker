@@ -34,18 +34,16 @@
         My Plant Tracker
         <button id="show-add-form" class="bg-primary text-white rounded-md px-4 py-2 ml-auto"></button>
         <button id="export-all" class="bg-primary text-white rounded-md px-4 py-2 ml-2"></button>
-        <button id="toggle-search" class="bg-primary text-white rounded-md px-4 py-2 ml-2">Search</button>
     </h1>
     <div id="summary" class="p-4 bg-card rounded-lg mb-4">
         <!-- counts will go here -->
     </div>
 
-    <div id="search-container" class="mb-4 hidden flex items-center gap-2">
+    <div id="search-container" class="mb-4 flex items-center gap-2">
         <label for="search-input" class="sr-only">Search Plants</label>
         <div class="relative flex-grow">
             <input type="text" id="search-input" placeholder="Search by name or species" class="w-full p-2 border rounded-md" />
         </div>
-        <button id="close-search" type="button" class="bg-gray-200 rounded-md px-3 py-2"></button>
     </div>
 
 
@@ -152,7 +150,7 @@
         </details>
 
         <div class="flex gap-2 justify-end mt-4 sticky bottom-0 bg-card p-4">
-            <button type="button" id="cancel-edit" class="bg-gray-200 rounded-md px-4 py-2 hidden inline-flex items-center gap-2">Cancel</button>
+            <button type="button" id="cancel-edit" class="bg-gray-200 rounded-md px-4 py-2 inline-flex items-center gap-2">Cancel</button>
             <button type="submit" id="submit-btn" class="bg-primary text-white rounded-md px-4 py-2 inline-flex items-center gap-2">Add Plant</button>
         </div>
     </form>
