@@ -1317,6 +1317,7 @@ button:focus {
   display: flex;
   flex-direction: column;
   gap: var(--spacing);
+  background: transparent;
 }
 
 .summary-row {
