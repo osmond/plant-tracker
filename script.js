@@ -1164,6 +1164,13 @@ function resetForm() {
   }
   const taxInfo = document.getElementById('taxonomy-info');
   if (taxInfo) taxInfo.innerHTML = '';
+  const thumbInput = document.getElementById('thumbnail_url');
+  if (thumbInput) thumbInput.value = '';
+  const previewImg = document.getElementById('name-preview');
+  if (previewImg) {
+    previewImg.src = '';
+    previewImg.classList.add('hidden');
+  }
   const photoInput = document.getElementById('photo');
   if (photoInput) photoInput.value = '';
   const photoUrlInput = document.getElementById('photo_url');
