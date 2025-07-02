@@ -1,5 +1,7 @@
 const ctx = document.getElementById('et0Chart').getContext('2d');
 let et0Chart;
+const urlParams = new URLSearchParams(window.location.search);
+const initialPlantId = urlParams.get('plant_id');
 
 function drawChart(data) {
   const labels = data.map(r => r.date);
@@ -98,6 +100,10 @@ async function loadPlants() {
     opt.textContent = p.name;
     sel.appendChild(opt);
   });
+  if (initialPlantId) {
+    sel.value = initialPlantId;
+    await loadTimeseries();
+  }
 }
 
 document.getElementById('refresh').addEventListener('click', loadTimeseries);
