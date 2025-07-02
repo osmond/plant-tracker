@@ -1736,6 +1736,12 @@ async function loadPlants() {
       el.classList.add('just-updated');
       setTimeout(() => el.classList.remove('just-updated'), 2000);
       history.replaceState(null, '', location.pathname + '#plant-' + focusPlantId);
+
+      const clearHash = () => {
+        history.replaceState(null, '', location.pathname);
+        document.removeEventListener('click', clearHash);
+      };
+      document.addEventListener('click', clearHash, { once: true });
     }
   }
 
