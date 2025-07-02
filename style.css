@@ -990,11 +990,18 @@ button:focus {
   position: relative;
 }
 
+#toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+}
+
 .overflow-menu {
   display: none;
   position: absolute;
   bottom: calc(100% + var(--spacing));
-  right: 0;
+  left: 0;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -1005,8 +1012,28 @@ button:focus {
   gap: var(--spacing);
 }
 
+.overflow-menu::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 1rem;
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--color-border) transparent transparent transparent;
+}
+.overflow-menu::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 1rem;
+  transform: translateY(-1px);
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--color-surface) transparent transparent transparent;
+}
+
 .filter-chip {
-  background: var(--color-surface);
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 0.25rem 0.5rem;
