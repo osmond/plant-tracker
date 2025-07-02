@@ -77,6 +77,8 @@ php -S localhost:8000
 ```
 
    Then visit `http://localhost:8000/index.html` in your browser.
+   To jump directly to a particular plant when the page loads, append
+   `#plant-{id}` to the URL, for example `http://localhost:8000/index.html#plant-5`.
    **Note:** Opening `index.html` directly as a file won't work because the JavaScript needs the PHP API endpoints.
 
 ## Deployment
@@ -165,6 +167,7 @@ In list or text view you can swipe right on a plant card to complete all due tas
 
 You can also export your current plant list as JSON or CSV using the download buttons at the top of the page.
 The new **Analytics** link opens a page with charts of historical ET₀ and water use.
+It links back to the main interface using the same `#plant-{id}` fragment so you return to the plant you were analyzing.
 
 The plant form offers live suggestions for scientific names as you type a common
 plant name. Selecting a scientific name fills the field and loads a thumbnail
