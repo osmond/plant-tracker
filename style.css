@@ -1130,6 +1130,12 @@ button:focus {
     display: inline-flex;
     align-items: center;
   }
+  #sort-toggle {
+    display: none;
+  }
+  #filter-panel #sort-toggle {
+    display: block;
+  }
 }
 
 .overflow-menu.show {
