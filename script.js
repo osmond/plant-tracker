@@ -24,8 +24,6 @@ let plantCache = [];
 
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
-// tasks vs library mode
-let mainMode = localStorage.getItem('mainMode') || 'tasks';
 // track weather info so the summary can include current conditions
 let currentWeather = null;
 let currentWeatherIcon = null;
@@ -459,8 +457,8 @@ function loadFilterPrefs() {
   const sVal = localStorage.getItem('sortPref');
   const dVal = localStorage.getItem('statusFilter');
   if (rf) rf.value = rVal !== null ? rVal : 'all';
-  if (sf) sf.value = sVal !== null ? sVal : (mainMode === 'tasks' ? 'due' : 'name');
-  if (df) df.value = dVal !== null ? dVal : (mainMode === 'tasks' ? 'any' : 'all');
+  if (sf) sf.value = sVal !== null ? sVal : 'due';
+  if (df) df.value = dVal !== null ? dVal : 'any';
 }
 
 function clearFilterPrefs() {
@@ -501,24 +499,14 @@ function applyViewMode() {
   localStorage.setItem('viewMode', viewMode);
 }
 
-function applyMainMode() {
-  document.querySelectorAll('#mode-toggle .mode-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.mode === mainMode);
-  });
-  const df = document.getElementById('status-filter');
-  const sort = document.getElementById('sort-toggle');
-  if (df) df.value = mainMode === 'tasks' ? 'any' : 'all';
-  if (sort) sort.value = mainMode === 'tasks' ? 'due' : (localStorage.getItem('sortPref') || 'name');
-  localStorage.setItem('mainMode', mainMode);
-}
 
 function updateFilterChips() {
   const wrap = document.getElementById('filter-chips');
   if (!wrap) return;
   wrap.innerHTML = '';
   const room = document.getElementById('room-filter')?.value || 'all';
-  const status = document.getElementById('status-filter')?.value || (mainMode === 'tasks' ? 'any' : 'all');
-  const sort = document.getElementById('sort-toggle')?.value || (mainMode === 'tasks' ? 'due' : 'name');
+  const status = document.getElementById('status-filter')?.value || 'any';
+  const sort = document.getElementById('sort-toggle')?.value || 'due';
   const statusLabels = { water: 'Watering', fert: 'Fertilizing', any: 'Needs Care', all: 'All' };
   const sortLabels = { 'name': 'Name \u25B2', 'name-desc': 'Name \u25BC', 'due': 'Due Date', 'added': 'Date Added' };
   function addChip(type, label, icon, extraClass) {
@@ -537,8 +525,8 @@ function updateFilterChips() {
     btn.innerHTML = ICONS.cancel;
     btn.addEventListener('click', () => {
       if (type === 'room') document.getElementById('room-filter').value = 'all';
-      if (type === 'status') document.getElementById('status-filter').value = mainMode === 'tasks' ? 'any' : 'all';
-      if (type === 'sort') document.getElementById('sort-toggle').value = mainMode === 'tasks' ? 'due' : 'name';
+      if (type === 'status') document.getElementById('status-filter').value = 'any';
+      if (type === 'sort') document.getElementById('sort-toggle').value = 'due';
       saveFilterPrefs();
       updateFilterChips();
       loadPlants();
@@ -547,8 +535,8 @@ function updateFilterChips() {
     wrap.appendChild(span);
   }
   if (room !== 'all') addChip('room', room, ICONS.room);
-  const defaultStatus = mainMode === 'tasks' ? 'any' : 'all';
-  const defaultSort = mainMode === 'tasks' ? 'due' : 'name';
+  const defaultStatus = 'any';
+  const defaultSort = 'due';
   if (status !== defaultStatus) {
     const icon = status === 'water' ? ICONS.water : status === 'fert' ? ICONS.fert : ICONS.filter;
     const cls = status === 'water' ? 'status-water-chip' : status === 'fert' ? 'status-fert-chip' : 'status-any-chip';
@@ -1360,11 +1348,6 @@ async function loadPlants() {
     if (statusFilter === 'fert' && !fertDue) return false;
     if (statusFilter === 'any' && !(waterDue || fertDue)) return false;
 
-    if (mainMode === 'tasks') {
-      const soonest = getSoonestDueDate(plant);
-      if (soonest >= startOfDayAfterTomorrow) return false;
-    }
-
     return true;
   });
 
@@ -1427,7 +1410,7 @@ async function loadPlants() {
   summaryEl.appendChild(row2);
   summaryEl.classList.add('show');
 
-  const sortBy = document.getElementById('sort-toggle').value || (mainMode === 'tasks' ? 'due' : 'name');
+  const sortBy = document.getElementById('sort-toggle').value || 'due';
   filtered.sort((a, b) => {
     if (sortBy === 'name-desc') {
       return b.name.localeCompare(a.name);
@@ -1895,7 +1878,6 @@ async function init(){
   const dueFilterEl = document.getElementById('status-filter');
   const filterBtn = document.getElementById('filter-btn');
   const filterPanel = document.getElementById('filter-panel');
-  const modeButtons = document.querySelectorAll('#mode-toggle .mode-btn');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
@@ -1937,7 +1919,6 @@ async function init(){
 
   // apply saved preferences before initial load
   loadFilterPrefs();
-  applyMainMode();
   showFormStep(1);
 
   applyViewMode();
@@ -2232,18 +2213,7 @@ async function init(){
     });
   }
 
-  if (modeButtons.length) {
-    modeButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        mainMode = btn.dataset.mode;
-        applyMainMode();
-        saveFilterPrefs();
-        updateFilterChips();
-        loadPlants();
-      });
-    });
-    applyMainMode();
-  }
+
 
   if (viewButtons.length) {
     viewButtons.forEach(btn => {
