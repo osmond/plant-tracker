@@ -79,6 +79,16 @@ if ($errors) {
 
 // Handle uploaded photo
 if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+    $maxFileSize = 5 * 1024 * 1024; // 5MB
+    if ($_FILES['photo']['size'] > $maxFileSize) {
+        @http_response_code(400);
+        echo json_encode(['error' => 'Photo exceeds 5MB size limit']);
+        if (!getenv('TESTING')) {
+            exit;
+        }
+        return;
+    }
+
     $uploadDir = __DIR__ . '/../uploads/';
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
