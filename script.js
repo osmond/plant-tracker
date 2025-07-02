@@ -357,6 +357,7 @@ function updateWaterAmount() {
   const unitSelect = document.getElementById('pot_diameter_unit');
   const typeSelect = document.getElementById('plant_type');
   const waterAmtInput = document.getElementById('water_amount');
+  const autoDisplay = document.getElementById('auto-water-oz');
   if (!diamInput || !waterAmtInput) return;
   const diam = parseFloat(diamInput.value);
   if (isNaN(diam) || weatherTminC === null || weatherTmaxC === null) return;
@@ -374,7 +375,9 @@ function updateWaterAmount() {
   const area = computeArea(diamCm);
   const waterMl = etc * area * 0.1;
   const oz = waterMl / ML_PER_US_FL_OUNCE;
-  waterAmtInput.value = oz.toFixed(1);
+  const ozStr = oz.toFixed(1);
+  waterAmtInput.value = ozStr;
+  if (autoDisplay) autoDisplay.textContent = ozStr;
   waterAmtInput.dispatchEvent(new Event('input', { bubbles: true }));
   if (editingPlantId) {
     const body = new URLSearchParams({
@@ -1103,18 +1106,26 @@ function populateForm(plant) {
       form.water_amount.value = oz.toFixed(1).replace(/\.0$/, '');
       const oc = document.getElementById('override_water');
       const wg = document.getElementById('water-amount-group');
+      const ad = document.getElementById('auto-water-display');
+      const av = document.getElementById('auto-water-oz');
       if (oc && wg) {
         oc.checked = true;
         wg.classList.remove('hidden');
+        if (ad) ad.classList.add('hidden');
       }
+      if (av) av.textContent = oz.toFixed(1).replace(/\.0$/, '');
     } else {
       form.water_amount.value = '';
       const oc = document.getElementById('override_water');
       const wg = document.getElementById('water-amount-group');
+      const ad = document.getElementById('auto-water-display');
+      const av = document.getElementById('auto-water-oz');
       if (oc && wg) {
         oc.checked = false;
         wg.classList.add('hidden');
+        if (ad) ad.classList.remove('hidden');
       }
+      if (av) av.textContent = '';
     }
   }
   form.fertilizing_frequency.value = plant.fertilizing_frequency;
@@ -1144,10 +1155,14 @@ function resetForm() {
   if (form.water_amount) form.water_amount.value = '';
   const oc = document.getElementById('override_water');
   const wg = document.getElementById('water-amount-group');
+  const ad = document.getElementById('auto-water-display');
+  const av = document.getElementById('auto-water-oz');
   if (oc && wg) {
     oc.checked = false;
     wg.classList.add('hidden');
   }
+  if (ad) ad.classList.remove('hidden');
+  if (av) av.textContent = '';
   const taxInfo = document.getElementById('taxonomy-info');
   if (taxInfo) taxInfo.innerHTML = '';
   const thumbInput = document.getElementById('thumbnail_url');
@@ -1837,6 +1852,7 @@ async function init(){
   const plantTypeSelect = document.getElementById('plant_type');
   const overrideCheck = document.getElementById('override_water');
   const waterGroup = document.getElementById('water-amount-group');
+  const autoWaterDisplay = document.getElementById('auto-water-display');
   const roomInput = document.getElementById('room');
   const nameInput = document.getElementById('name');
   const speciesInput = document.getElementById('species');
@@ -2068,8 +2084,10 @@ async function init(){
   });
   if (overrideCheck && waterGroup) {
     overrideCheck.addEventListener('change', () => {
-      waterGroup.classList.toggle('hidden', !overrideCheck.checked);
-      if (!overrideCheck.checked && waterAmtInput) {
+      const checked = overrideCheck.checked;
+      waterGroup.classList.toggle('hidden', !checked);
+      if (autoWaterDisplay) autoWaterDisplay.classList.toggle('hidden', checked);
+      if (!checked && waterAmtInput) {
         waterAmtInput.value = '';
       }
     });
