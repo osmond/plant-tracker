@@ -148,6 +148,40 @@ class ApiTest extends TestCase
         $this->assertEquals('success', $data['status']);
     }
 
+    public function testAddPlantWithScientificNameAndThumbnail()
+    {
+        $_POST = [
+            'name' => 'Thumbnail Plant',
+            'watering_frequency' => 5,
+            'scientific_name' => 'Ficus lyrata',
+            'thumbnail_url' => 'uploads/thumb.webp'
+        ];
+        ob_start();
+        include __DIR__ . '/../api/add_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertEquals('success', $data['status']);
+    }
+
+    public function testUpdatePlantWithScientificNameAndThumbnail()
+    {
+        $_POST = [
+            'id' => 1,
+            'name' => 'Updated Plant',
+            'watering_frequency' => 7,
+            'scientific_name' => 'Ficus lyrata',
+            'thumbnail_url' => 'uploads/thumb.webp',
+            'water_amount' => 150,
+            'last_watered' => '',
+            'last_fertilized' => ''
+        ];
+        ob_start();
+        include __DIR__ . '/../api/update_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertEquals('success', $data['status']);
+    }
+
     public function testArchivePlantMissingId()
     {
         $_POST = [];
