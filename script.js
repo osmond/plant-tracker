@@ -338,7 +338,10 @@ async function showTaxonomyInfo(name) {
 async function lookupPlants(query) {
   if (!suggestionList) return;
   suggestionList.innerHTML = '';
-  if (!query) return;
+  if (!query) {
+    suggestionList.classList.add('hidden');
+    return;
+  }
   try {
     const res = await fetch(`https://api.inaturalist.org/v1/taxa/autocomplete?q=${encodeURIComponent(query)}`);
     if (!res.ok) return;
@@ -350,6 +353,7 @@ async function lookupPlants(query) {
       li.dataset.img = (taxon.default_photo && (taxon.default_photo.medium_url || taxon.default_photo.square_url)) || '';
       suggestionList.appendChild(li);
     });
+    suggestionList.classList.toggle('hidden', suggestionList.children.length === 0);
   } catch (e) {
     // ignore network errors
   }
@@ -2075,6 +2079,37 @@ async function init(){
     }, 300));
     speciesInput.addEventListener('change', () => {
       showTaxonomyInfo(speciesInput.value.trim());
+    });
+  }
+
+  if (nameInput && suggestionList) {
+    let lastLookup = '';
+    nameInput.addEventListener('input', () => {
+      const q = nameInput.value.trim();
+      if (q === lastLookup) return;
+      lastLookup = q;
+      debouncedLookupPlants(q);
+    });
+    nameInput.addEventListener('focus', () => {
+      if (suggestionList.children.length) suggestionList.classList.remove('hidden');
+    });
+    nameInput.addEventListener('blur', () => {
+      setTimeout(() => suggestionList.classList.add('hidden'), 100);
+    });
+    suggestionList.addEventListener('click', e => {
+      if (e.target.tagName === 'LI') {
+        nameInput.value = e.target.textContent;
+        if (speciesInput) {
+          speciesInput.value = e.target.dataset.sci || '';
+          speciesInput.dispatchEvent(new Event('change'));
+        }
+        if (imageUrlInput) imageUrlInput.value = e.target.dataset.img || '';
+        if (previewImg && e.target.dataset.img) {
+          previewImg.src = e.target.dataset.img;
+          previewImg.classList.remove('hidden');
+        }
+        suggestionList.classList.add('hidden');
+      }
     });
   }
   const potDiamUnit = document.getElementById('pot_diameter_unit');
