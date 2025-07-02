@@ -239,6 +239,21 @@ async function showTaxonomyInfo(name) {
       previewImg.src = cached.img;
       previewImg.classList.remove('hidden');
     }
+    // re-attach handlers to cached gallery images
+    const gallery = infoEl.querySelector('.specimen-gallery');
+    if (gallery) {
+      gallery.querySelectorAll('img').forEach(imgEl => {
+        imgEl.addEventListener('click', () => {
+          gallery.querySelectorAll('img').forEach(i => i.classList.remove('selected'));
+          imgEl.classList.add('selected');
+          if (imageUrlInput) imageUrlInput.value = imgEl.src;
+          if (previewImg) {
+            previewImg.src = imgEl.src;
+            previewImg.classList.remove('hidden');
+          }
+        });
+      });
+    }
     return;
   }
 
@@ -255,12 +270,27 @@ async function showTaxonomyInfo(name) {
     if (taxon.name) {
       parts.push(`<div><strong>Scientific Name:</strong> ${taxon.name}</div>`);
     }
-    let img = '';
-    if (taxon.default_photo && taxon.default_photo.square_url) {
-      img = taxon.default_photo.square_url;
-      parts.push(`<div class="specimen-gallery"><img src="${img}" alt="${taxon.name || name}" loading="lazy"></div>`);
+    let photos = [];
+    try {
+      const detailRes = await fetch(`https://api.inaturalist.org/v1/taxa/${taxon.id}`);
+      if (detailRes.ok) {
+        const detailJson = await detailRes.json();
+        const detail = (detailJson.results || [])[0] || {};
+        photos = (detail.taxon_photos || []).map(tp => tp.photo && tp.photo.square_url).filter(Boolean);
+      }
+    } catch (e) {}
+    if (!photos.length && taxon.default_photo && taxon.default_photo.square_url) {
+      photos = [taxon.default_photo.square_url];
+    }
+
+    let img = photos[0] || '';
+    if (photos.length) {
+      const imgsHtml = photos.slice(0, 10).map((url, idx) =>
+        `<img src="${url}" alt="${taxon.name || name}" loading="lazy"${idx === 0 ? ' class="selected"' : ''}>`
+      ).join('');
+      parts.push(`<div class="specimen-gallery">${imgsHtml}</div>`);
       if (imageUrlInput) imageUrlInput.value = img;
-      if (previewImg) {
+      if (previewImg && img) {
         previewImg.src = img;
         previewImg.classList.remove('hidden');
       }
@@ -272,6 +302,21 @@ async function showTaxonomyInfo(name) {
     if (sciNameInput) sciNameInput.value = sci;
     const html = parts.join('');
     infoEl.innerHTML = html;
+    // attach handlers to newly created gallery
+    const galleryEl = infoEl.querySelector('.specimen-gallery');
+    if (galleryEl) {
+      galleryEl.querySelectorAll('img').forEach(imgEl => {
+        imgEl.addEventListener('click', () => {
+          galleryEl.querySelectorAll('img').forEach(i => i.classList.remove('selected'));
+          imgEl.classList.add('selected');
+          if (imageUrlInput) imageUrlInput.value = imgEl.src;
+          if (previewImg) {
+            previewImg.src = imgEl.src;
+            previewImg.classList.remove('hidden');
+          }
+        });
+      });
+    }
     plantInfoCache.set(name, { html, img, sci });
   } catch (e) {
     // ignore network errors
