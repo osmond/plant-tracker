@@ -57,6 +57,21 @@ if ($photo_url === '' && (!isset($_FILES['photo']) || $_FILES['photo']['error'] 
     }
 }
 
+// If no thumbnail URL is provided, retain the existing one
+if ($thumbnail_url === '') {
+    $stmt = $conn->prepare("SELECT thumbnail_url FROM plants WHERE id = ?");
+    if ($stmt) {
+        $stmt->bind_param('i', $id);
+        if ($stmt->execute()) {
+            $stmt->bind_result($existingThumb);
+            if ($stmt->fetch()) {
+                $thumbnail_url = $existingThumb;
+            }
+        }
+        $stmt->close();
+    }
+}
+
 // further validation
 if ($species !== '' && !preg_match("/^[\p{L}0-9\s.'-]{1,100}$/u", $species)) {
     $errors[] = 'Invalid species';
