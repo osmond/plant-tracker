@@ -60,14 +60,21 @@ function fillTable(data) {
   const tbl = document.getElementById('dataTable');
   tbl.innerHTML = '';
   if (data.length === 0) return;
-  const head = document.createElement('tr');
-  head.innerHTML = '<th>Date</th><th>ET₀ (mm)</th><th>Water (mL)</th>';
-  tbl.appendChild(head);
+  const thead = document.createElement('thead');
+  thead.className = 'bg-gray-50';
+  thead.innerHTML =
+    '<tr><th class="px-3 py-2 text-left">Date</th><th class="px-3 py-2 text-left">ET₀ (mm)</th><th class="px-3 py-2 text-left">Water (mL)</th></tr>';
+  tbl.appendChild(thead);
+  const tbody = document.createElement('tbody');
   data.forEach(r => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${r.date}</td><td>${r.et0_mm}</td><td>${r.water_ml}</td>`;
-    tbl.appendChild(tr);
+    tr.innerHTML =
+      `<td class="px-3 py-2 border-b border-gray-200">${r.date}</td>` +
+      `<td class="px-3 py-2 border-b border-gray-200">${r.et0_mm}</td>` +
+      `<td class="px-3 py-2 border-b border-gray-200">${r.water_ml}</td>`;
+    tbody.appendChild(tr);
   });
+  tbl.appendChild(tbody);
 }
 
 async function loadTimeseries() {
