@@ -24,9 +24,8 @@ let plantCache = [];
 
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
-// tasks vs library mode
-let mainMode = localStorage.getItem('mainMode') || 'tasks';
-let mainModeChecked = false;
+// list shows all plants by default
+let mainMode = 'library';
 let quickFilter = null;
 // track weather info so the summary can include current conditions
 let currentWeather = null;
@@ -461,8 +460,8 @@ function loadFilterPrefs() {
   const sVal = localStorage.getItem('sortPref');
   const dVal = localStorage.getItem('statusFilter');
   if (rf) rf.value = rVal !== null ? rVal : 'all';
-  if (sf) sf.value = sVal !== null ? sVal : (mainMode === 'tasks' ? 'due' : 'name');
-  if (df) df.value = dVal !== null ? dVal : (mainMode === 'tasks' ? 'any' : 'all');
+  if (sf) sf.value = sVal !== null ? sVal : 'due';
+  if (df) df.value = dVal !== null ? dVal : 'all';
   quickFilter = null;
 }
 
@@ -505,24 +504,15 @@ function applyViewMode() {
   localStorage.setItem('viewMode', viewMode);
 }
 
-function applyMainMode() {
-  document.querySelectorAll('#mode-toggle .mode-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.mode === mainMode);
-  });
-  const df = document.getElementById('status-filter');
-  const sort = document.getElementById('sort-toggle');
-  if (df) df.value = mainMode === 'tasks' ? 'any' : 'all';
-  if (sort) sort.value = mainMode === 'tasks' ? 'due' : (localStorage.getItem('sortPref') || 'name');
-  localStorage.setItem('mainMode', mainMode);
-}
+
 
 function updateFilterChips() {
   const wrap = document.getElementById('filter-chips');
   if (!wrap) return;
   wrap.innerHTML = '';
   const room = document.getElementById('room-filter')?.value || 'all';
-  const status = document.getElementById('status-filter')?.value || (mainMode === 'tasks' ? 'any' : 'all');
-  const sort = document.getElementById('sort-toggle')?.value || (mainMode === 'tasks' ? 'due' : 'name');
+  const status = document.getElementById('status-filter')?.value || 'all';
+  const sort = document.getElementById('sort-toggle')?.value || 'due';
   const statusLabels = { water: 'Watering', fert: 'Fertilizing', any: 'Needs Care', all: 'All' };
   const sortLabels = { 'name': 'Name \u25B2', 'name-desc': 'Name \u25BC', 'due': 'Due Date', 'added': 'Date Added' };
   function addChip(type, label) {
@@ -534,8 +524,8 @@ function updateFilterChips() {
     btn.innerHTML = ICONS.cancel;
     btn.addEventListener('click', () => {
       if (type === 'room') document.getElementById('room-filter').value = 'all';
-      if (type === 'status') document.getElementById('status-filter').value = mainMode === 'tasks' ? 'any' : 'all';
-      if (type === 'sort') document.getElementById('sort-toggle').value = mainMode === 'tasks' ? 'due' : 'name';
+      if (type === 'status') document.getElementById('status-filter').value = 'all';
+      if (type === 'sort') document.getElementById('sort-toggle').value = 'due';
       if (type === 'quick') quickFilter = null;
       saveFilterPrefs();
       updateFilterChips();
@@ -545,8 +535,8 @@ function updateFilterChips() {
     wrap.appendChild(span);
   }
   if (room !== 'all') addChip('room', room);
-  const defaultStatus = mainMode === 'tasks' ? 'any' : 'all';
-  const defaultSort = mainMode === 'tasks' ? 'due' : 'name';
+  const defaultStatus = 'all';
+  const defaultSort = 'due';
   if (status !== defaultStatus) addChip('status', `Status: ${statusLabels[status] || status}`);
   if (sort !== defaultSort) addChip('sort', `Sort: ${sortLabels[sort] || sort}`);
   if (quickFilter === 'overdue') addChip('quick', 'Overdue');
@@ -1268,16 +1258,6 @@ async function loadPlants() {
   const res = await fetch(`api/get_plants.php${showArchive ? '?archived=1' : ''}`);
   const plants = await res.json();
   plantCache = plants;
-  if (!mainModeChecked) {
-    const todayCheck = new Date();
-    todayCheck.setHours(0, 0, 0, 0);
-    const hasDue = plants.some(
-      p => needsWatering(p, todayCheck) || needsFertilizing(p, todayCheck)
-    );
-    mainMode = hasDue ? 'tasks' : 'library';
-    applyMainMode();
-    mainModeChecked = true;
-  }
   const list = document.getElementById('plant-grid');
   if (list) {
     list.classList.toggle('list-view', viewMode === 'list');
@@ -1340,12 +1320,6 @@ async function loadPlants() {
       const soonest = getSoonestDueDate(plant);
       if (soonest >= startOfToday) return false;
     }
-
-    if (mainMode === 'tasks') {
-      const soonest = getSoonestDueDate(plant);
-      if (soonest >= startOfDayAfterTomorrow) return false;
-    }
-
     return true;
   });
 
@@ -1408,7 +1382,7 @@ async function loadPlants() {
   summaryEl.appendChild(row2);
   summaryEl.classList.add('show');
 
-  const sortBy = document.getElementById('sort-toggle').value || (mainMode === 'tasks' ? 'due' : 'name');
+  const sortBy = document.getElementById('sort-toggle').value || 'due';
   filtered.sort((a, b) => {
     if (sortBy === 'name-desc') {
       return b.name.localeCompare(a.name);
@@ -1861,7 +1835,6 @@ async function init(){
   const filterBtnMobile = document.getElementById('filter-btn-mobile');
   const filterPanel = document.getElementById('filter-panel');
   const quickFilterWrap = document.getElementById('quick-filters');
-  const modeButtons = document.querySelectorAll('.mode-toggle .mode-btn');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
@@ -1903,7 +1876,6 @@ async function init(){
 
   // apply saved preferences before initial load
   loadFilterPrefs();
-  applyMainMode();
   showFormStep(1);
 
   applyViewMode();
@@ -1954,8 +1926,6 @@ async function init(){
           quickFilter = null;
           document.getElementById('status-filter').value = cfg.key;
         }
-        mainMode = 'tasks';
-        applyMainMode();
         saveFilterPrefs();
         updateFilterChips();
         loadPlants();
@@ -2204,18 +2174,7 @@ async function init(){
     });
   }
 
-  if (modeButtons.length) {
-    modeButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        mainMode = btn.dataset.mode;
-        applyMainMode();
-        saveFilterPrefs();
-        updateFilterChips();
-        loadPlants();
-      });
-    });
-    applyMainMode();
-  }
+
 
   if (viewButtons.length) {
     viewButtons.forEach(btn => {
