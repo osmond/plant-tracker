@@ -356,7 +356,14 @@ button:focus {
 }
 
 #view-toggle {
+  margin-left: 0;
+}
+
+#display-controls {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
 }
 
 @media (max-width: 640px) {
