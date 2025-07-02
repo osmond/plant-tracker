@@ -3,6 +3,27 @@ let et0Chart;
 const urlParams = new URLSearchParams(window.location.search);
 const initialPlantId = urlParams.get('plant_id');
 
+function setDefaultDatesToCurrentWeek() {
+  const today = new Date();
+  const day = today.getDay(); // 0 = Sunday
+  const start = new Date(today);
+  start.setDate(today.getDate() - ((day + 6) % 7));
+  start.setHours(0,0,0,0);
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  const toISO = d => d.toISOString().split('T')[0];
+  const startInput = document.getElementById('startDate');
+  const endInput = document.getElementById('endDate');
+  if (startInput && !startInput.value) startInput.value = toISO(start);
+  if (endInput && !endInput.value) endInput.value = toISO(end);
+}
+
+const backLink = document.getElementById('backLink');
+if (backLink && initialPlantId) {
+  backLink.href = `index.html?plant_id=${initialPlantId}#plant-${initialPlantId}`;
+}
+setDefaultDatesToCurrentWeek();
+
 function drawChart(data) {
   const labels = data.map(r => r.date);
   const et0 = data.map(r => parseFloat(r.et0_mm));
