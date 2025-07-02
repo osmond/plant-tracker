@@ -1858,9 +1858,10 @@ async function init(){
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('status-filter');
   const filterBtn = document.getElementById('filter-btn');
+  const filterBtnMobile = document.getElementById('filter-btn-mobile');
   const filterPanel = document.getElementById('filter-panel');
   const quickFilterWrap = document.getElementById('quick-filters');
-  const modeButtons = document.querySelectorAll('#mode-toggle .mode-btn');
+  const modeButtons = document.querySelectorAll('.mode-toggle .mode-btn');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
@@ -1925,6 +1926,12 @@ async function init(){
   if (filterBtn) {
     filterBtn.innerHTML = ICONS.filter + '<span class="visually-hidden">Filters</span>';
     filterBtn.addEventListener('click', () => {
+      if (filterPanel) filterPanel.classList.toggle('show');
+    });
+  }
+  if (filterBtnMobile) {
+    filterBtnMobile.innerHTML = ICONS.filter + '<span class="visually-hidden">Filters</span>';
+    filterBtnMobile.addEventListener('click', () => {
       if (filterPanel) filterPanel.classList.toggle('show');
     });
   }
