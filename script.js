@@ -391,6 +391,28 @@ async function showTaxonomyInfo(name) {
   }
 }
 
+async function lookupPlants(query) {
+  if (!suggestionList) return;
+  suggestionList.innerHTML = '';
+  if (!query) return;
+  try {
+    const res = await fetch(`https://openfarm.cc/api/v1/crops/?filter=${encodeURIComponent(query)}`);
+    if (!res.ok) return;
+    const json = await res.json();
+    (json.data || []).forEach(crop => {
+      const li = document.createElement('li');
+      li.textContent = crop.attributes.name;
+      li.dataset.sci = crop.attributes.binomial_name || '';
+      li.dataset.img = crop.attributes.main_image_path || '';
+      suggestionList.appendChild(li);
+    });
+  } catch (e) {
+    // ignore network errors
+  }
+}
+
+const debouncedLookupPlants = debounce(lookupPlants, 300);
+
 function updateWaterAmount() {
   const diamInput = document.getElementById('pot_diameter');
   const unitSelect = document.getElementById('pot_diameter_unit');
@@ -1787,7 +1809,10 @@ async function init(){
   const speciesInput = document.getElementById('species');
   const potHelp = document.getElementById('pot_diameter_help');
   const speciesList = document.getElementById('species-list');
-  const commonList = document.getElementById('common-list');
+  const suggestionList = document.getElementById('name-suggestions');
+  const sciNameInput = document.getElementById('sci_name');
+  const imageUrlInput = document.getElementById('image_url');
+  const previewImg = document.getElementById('name-preview');
 
   // populate datalists from saved history
   const savedRooms = loadHistoryValues('rooms');
@@ -1800,14 +1825,7 @@ async function init(){
     });
   }
 
-  const savedNames = loadHistoryValues('plantNames');
-  if (commonList && savedNames.length) {
-    savedNames.forEach(n => {
-      const opt = document.createElement('option');
-      opt.value = n;
-      commonList.appendChild(opt);
-    });
-  }
+
 
 
   // apply saved preferences before initial load
@@ -1988,34 +2006,26 @@ async function init(){
       }
     });
   }
-  if (nameInput && commonList) {
-    let lastQueryName = '';
-    nameInput.addEventListener('input', debounce(async () => {
-      const query = nameInput.value.trim();
-      if (query === lastQueryName) return;
-      lastQueryName = query;
-      if (!query) {
-        commonList.innerHTML = '';
-        if (speciesList) speciesList.innerHTML = '';
-        return;
-      }
-      const [commonNames, scientificNames] = await Promise.all([
-        fetchCommonNameSuggestions(query),
-        fetchScientificNames(query)
-      ]);
-      commonList.innerHTML = commonNames
-        .map(n => `<option value="${n}"></option>`)
-        .join('');
-      if (speciesList) {
-        speciesList.innerHTML = scientificNames
-          .map(n => `<option value="${n}"></option>`)
-          .join('');
-        if (scientificNames.length && speciesInput && !speciesInput.value) {
-          speciesInput.value = scientificNames[0];
-          showTaxonomyInfo(scientificNames[0]);
+  if (nameInput && suggestionList) {
+    nameInput.addEventListener('input', () => {
+      debouncedLookupPlants(nameInput.value.trim());
+    });
+    suggestionList.addEventListener('click', e => {
+      const li = e.target.closest('li');
+      if (!li) return;
+      nameInput.value = li.textContent;
+      if (sciNameInput) sciNameInput.value = li.dataset.sci || '';
+      if (imageUrlInput) imageUrlInput.value = li.dataset.img || '';
+      suggestionList.innerHTML = '';
+      if (previewImg) {
+        if (li.dataset.img) {
+          previewImg.src = li.dataset.img;
+          previewImg.classList.remove('hidden');
+        } else {
+          previewImg.classList.add('hidden');
         }
       }
-    }, 300));
+    });
   }
   if (speciesInput && speciesList) {
     let lastQuery = '';
@@ -2065,11 +2075,6 @@ async function init(){
         const roomVal = form.room.value.trim();
         saveHistoryValue('plantNames', nameVal);
         saveHistoryValue('rooms', roomVal);
-        if (commonList && nameVal) {
-          const opt = document.createElement('option');
-          opt.value = nameVal;
-          commonList.appendChild(opt);
-        }
         const roomList = document.getElementById('room-options');
         if (roomList && roomVal) {
           const opt = document.createElement('option');
