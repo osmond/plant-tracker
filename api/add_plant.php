@@ -51,6 +51,8 @@ $water_amount = isset($_POST['water_amount']) ? floatval($_POST['water_amount'])
 $last_watered = $_POST['last_watered'] ?? null;
 $last_fertilized = $_POST['last_fertilized'] ?? null;
 $photo_url = trim($_POST['photo_url'] ?? '');
+$scientific_name = trim($_POST['scientific_name'] ?? '');
+$thumbnail_url  = trim($_POST['thumbnail_url'] ?? '');
 
 // further validation
 $errors = [];
@@ -110,8 +112,10 @@ $stmt = $conn->prepare(
         last_watered,
         last_fertilized,
         photo_url,
-        water_amount
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        water_amount,
+        scientific_name,
+        thumbnail_url
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 );
 if (!$stmt) {
     @http_response_code(500);
@@ -126,7 +130,7 @@ if (!$stmt) {
     return;
 }
 $stmt->bind_param(
-    "ssssiisssd",
+    "ssssiisssdss",
     $name,
     $species,
     $plant_type,
@@ -136,7 +140,9 @@ $stmt->bind_param(
     $last_watered,
     $last_fertilized,
     $photo_url,
-    $water_amount
+    $water_amount,
+    $scientific_name,
+    $thumbnail_url
 );
 
 if (!$stmt->execute()) {
