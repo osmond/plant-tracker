@@ -63,6 +63,9 @@ calendarStartDate.setHours(0, 0, 0, 0);
 const iNatCache = new Map();
 const plantInfoCache = new Map();
 
+// DOM elements used across functions
+let suggestionList = null;
+
 
 function debounce(fn, delay = 300) {
   let timer;
@@ -1692,7 +1695,7 @@ async function init(){
   const speciesInput = document.getElementById('species');
   const potHelp = document.getElementById('pot_diameter_help');
   const speciesList = document.getElementById('species-list');
-  const suggestionList = document.getElementById('name-suggestions');
+  suggestionList = document.getElementById('name-suggestions');
   const sciNameInput = document.getElementById('scientific_name');
   const imageUrlInput = document.getElementById('thumbnail_url');
   const previewImg = document.getElementById('name-preview');
