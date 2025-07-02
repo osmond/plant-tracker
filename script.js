@@ -26,6 +26,7 @@ let plantCache = [];
 let viewMode = localStorage.getItem('viewMode') || 'grid';
 // tasks vs library mode
 let mainMode = localStorage.getItem('mainMode') || 'tasks';
+let mainModeChecked = false;
 // track weather info so the summary can include current conditions
 let currentWeather = null;
 let currentWeatherIcon = null;
@@ -1261,6 +1262,16 @@ async function loadPlants() {
   const res = await fetch(`api/get_plants.php${showArchive ? '?archived=1' : ''}`);
   const plants = await res.json();
   plantCache = plants;
+  if (!mainModeChecked) {
+    const todayCheck = new Date();
+    todayCheck.setHours(0, 0, 0, 0);
+    const hasDue = plants.some(
+      p => needsWatering(p, todayCheck) || needsFertilizing(p, todayCheck)
+    );
+    mainMode = hasDue ? 'tasks' : 'library';
+    applyMainMode();
+    mainModeChecked = true;
+  }
   const list = document.getElementById('plant-grid');
   if (list) {
     list.classList.toggle('list-view', viewMode === 'list');
