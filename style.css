@@ -1138,9 +1138,6 @@ button:focus {
   justify-content: center;
 }
 
-.toolbar.search-collapsed .toolbar__search {
-  display: none;
-}
 
 #search-input {
   border: 1px solid var(--color-border-light);

@@ -216,6 +216,9 @@ dropdowns for narrowing the list. You can filter by **room**, show plants that
 need specific **care** (watering or fertilizing), and change the **sort** order.
 Selections apply instantly and the panel hides after you choose an option.
 
+The search box in the toolbar now stays visible while you scroll so you can
+quickly look up plants at any time.
+
 ## Service Worker
 A small service worker caches the key pages and scripts so the app still opens when you're offline. During development you may need to disable the cache or bump the version in `service-worker.js` to pick up changes.
 
