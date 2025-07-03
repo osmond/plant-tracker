@@ -125,6 +125,15 @@ then run:
 npm test
 ```
 
+## Building CSS
+The project uses Tailwind CSS for styling. If you modify `tailwind.config.js` or
+update HTML templates, regenerate the stylesheet with:
+
+```bash
+npm run build:css
+```
+This command outputs `css/tailwind.css`.
+
 ## Calculators
 Two small utilities help estimate watering needs:
 
