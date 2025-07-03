@@ -2000,6 +2000,9 @@ async function init(){
     filterBtn.addEventListener('click', () => {
       if (filterPanel) filterPanel.classList.toggle('show');
     });
+
+    updateFilterChips();
+
   }
 
   if (filterToggle && filterPanel) {
