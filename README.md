@@ -216,6 +216,13 @@ dropdowns for narrowing the list. You can filter by **room**, show plants that
 need specific **care** (watering or fertilizing), and change the **sort** order.
 Selections apply instantly and the panel hides after you choose an option.
 
+Next to the search box is a **Needs Care** button that acts as a quick filter.
+The button displays a badge with the number of plants that currently have tasks
+due. Clicking it hides all other plants and shows only those that require
+watering or fertilizing. While active, the button switches to a ghost-style
+**Show All** appearance so you can easily return to the full list with another
+click.
+
 The search box in the toolbar now stays visible while you scroll so you can
 quickly look up plants at any time.
 
