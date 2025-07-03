@@ -556,17 +556,67 @@ function applyViewMode() {
 
 function updateFilterChips() {
   const filterToggle = document.getElementById('filter-toggle');
-  const room = document.getElementById('room-filter')?.value || 'all';
-  const status = document.getElementById('status-filter')?.value || 'any';
-  const sort = document.getElementById('sort-toggle')?.value || 'due';
+  const chipsEl = document.getElementById('filter-chips');
+  const summaryEl = document.getElementById('filter-summary');
+
+  const roomEl = document.getElementById('room-filter');
+  const statusEl = document.getElementById('status-filter');
+  const sortEl = document.getElementById('sort-toggle');
+
   const defaultStatus = 'any';
   const defaultSort = 'due';
 
-  let activeCount = 0;
-  if (room !== 'all') activeCount++;
-  if (status !== defaultStatus) activeCount++;
-  if (sort !== defaultSort) activeCount++;
+  const chips = [];
+  if (roomEl && roomEl.value !== 'all') {
+    chips.push({
+      text: roomEl.options[roomEl.selectedIndex].textContent,
+      remove() { roomEl.value = 'all'; }
+    });
+  }
+  if (statusEl && statusEl.value !== defaultStatus) {
+    chips.push({
+      text: statusEl.options[statusEl.selectedIndex].textContent,
+      remove() { statusEl.value = defaultStatus; }
+    });
+  }
+  if (sortEl && sortEl.value !== defaultSort) {
+    chips.push({
+      text: sortEl.options[sortEl.selectedIndex].textContent,
+      remove() { sortEl.value = defaultSort; }
+    });
+  }
+  document.querySelectorAll('#type-filters input:checked').forEach(cb => {
+    const label = cb.closest('label');
+    chips.push({
+      text: label ? label.textContent.trim() : cb.value,
+      remove() { cb.checked = false; }
+    });
+  });
 
+  if (chipsEl) {
+    chipsEl.innerHTML = '';
+    chips.forEach(c => {
+      const chip = document.createElement('span');
+      chip.className = 'filter-chip';
+      chip.textContent = c.text;
+      const btn = document.createElement('button');
+      btn.innerHTML = ICONS.cancel;
+      btn.addEventListener('click', () => {
+        c.remove();
+        saveFilterPrefs();
+        loadPlants();
+        updateFilterChips();
+      });
+      chip.appendChild(btn);
+      chipsEl.appendChild(chip);
+    });
+  }
+
+  const activeCount = chips.length;
+
+  if (summaryEl) {
+    summaryEl.textContent = activeCount ? `${activeCount} active` : 'No filters';
+  }
   if (filterToggle) {
     filterToggle.innerHTML = ICONS.filter + ' Filters';
     filterToggle.setAttribute('data-count', activeCount);
@@ -2324,4 +2374,4 @@ if (document.readyState === 'loading') {
   init();
 }
 
-export { loadCalendar, focusPlantId, loadPlants };
+export { loadCalendar, focusPlantId, loadPlants, updateFilterChips };
