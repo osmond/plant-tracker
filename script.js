@@ -2055,11 +2055,13 @@ async function init(){
     });
   }
   if (statusChip && dueFilterEl) {
+
     if (dueFilterEl.value === 'any') {
       statusChip.classList.add('active');
     } else {
       statusChip.textContent = 'Show All';
     }
+
     statusChip.addEventListener('click', () => {
       const active = statusChip.classList.toggle('active');
       dueFilterEl.value = active ? 'any' : 'all';
