@@ -1956,8 +1956,6 @@ async function init(){
 
     const toolbar = document.querySelector('.toolbar');
     const searchInput = document.getElementById('search-input');
-
-  const searchInput = document.getElementById('search-input');
   const clearSearchBtn = document.getElementById('clear-search');
 
   function updateClearSearch() {
@@ -2096,24 +2094,6 @@ async function init(){
   });
 
 
-    if (searchInput) {
-      searchInput.addEventListener('input', loadPlants);
-    }
-    document.getElementById('cancel-edit').onclick = resetForm;
-
-    if (toolbar && searchInput) {
-      let lastScroll = window.scrollY;
-      window.addEventListener('scroll', () => {
-        const current = window.scrollY;
-        if (current > lastScroll && current > 50) {
-          toolbar.classList.add('search-collapsed');
-        } else if (current < lastScroll) {
-          toolbar.classList.remove('search-collapsed');
-        }
-        lastScroll = current;
-      });
-    }
-
   if (searchInput) {
     searchInput.addEventListener('input', () => {
       updateClearSearch();
@@ -2121,6 +2101,20 @@ async function init(){
     });
     updateClearSearch();
   }
+  if (toolbar && searchInput) {
+    let lastScroll = window.scrollY;
+    window.addEventListener('scroll', () => {
+      const current = window.scrollY;
+      if (current > lastScroll && current > 50) {
+        toolbar.classList.add('search-collapsed');
+      } else if (current < lastScroll) {
+        toolbar.classList.remove('search-collapsed');
+      }
+      lastScroll = current;
+    });
+  }
+  document.getElementById('cancel-edit').onclick = resetForm;
+
   if (clearSearchBtn) {
     clearSearchBtn.innerHTML = ICONS.cancel;
     clearSearchBtn.addEventListener('click', () => {
@@ -2132,7 +2126,6 @@ async function init(){
       loadPlants();
     });
   }
-  document.getElementById('cancel-edit').onclick=resetForm;
 
   if (photoDrop && photoInput) {
     function previewFile(file) {
