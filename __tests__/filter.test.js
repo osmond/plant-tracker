@@ -9,6 +9,7 @@ function setupDOM() {
     <div id="summary"></div>
     <select id="sort-toggle"></select>
     <div id="location-filters"><label><input type="checkbox" value="outside" /></label><label><input type="checkbox" value="inside" checked /></label></div>
+    <div id="type-filters"><label><input type="checkbox" value="succulent" />Succulent</label><label><input type="checkbox" value="herb" />Herb</label></div>
   `;
 }
 
@@ -71,6 +72,27 @@ test('loadPlants filters by location checkbox', async () => {
   outsideCheck.checked = true;
   const insideCheck = document.querySelector('#location-filters input[value="inside"]');
   insideCheck.checked = false;
+  await mod.loadPlants();
+
+  const cards = document.querySelectorAll('.plant-card-wrapper');
+  expect(cards.length).toBe(1);
+  expect(cards[0].id).toBe('plant-1');
+});
+
+test('loadPlants filters by plant type', async () => {
+  setupDOM();
+  const plants = [
+    { id: 1, name: 'A', species: 'sp', room: 'Kitchen', plant_type: 'succulent', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
+    { id: 2, name: 'B', species: 'sp', room: 'Kitchen', plant_type: 'herb', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
+  ];
+  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  let mod;
+  await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
+
+  const succulentCheck = document.querySelector('#type-filters input[value="succulent"]');
+  succulentCheck.checked = true;
+  const herbCheck = document.querySelector('#type-filters input[value="herb"]');
+  herbCheck.checked = false;
   await mod.loadPlants();
 
   const cards = document.querySelectorAll('.plant-card-wrapper');
