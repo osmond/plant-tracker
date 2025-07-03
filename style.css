@@ -617,6 +617,15 @@ button:focus {
   animation: fade-up 2s forwards;
 }
 
+.needs-care-alert {
+  background: var(--color-error);
+  color: var(--color-bg);
+  border-radius: 9999px;
+  padding: 2px 6px;
+  font-size: var(--font-size-sm);
+  margin-left: 0.5rem;
+}
+
 @keyframes fade-up {
   0% { opacity: 1; transform: translateY(0); }
   80% { opacity: 1; }
