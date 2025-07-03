@@ -27,7 +27,8 @@
   --color-highlight: #faf089;
   --color-warning: #d69e2e;
   --color-success: #38a169;
-  --color-chip-bg: #ecfdf5;
+  /* chip background with 30% opacity of primary color for better contrast */
+  --color-chip-bg: rgba(76, 175, 80, 0.3);
   /* action button colors */
   --color-sprout-bg: #E8F5E9;  /* Green 50 – soft background */
   --color-plant: #388E3C;      /* Green 600 – vibrant leaf */
@@ -1203,17 +1204,16 @@ button:focus {
   border-color: var(--color-primary);
 }
 
-/* Distinct styling for the Needs Care toggle */
+/* Distinct styling for the Needs Care toggle as a filled button */
 #status-chip {
-  border-color: var(--color-plant);
-  color: var(--color-plant);
-  background: transparent;
+  background: var(--color-plant);
+  color: var(--color-surface);
+  border: 1px solid var(--color-plant);
 }
 
-#status-chip.active {
-  color: var(--color-surface);
-  background: var(--color-plant);
-  border-color: var(--color-plant);
+#status-chip:hover,
+#status-chip:focus {
+  filter: brightness(95%);
 }
 
 
