@@ -1955,6 +1955,7 @@ async function init(){
   const nextBtn = document.getElementById('next-week');
   const toolbar = document.querySelector('.toolbar');
   const searchInputEl = document.getElementById('search-input');
+  const clearSearchBtn = document.getElementById('clear-search');
 
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
@@ -2085,7 +2086,26 @@ async function init(){
     }
   });
 
-  if (searchInputEl) searchInputEl.addEventListener('input', loadPlants);
+  if (searchInputEl) {
+    const toggleClear = () => {
+      if (clearSearchBtn) {
+        clearSearchBtn.classList.toggle('hidden', searchInputEl.value === '');
+      }
+    };
+    searchInputEl.addEventListener('input', () => {
+      toggleClear();
+      loadPlants();
+    });
+    if (clearSearchBtn) {
+      clearSearchBtn.innerHTML = ICONS.cancel;
+      clearSearchBtn.addEventListener('click', () => {
+        searchInputEl.value = '';
+        toggleClear();
+        loadPlants();
+      });
+      toggleClear();
+    }
+  }
   if (toolbar) {
     let lastScrollY = window.scrollY;
     window.addEventListener('scroll', () => {
