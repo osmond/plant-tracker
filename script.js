@@ -501,8 +501,11 @@ function loadFilterPrefs() {
   document.querySelectorAll('#care-filters input').forEach(cb => {
     cb.checked = care.includes(cb.value);
   });
+
+
   const recentEl = document.getElementById('recently-added');
   if (recentEl) recentEl.checked = false;
+
 }
 
 function clearFilterPrefs() {
@@ -511,6 +514,7 @@ function clearFilterPrefs() {
   localStorage.removeItem('statusFilter');
   localStorage.removeItem('typeFilters');
   localStorage.removeItem('careFilters');
+
 }
 
 function migrateFilterPrefs() {
@@ -519,6 +523,7 @@ function migrateFilterPrefs() {
     clearFilterPrefs();
     localStorage.setItem('filterPrefVersion', String(FILTER_PREF_VERSION));
   }
+
 }
 
 function saveHistoryValue(key, value) {
@@ -1307,11 +1312,9 @@ async function loadPlants() {
   const statusFilter = document.getElementById('status-filter')
     ? document.getElementById('status-filter').value
     : 'all';
-  const locFilters = Array.from(document.querySelectorAll('#location-filters input:checked')).map(cb => cb.value);
   const typeFilters = Array.from(document.querySelectorAll('#type-filters input:checked')).map(cb => cb.value);
   const careFilters = Array.from(document.querySelectorAll('#care-filters input:checked')).map(cb => cb.value);
-  const potFilters = Array.from(document.querySelectorAll('#pot-size-filters input:checked')).map(cb => cb.value);
-  const recentOnly = document.getElementById('recently-added')?.checked;
+
 
   const rainEl = document.getElementById('rainfall-info');
   if (rainEl) {
@@ -1364,14 +1367,7 @@ async function loadPlants() {
     if (statusFilter === 'fert' && !fertDue) return false;
     if (statusFilter === 'any' && !(waterDue || fertDue)) return false;
 
-    let plantLocation = 'inside';
-    if (plant.room) {
-      const r = plant.room.toLowerCase();
-      if (r.includes('outside') || r.includes('garden') || r.includes('yard')) plantLocation = 'outside';
-      else if (r.includes('office')) plantLocation = 'office';
-      else if (r.includes('library')) plantLocation = 'library';
-    }
-    if (locFilters.length && !locFilters.includes(plantLocation)) return false;
+
 
     if (typeFilters.length) {
       let ptype = plant.plant_type || '';
@@ -1379,13 +1375,7 @@ async function loadPlants() {
       if (!typeFilters.includes(ptype)) return false;
     }
 
-    if (potFilters.length) {
-      const amt = parseFloat(plant.water_amount || 0);
-      let cat = 'small';
-      if (amt > 5) cat = 'large';
-      else if (amt > 2) cat = 'medium';
-      if (!potFilters.includes(cat)) return false;
-    }
+
 
     if (careFilters.length) {
       const soonest = getSoonestDueDate(plant);
@@ -1397,10 +1387,7 @@ async function loadPlants() {
       if (!careFilters.some(c => statuses.includes(c))) return false;
     }
 
-    if (recentOnly) {
-      const created = new Date(plant.created_at);
-      if ((today - created) / 86400000 > 30) return false;
-    }
+
     return true;
   });
 
