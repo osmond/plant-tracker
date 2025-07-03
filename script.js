@@ -29,6 +29,8 @@ const FILTER_PREF_VERSION = 2;
 let currentWeather = null;
 let currentWeatherIcon = null;
 let currentWeatherDesc = null;
+let sunsetTimestamp = null;
+let sunriseTimestamp = null;
 
 // number of milliliters in one US fluid ounce
 const ML_PER_US_FL_OUNCE = 29.5735;
@@ -556,17 +558,67 @@ function applyViewMode() {
 
 function updateFilterChips() {
   const filterToggle = document.getElementById('filter-toggle');
-  const room = document.getElementById('room-filter')?.value || 'all';
-  const status = document.getElementById('status-filter')?.value || 'any';
-  const sort = document.getElementById('sort-toggle')?.value || 'due';
+  const chipsEl = document.getElementById('filter-chips');
+  const summaryEl = document.getElementById('filter-summary');
+
+  const roomEl = document.getElementById('room-filter');
+  const statusEl = document.getElementById('status-filter');
+  const sortEl = document.getElementById('sort-toggle');
+
   const defaultStatus = 'any';
   const defaultSort = 'due';
 
-  let activeCount = 0;
-  if (room !== 'all') activeCount++;
-  if (status !== defaultStatus) activeCount++;
-  if (sort !== defaultSort) activeCount++;
+  const chips = [];
+  if (roomEl && roomEl.value !== 'all') {
+    chips.push({
+      text: roomEl.options[roomEl.selectedIndex].textContent,
+      remove() { roomEl.value = 'all'; }
+    });
+  }
+  if (statusEl && statusEl.value !== defaultStatus) {
+    chips.push({
+      text: statusEl.options[statusEl.selectedIndex].textContent,
+      remove() { statusEl.value = defaultStatus; }
+    });
+  }
+  if (sortEl && sortEl.value !== defaultSort) {
+    chips.push({
+      text: sortEl.options[sortEl.selectedIndex].textContent,
+      remove() { sortEl.value = defaultSort; }
+    });
+  }
+  document.querySelectorAll('#type-filters input:checked').forEach(cb => {
+    const label = cb.closest('label');
+    chips.push({
+      text: label ? label.textContent.trim() : cb.value,
+      remove() { cb.checked = false; }
+    });
+  });
 
+  if (chipsEl) {
+    chipsEl.innerHTML = '';
+    chips.forEach(c => {
+      const chip = document.createElement('span');
+      chip.className = 'filter-chip';
+      chip.textContent = c.text;
+      const btn = document.createElement('button');
+      btn.innerHTML = ICONS.cancel;
+      btn.addEventListener('click', () => {
+        c.remove();
+        saveFilterPrefs();
+        loadPlants();
+        updateFilterChips();
+      });
+      chip.appendChild(btn);
+      chipsEl.appendChild(chip);
+    });
+  }
+
+  const activeCount = chips.length;
+
+  if (summaryEl) {
+    summaryEl.textContent = activeCount ? `${activeCount} active` : 'No filters';
+  }
   if (filterToggle) {
     filterToggle.innerHTML = ICONS.filter + ' Filters';
     filterToggle.setAttribute('data-count', activeCount);
@@ -1091,11 +1143,21 @@ async function duplicatePlant(plant) {
 // --- weather helper ---
 // Weather data is fetched server-side to keep the API key private.
 
+function checkAndApplyDarkMode() {
+  if (sunsetTimestamp === null || sunriseTimestamp === null) return;
+  const nowSec = Date.now() / 1000;
+  const isNight = nowSec >= sunsetTimestamp || nowSec < sunriseTimestamp;
+  document.body.classList.toggle('dark', isNight);
+}
+
 function fetchWeather() {
-  const addWeather = (temp, desc, icon) => {
+  const addWeather = (temp, desc, icon, sunset, sunrise) => {
     currentWeather = `${temp}°F ${desc}`;
     currentWeatherIcon = `https://openweathermap.org/img/wn/${icon}@2x.png`;
     currentWeatherDesc = desc;
+    sunsetTimestamp = sunset;
+    sunriseTimestamp = sunrise;
+    checkAndApplyDarkMode();
     loadPlants();
   };
 
@@ -1111,7 +1173,7 @@ function fetchWeather() {
       const doy = Math.floor((now - start) / 86400000);
       raValue = computeRA(lat, doy);
       rainForecastInches = Array.isArray(data.rain) && data.rain.length === 3 ? data.rain : [0, 0, 0];
-      addWeather(Math.round(data.temp), data.desc, data.icon);
+      addWeather(Math.round(data.temp), data.desc, data.icon, data.sunset, data.sunrise);
       updateWaterAmount();
     } catch (e) {
       console.error('Weather fetch failed', e);
@@ -1895,6 +1957,15 @@ async function init(){
     const toolbar = document.querySelector('.toolbar');
     const searchInput = document.getElementById('search-input');
 
+  const searchInput = document.getElementById('search-input');
+  const clearSearchBtn = document.getElementById('clear-search');
+
+  function updateClearSearch() {
+    if (!clearSearchBtn) return;
+    if (searchInput && searchInput.value.trim()) clearSearchBtn.classList.remove('hidden');
+    else clearSearchBtn.classList.add('hidden');
+  }
+
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
 
@@ -2024,6 +2095,7 @@ async function init(){
     }
   });
 
+
     if (searchInput) {
       searchInput.addEventListener('input', loadPlants);
     }
@@ -2041,6 +2113,27 @@ async function init(){
         lastScroll = current;
       });
     }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      updateClearSearch();
+      loadPlants();
+    });
+    updateClearSearch();
+  }
+  if (clearSearchBtn) {
+    clearSearchBtn.innerHTML = ICONS.cancel;
+    clearSearchBtn.addEventListener('click', () => {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      updateClearSearch();
+      loadPlants();
+    });
+  }
+  document.getElementById('cancel-edit').onclick=resetForm;
+
   if (photoDrop && photoInput) {
     function previewFile(file) {
       const reader = new FileReader();
@@ -2333,7 +2426,9 @@ async function init(){
   loadPlants();
   syncPendingActions();
   fetchWeather();
+  checkAndApplyDarkMode();
   setInterval(fetchWeather, WEATHER_UPDATE_INTERVAL);
+  setInterval(checkAndApplyDarkMode, 60000);
 }
 
 if (document.readyState === 'loading') {
@@ -2342,4 +2437,4 @@ if (document.readyState === 'loading') {
   init();
 }
 
-export { loadCalendar, focusPlantId, loadPlants };
+export { loadCalendar, focusPlantId, loadPlants, updateFilterChips };
