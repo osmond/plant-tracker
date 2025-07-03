@@ -1604,6 +1604,11 @@ button:focus {
   z-index: 10000;
 }
 
+.updating-grid {
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
 .loading-overlay::after {
   content: '';
   width: 40px;
