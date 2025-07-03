@@ -1108,13 +1108,32 @@ button:focus {
   z-index: 10;
 }
 
-.toolbar__search {
+.search-wrapper {
+  position: relative;
   flex: 1 1 250px;
   max-width: 350px;
+}
+
+.toolbar__search {
+  width: 100%;
   padding: 0.5rem;
   background: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .toolbar.search-collapsed .toolbar__search {
@@ -1667,7 +1686,7 @@ button:focus {
 }
 
 @media (max-width: 640px) {
-  .toolbar__search {
+  .search-wrapper {
     flex-basis: 100%;
     max-width: none;
   }
