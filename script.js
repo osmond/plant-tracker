@@ -500,7 +500,7 @@ function loadFilterPrefs() {
   }
   if (df) {
     const hasD = dVal !== null && Array.from(df.options).some(o => o.value === dVal);
-    df.value = hasD ? dVal : 'any';
+    df.value = hasD ? dVal : 'all';
   }
   const types = JSON.parse(localStorage.getItem('typeFilters') || '[]');
   document.querySelectorAll('#type-filters input').forEach(cb => {
@@ -574,7 +574,7 @@ function updateFilterChips() {
   const statusEl = document.getElementById('status-filter');
   const sortEl = document.getElementById('sort-toggle');
 
-  const defaultStatus = 'any';
+  const defaultStatus = 'all';
   const defaultSort = 'due';
 
   const chips = [];
@@ -2062,6 +2062,7 @@ async function init(){
   }
   const statusLabel = document.getElementById('status-chip-label');
   if (statusChip && dueFilterEl && statusLabel) {
+
     if (dueFilterEl.value === 'any') {
       statusChip.classList.add('active', 'btn-ghost');
       statusChip.classList.remove('btn-primary');
@@ -2071,6 +2072,11 @@ async function init(){
       statusChip.classList.add('btn-primary');
       statusLabel.textContent = 'Needs Care';
     }
+
+    const isNeedsCare = dueFilterEl.value === 'any';
+    statusChip.classList.toggle('active', isNeedsCare);
+    statusLabel.textContent = isNeedsCare ? 'Show All' : 'Needs Care';
+
 
     statusChip.addEventListener('click', () => {
       const active = statusChip.classList.toggle('active');
