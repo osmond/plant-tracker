@@ -8,8 +8,8 @@ module.exports = {
       colors: {
         bg: 'var(--color-bg)',
         card: 'var(--color-card)',
-        primary: '#8d67d6',
-        accent: '#ffa5d8',
+        primary: '#4caf50',
+        accent: '#8bc34a',
         text: 'var(--color-text)'
       }
     }

@@ -24,6 +24,7 @@ let plantCache = [];
 
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
+const FILTER_PREF_VERSION = 2;
 // track weather info so the summary can include current conditions
 let currentWeather = null;
 let currentWeatherIcon = null;
@@ -500,6 +501,11 @@ function loadFilterPrefs() {
   document.querySelectorAll('#care-filters input').forEach(cb => {
     cb.checked = care.includes(cb.value);
   });
+
+
+  const recentEl = document.getElementById('recently-added');
+  if (recentEl) recentEl.checked = false;
+
 }
 
 function clearFilterPrefs() {
@@ -508,6 +514,16 @@ function clearFilterPrefs() {
   localStorage.removeItem('statusFilter');
   localStorage.removeItem('typeFilters');
   localStorage.removeItem('careFilters');
+
+}
+
+function migrateFilterPrefs() {
+  const stored = localStorage.getItem('filterPrefVersion');
+  if (stored !== String(FILTER_PREF_VERSION)) {
+    clearFilterPrefs();
+    localStorage.setItem('filterPrefVersion', String(FILTER_PREF_VERSION));
+  }
+
 }
 
 function saveHistoryValue(key, value) {
@@ -529,6 +545,7 @@ function loadHistoryValues(key) {
 
 // expose so it can be called externally
 window.clearFilterPrefs = clearFilterPrefs;
+window.migrateFilterPrefs = migrateFilterPrefs;
 
 function applyViewMode() {
   const container = document.getElementById('plant-grid');
@@ -1935,6 +1952,7 @@ async function init(){
 
 
   // apply saved preferences before initial load
+  migrateFilterPrefs();
   loadFilterPrefs();
   showFormStep(1);
 
