@@ -1892,6 +1892,15 @@ async function init(){
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
 
+  const searchInput = document.getElementById('search-input');
+  const clearSearchBtn = document.getElementById('clear-search');
+
+  function updateClearSearch() {
+    if (!clearSearchBtn) return;
+    if (searchInput && searchInput.value.trim()) clearSearchBtn.classList.remove('hidden');
+    else clearSearchBtn.classList.add('hidden');
+  }
+
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
 
@@ -2021,7 +2030,24 @@ async function init(){
     }
   });
 
-  document.getElementById('search-input').addEventListener('input',loadPlants);
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      updateClearSearch();
+      loadPlants();
+    });
+    updateClearSearch();
+  }
+  if (clearSearchBtn) {
+    clearSearchBtn.innerHTML = ICONS.cancel;
+    clearSearchBtn.addEventListener('click', () => {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      updateClearSearch();
+      loadPlants();
+    });
+  }
   document.getElementById('cancel-edit').onclick=resetForm;
   if (photoDrop && photoInput) {
     function previewFile(file) {
