@@ -12,13 +12,15 @@ test('addDays adds days correctly', () => {
   expect(d.toISOString().split('T')[0]).toBe('2023-01-06');
 });
 
-test('formatDateShort returns relative labels', () => {
+test('formatDateShort returns labeled dates', () => {
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
-  expect(formatDateShort(todayStr)).toBe('today');
+  const todayLabel = today.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' \u2013 today';
+  expect(formatDateShort(todayStr)).toBe(todayLabel);
 
   const yest = new Date(today);
   yest.setDate(today.getDate() - 1);
   const yestStr = yest.toISOString().split('T')[0];
-  expect(formatDateShort(yestStr)).toBe('yesterday');
+  const yestLabel = yest.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' \u2013 yesterday';
+  expect(formatDateShort(yestStr)).toBe(yestLabel);
 });
