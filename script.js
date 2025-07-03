@@ -2000,7 +2000,9 @@ async function init(){
     filterBtn.addEventListener('click', () => {
       if (filterPanel) filterPanel.classList.toggle('show');
     });
+
     updateFilterChips();
+
   }
 
   if (filterToggle && filterPanel) {
@@ -2309,7 +2311,6 @@ async function init(){
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
-      if (filterPanel) filterPanel.classList.remove('show');
     });
   });
 
