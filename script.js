@@ -490,9 +490,18 @@ function loadFilterPrefs() {
   const rVal = localStorage.getItem('roomFilter');
   const sVal = localStorage.getItem('sortPref');
   const dVal = localStorage.getItem('statusFilter');
-  if (rf) rf.value = rVal !== null ? rVal : 'all';
-  if (sf) sf.value = sVal !== null ? sVal : 'due';
-  if (df) df.value = dVal !== null ? dVal : 'any';
+  if (rf) {
+    const hasR = rVal !== null && Array.from(rf.options).some(o => o.value === rVal);
+    rf.value = hasR ? rVal : 'all';
+  }
+  if (sf) {
+    const hasS = sVal !== null && Array.from(sf.options).some(o => o.value === sVal);
+    sf.value = hasS ? sVal : 'due';
+  }
+  if (df) {
+    const hasD = dVal !== null && Array.from(df.options).some(o => o.value === dVal);
+    df.value = hasD ? dVal : 'any';
+  }
   const types = JSON.parse(localStorage.getItem('typeFilters') || '[]');
   document.querySelectorAll('#type-filters input').forEach(cb => {
     cb.checked = types.includes(cb.value);
@@ -569,19 +578,19 @@ function updateFilterChips() {
   const defaultSort = 'due';
 
   const chips = [];
-  if (roomEl && roomEl.value !== 'all') {
+  if (roomEl && roomEl.value !== 'all' && roomEl.selectedIndex >= 0) {
     chips.push({
       text: roomEl.options[roomEl.selectedIndex].textContent,
       remove() { roomEl.value = 'all'; }
     });
   }
-  if (statusEl && statusEl.value !== defaultStatus) {
+  if (statusEl && statusEl.value !== defaultStatus && statusEl.selectedIndex >= 0) {
     chips.push({
       text: statusEl.options[statusEl.selectedIndex].textContent,
       remove() { statusEl.value = defaultStatus; }
     });
   }
-  if (sortEl && sortEl.value !== defaultSort) {
+  if (sortEl && sortEl.value !== defaultSort && sortEl.selectedIndex >= 0) {
     chips.push({
       text: sortEl.options[sortEl.selectedIndex].textContent,
       remove() { sortEl.value = defaultSort; }
@@ -2422,4 +2431,4 @@ if (document.readyState === 'loading') {
   init();
 }
 
-export { loadCalendar, focusPlantId, loadPlants, updateFilterChips };
+export { loadCalendar, focusPlantId, loadPlants, updateFilterChips, loadFilterPrefs };
