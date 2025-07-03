@@ -2304,7 +2304,7 @@ async function init(){
   }
 
   const extraFilterInputs = document.querySelectorAll(
-    '#location-filters input,#type-filters input,#care-filters input,#pot-size-filters input,#recently-added'
+    '#type-filters input,#care-filters input'
   );
   extraFilterInputs.forEach(input => {
     input.addEventListener('change', () => {
