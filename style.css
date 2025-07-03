@@ -1111,6 +1111,32 @@ button:focus {
   border-color: var(--color-primary);
 }
 
+.filter-btn {
+  position: relative;
+  padding: 0.35rem 0.75rem;
+  font-size: 1rem;
+  background: var(--color-chip-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.filter-btn::after {
+  content: attr(data-count);
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #dd3333;
+  color: white;
+  font-size: 0.65rem;
+  padding: 0 4px;
+  border-radius: 999px;
+  display: none;
+}
+
+.filter-btn[data-count]:not([data-count="0"])::after {
+  display: inline-block;
+}
+
 
 .overflow-menu {
   display: none;
@@ -1188,9 +1214,34 @@ button:focus {
   cursor: pointer;
 }
 
+#filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing));
+}
+
+.filter-summary {
+  display: none;
+  background: var(--color-chip-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+}
+
 #filter-panel {
   left: 0;
   right: auto;
+}
+
+@media (max-width: 640px) {
+  #filter-chips {
+    display: none;
+  }
+  #filter-summary {
+    display: inline-flex;
+    align-items: center;
+  }
 }
 
 .overflow-menu.show {

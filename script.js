@@ -529,9 +529,7 @@ function applyViewMode() {
 
 
 function updateFilterChips() {
-  // This previously updated the desktop filter button with an active count
-  // but the button has been removed, so the function now simply computes the
-  // active filters for potential future use.
+  const filterBtn = document.getElementById('filter-btn');
   const room = document.getElementById('room-filter')?.value || 'all';
   const status = document.getElementById('status-filter')?.value || 'any';
   const sort = document.getElementById('sort-toggle')?.value || 'due';
@@ -543,6 +541,10 @@ function updateFilterChips() {
   if (status !== defaultStatus) activeCount++;
   if (sort !== defaultSort) activeCount++;
 
+  if (filterBtn) {
+    filterBtn.innerHTML = ICONS.filter;
+    filterBtn.setAttribute('data-count', activeCount);
+  }
   return activeCount;
 }
 
@@ -1847,6 +1849,7 @@ async function init(){
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('status-filter');
   const statusChip = document.getElementById('status-chip');
+  const filterBtn = document.getElementById('filter-btn');
   const filterPanel = document.getElementById('filter-panel');
   const filterToggle = document.getElementById('filter-toggle');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
@@ -1911,6 +1914,13 @@ async function init(){
   if (undoBtn) {
     undoBtn.innerHTML = ICONS.undo + ' Undo';
   }
+
+  if (filterBtn) {
+    filterBtn.addEventListener('click', () => {
+      if (filterPanel) filterPanel.classList.toggle('show');
+    });
+    updateFilterChips();
+
   if (filterToggle && filterPanel) {
     filterToggle.innerHTML = ICONS.filter + ' Filters';
     filterToggle.addEventListener('click', (e) => {
@@ -1921,7 +1931,7 @@ async function init(){
       if (!filterPanel.contains(e.target) && e.target !== filterToggle) {
         filterPanel.classList.remove('show');
       }
-    });
+
   }
   if (statusChip && dueFilterEl) {
     if (dueFilterEl.value === 'any') statusChip.classList.add('active');
