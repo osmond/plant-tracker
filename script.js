@@ -1512,11 +1512,10 @@ async function loadPlants() {
   const statusLabel = document.getElementById('status-chip-label');
   const statusChip = document.getElementById('status-chip');
   if (statusChip && statusLabel) {
-    if (statusChip.classList.contains('active')) {
-      statusLabel.textContent = 'Show All';
-    } else {
-      statusLabel.textContent = 'Needs Care';
-    }
+    const active = statusChip.classList.contains('active');
+    statusLabel.textContent = active ? 'Show All' : 'Needs Care';
+    statusChip.classList.toggle('btn-ghost', active);
+    statusChip.classList.toggle('btn-primary', !active);
   }
 
   const sortBy = document.getElementById('sort-toggle').value || 'due';
@@ -2064,9 +2063,12 @@ async function init(){
   const statusLabel = document.getElementById('status-chip-label');
   if (statusChip && dueFilterEl && statusLabel) {
     if (dueFilterEl.value === 'any') {
-      statusChip.classList.add('active');
+      statusChip.classList.add('active', 'btn-ghost');
+      statusChip.classList.remove('btn-primary');
       statusLabel.textContent = 'Show All';
     } else {
+      statusChip.classList.remove('btn-ghost');
+      statusChip.classList.add('btn-primary');
       statusLabel.textContent = 'Needs Care';
     }
 
@@ -2075,6 +2077,8 @@ async function init(){
       dueFilterEl.value = active ? 'any' : 'all';
       saveFilterPrefs();
       updateFilterChips();
+      statusChip.classList.toggle('btn-ghost', active);
+      statusChip.classList.toggle('btn-primary', !active);
       statusLabel.textContent = active ? 'Show All' : 'Needs Care';
       loadPlants();
     });
@@ -2385,7 +2389,10 @@ async function init(){
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
-      statusChip.classList.toggle('active', dueFilterEl.value === 'any');
+      const isAny = dueFilterEl.value === 'any';
+      statusChip.classList.toggle('active', isAny);
+      statusChip.classList.toggle('btn-ghost', isAny);
+      statusChip.classList.toggle('btn-primary', !isAny);
       if (filterPanel) {
         filterPanel.classList.remove('show');
         filterToggle.setAttribute('aria-expanded', 'false');

@@ -121,11 +121,13 @@ test('status chip text toggles based on filter', async () => {
   statusChip.classList.add('active');
   await mod.loadPlants();
   expect(statusLabel.textContent).toBe('Show All');
+  expect(statusChip.classList.contains('btn-ghost')).toBe(true);
 
   statusFilter.value = 'all';
   statusChip.classList.remove('active');
   await mod.loadPlants();
   expect(statusLabel.textContent).toBe('Needs Care');
+  expect(statusChip.classList.contains('btn-ghost')).toBe(false);
   jest.useRealTimers();
 });
 
