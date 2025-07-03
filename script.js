@@ -1423,6 +1423,12 @@ async function loadPlants() {
 
   list.innerHTML = '';
   let needsCareCount = 0;
+  plants.forEach(plant => {
+    if (needsWatering(plant, today) || needsFertilizing(plant, today)) {
+      needsCareCount++;
+    }
+  });
+
   const filtered = plants.filter(plant => {
     if (selectedRoom !== 'all' && plant.room !== selectedRoom) return false;
     const haystack = (plant.name + ' ' + plant.species).toLowerCase();
@@ -1430,7 +1436,6 @@ async function loadPlants() {
 
     const waterDue = needsWatering(plant, today);
     const fertDue = needsFertilizing(plant, today);
-    if (waterDue || fertDue) needsCareCount++;
     if (statusFilter === 'water' && !waterDue) return false;
     if (statusFilter === 'fert' && !fertDue) return false;
     if (statusFilter === 'any' && !(waterDue || fertDue)) return false;
