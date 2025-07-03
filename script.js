@@ -1364,14 +1364,17 @@ async function exportPlantsBoth() {
 
 // --- main render & filter loop ---
 async function loadPlants() {
-  const res = await fetch(`api/get_plants.php${showArchive ? '?archived=1' : ''}`);
-  const plants = await res.json();
-  plantCache = plants;
   const list = document.getElementById('plant-grid');
-  if (list) {
-    list.classList.toggle('list-view', viewMode === 'list');
-    list.classList.toggle('text-view', viewMode === 'text');
-  }
+  toggleLoading(true);
+  if (list) list.classList.add('updating-grid');
+  try {
+    const res = await fetch(`api/get_plants.php${showArchive ? '?archived=1' : ''}`);
+    const plants = await res.json();
+    plantCache = plants;
+    if (list) {
+      list.classList.toggle('list-view', viewMode === 'list');
+      list.classList.toggle('text-view', viewMode === 'text');
+    }
   const selectedRoom = document.getElementById('room-filter').value;
   const statusFilter = document.getElementById('status-filter')
     ? document.getElementById('status-filter').value
@@ -1916,6 +1919,12 @@ async function loadPlants() {
 
   checkArchivedLink(plants);
   loadCalendar(plants);
+  } catch (err) {
+    console.error('Failed to load plants', err);
+  } finally {
+    if (list) list.classList.remove('updating-grid');
+    toggleLoading(false);
+  }
 }
 
 async function checkArchivedLink(plantsList) {
