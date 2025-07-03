@@ -475,12 +475,10 @@ function saveFilterPrefs() {
   if (rf) localStorage.setItem('roomFilter', rf.value);
   if (sf) localStorage.setItem('sortPref', sf.value);
   if (df) localStorage.setItem('statusFilter', df.value);
-  const types = Array.from(document.querySelectorAll('#type-filters input:checked'))
-    .map(cb => cb.value);
-  const care = Array.from(document.querySelectorAll('#care-filters input:checked'))
-    .map(cb => cb.value);
+  const types = Array.from(
+    document.querySelectorAll('#type-filters input:checked')
+  ).map(cb => cb.value);
   localStorage.setItem('typeFilters', JSON.stringify(types));
-  localStorage.setItem('careFilters', JSON.stringify(care));
 }
 
 function loadFilterPrefs() {
@@ -494,12 +492,8 @@ function loadFilterPrefs() {
   if (sf) sf.value = sVal !== null ? sVal : 'due';
   if (df) df.value = dVal !== null ? dVal : 'any';
   const types = JSON.parse(localStorage.getItem('typeFilters') || '[]');
-  const care = JSON.parse(localStorage.getItem('careFilters') || '[]');
   document.querySelectorAll('#type-filters input').forEach(cb => {
     cb.checked = types.includes(cb.value);
-  });
-  document.querySelectorAll('#care-filters input').forEach(cb => {
-    cb.checked = care.includes(cb.value);
   });
 
 
@@ -513,7 +507,6 @@ function clearFilterPrefs() {
   localStorage.removeItem('sortPref');
   localStorage.removeItem('statusFilter');
   localStorage.removeItem('typeFilters');
-  localStorage.removeItem('careFilters');
 
 }
 
@@ -1312,8 +1305,9 @@ async function loadPlants() {
   const statusFilter = document.getElementById('status-filter')
     ? document.getElementById('status-filter').value
     : 'all';
-  const typeFilters = Array.from(document.querySelectorAll('#type-filters input:checked')).map(cb => cb.value);
-  const careFilters = Array.from(document.querySelectorAll('#care-filters input:checked')).map(cb => cb.value);
+  const typeFilters = Array.from(
+    document.querySelectorAll('#type-filters input:checked')
+  ).map(cb => cb.value);
 
 
   const rainEl = document.getElementById('rainfall-info');
@@ -1367,26 +1361,11 @@ async function loadPlants() {
     if (statusFilter === 'fert' && !fertDue) return false;
     if (statusFilter === 'any' && !(waterDue || fertDue)) return false;
 
-
-
     if (typeFilters.length) {
       let ptype = plant.plant_type || '';
       if (ptype === 'flower') ptype = 'flower';
       if (!typeFilters.includes(ptype)) return false;
     }
-
-
-
-    if (careFilters.length) {
-      const soonest = getSoonestDueDate(plant);
-      const nextFert = getNextFertDate(plant);
-      const statuses = [];
-      if (waterDue && soonest < startOfToday) statuses.push('overdue-water');
-      if ((waterDue || fertDue) && soonest >= startOfToday && soonest < startOfTomorrow) statuses.push('due-today');
-      if (nextFert && nextFert > today && nextFert <= addDays(today,3)) statuses.push('fertilizing-soon');
-      if (!careFilters.some(c => statuses.includes(c))) return false;
-    }
-
 
     return true;
   });
@@ -2287,9 +2266,7 @@ async function init(){
     });
   }
 
-  const extraFilterInputs = document.querySelectorAll(
-    '#type-filters input,#care-filters input'
-  );
+  const extraFilterInputs = document.querySelectorAll('#type-filters input');
   extraFilterInputs.forEach(input => {
     input.addEventListener('change', () => {
       saveFilterPrefs();
