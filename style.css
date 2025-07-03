@@ -341,7 +341,7 @@ button:focus {
     border-radius: var(--radius);
     background: var(--color-bg);
     color: var(--color-text);
-    transition: background-color 0.2s, transform 0.1s;
+    transition: background-color 0.2s, transform 0.2s;
 }
 
 .action-btn .icon {
@@ -389,11 +389,11 @@ button:focus {
 .action-btn:hover,
 .action-btn:focus {
     background-color: var(--color-surface);
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.05);
 }
 
 .action-btn:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
 }
 
 .view-toggle-group {
