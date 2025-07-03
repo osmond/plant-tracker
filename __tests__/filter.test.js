@@ -102,7 +102,7 @@ test('loadPlants filters by plant type', async () => {
   expect(cards[0].id).toBe('plant-1');
 });
 
-test('status chip text toggles based on filter', async () => {
+test('status chip label stays constant while filter toggles', async () => {
   setupDOM();
   document.body.innerHTML += `<button id="status-chip" class="btn btn-primary active"><span id="status-chip-label">Needs Care</span><span id="needs-care-alert" class="needs-care-alert hidden"></span></button>`;
   jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
@@ -120,7 +120,7 @@ test('status chip text toggles based on filter', async () => {
   statusFilter.value = 'any';
   statusChip.classList.add('active');
   await mod.loadPlants();
-  expect(statusLabel.textContent).toBe('Show All');
+  expect(statusLabel.textContent).toBe('Needs Care');
   expect(statusChip.classList.contains('btn-ghost')).toBe(true);
 
   statusFilter.value = 'all';

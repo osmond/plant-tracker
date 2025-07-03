@@ -1518,7 +1518,7 @@ async function loadPlants() {
   const statusChip = document.getElementById('status-chip');
   if (statusChip && statusLabel) {
     const active = statusChip.classList.contains('active');
-    statusLabel.textContent = active ? 'Show All' : 'Needs Care';
+    statusLabel.textContent = 'Needs Care';
     statusChip.classList.toggle('btn-ghost', active);
     statusChip.classList.toggle('btn-primary', !active);
   }
@@ -2071,16 +2071,14 @@ async function init(){
     if (dueFilterEl.value === 'any') {
       statusChip.classList.add('active', 'btn-ghost');
       statusChip.classList.remove('btn-primary');
-      statusLabel.textContent = 'Show All';
     } else {
       statusChip.classList.remove('btn-ghost');
       statusChip.classList.add('btn-primary');
-      statusLabel.textContent = 'Needs Care';
     }
 
     const isNeedsCare = dueFilterEl.value === 'any';
     statusChip.classList.toggle('active', isNeedsCare);
-    statusLabel.textContent = isNeedsCare ? 'Show All' : 'Needs Care';
+    statusLabel.textContent = 'Needs Care';
 
 
     statusChip.addEventListener('click', () => {
@@ -2090,7 +2088,7 @@ async function init(){
       updateFilterChips();
       statusChip.classList.toggle('btn-ghost', active);
       statusChip.classList.toggle('btn-primary', !active);
-      statusLabel.textContent = active ? 'Show All' : 'Needs Care';
+      statusLabel.textContent = 'Needs Care';
       loadPlants();
     });
   }
