@@ -1888,9 +1888,12 @@ async function init(){
   const statusChip = document.getElementById('status-chip');
   const filterPanel = document.getElementById('filter-panel');
   const filterToggle = document.getElementById('filter-toggle');
-  const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
-  const prevBtn = document.getElementById('prev-week');
-  const nextBtn = document.getElementById('next-week');
+    const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
+    const prevBtn = document.getElementById('prev-week');
+    const nextBtn = document.getElementById('next-week');
+
+    const toolbar = document.querySelector('.toolbar');
+    const searchInput = document.getElementById('search-input');
 
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
@@ -2021,8 +2024,23 @@ async function init(){
     }
   });
 
-  document.getElementById('search-input').addEventListener('input',loadPlants);
-  document.getElementById('cancel-edit').onclick=resetForm;
+    if (searchInput) {
+      searchInput.addEventListener('input', loadPlants);
+    }
+    document.getElementById('cancel-edit').onclick = resetForm;
+
+    if (toolbar && searchInput) {
+      let lastScroll = window.scrollY;
+      window.addEventListener('scroll', () => {
+        const current = window.scrollY;
+        if (current > lastScroll && current > 50) {
+          toolbar.classList.add('search-collapsed');
+        } else if (current < lastScroll) {
+          toolbar.classList.remove('search-collapsed');
+        }
+        lastScroll = current;
+      });
+    }
   if (photoDrop && photoInput) {
     function previewFile(file) {
       const reader = new FileReader();
