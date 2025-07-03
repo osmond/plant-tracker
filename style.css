@@ -53,6 +53,14 @@
   --font-size-xl: 1.5rem;      /* 24px extra large text */
 }
 
+body.dark {
+  --color-bg: #1f2937;
+  --color-card: #374151;
+  --color-surface: #1f2937;
+  --color-border: #4b5563;
+  --color-text: #f9fafb;
+}
+
 
 .bg-primary {
   background-color: var(--color-primary);
