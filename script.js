@@ -2012,7 +2012,7 @@ async function init(){
       if (!filterPanel.contains(e.target) && e.target !== filterToggle) {
         filterPanel.classList.remove('show');
       }
-
+    });
   }
   if (statusChip && dueFilterEl) {
     if (dueFilterEl.value === 'any') statusChip.classList.add('active');
