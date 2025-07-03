@@ -101,3 +101,29 @@ test('loadPlants filters by plant type', async () => {
   expect(cards.length).toBe(1);
   expect(cards[0].id).toBe('plant-1');
 });
+
+test('status chip text toggles based on filter', async () => {
+  setupDOM();
+  document.body.innerHTML += `<button id="status-chip" class="chip active">Needs Care</button>`;
+  jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
+  const plants = [
+    { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
+  ];
+  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  let mod;
+  await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
+
+  const statusChip = document.getElementById('status-chip');
+  const statusFilter = document.getElementById('status-filter');
+
+  statusFilter.value = 'any';
+  statusChip.classList.add('active');
+  await mod.loadPlants();
+  expect(statusChip.textContent).toBe('Needs Care (1)');
+
+  statusFilter.value = 'all';
+  statusChip.classList.remove('active');
+  await mod.loadPlants();
+  expect(statusChip.textContent).toBe('Show All');
+  jest.useRealTimers();
+});
