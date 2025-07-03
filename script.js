@@ -1848,6 +1848,7 @@ async function init(){
   const dueFilterEl = document.getElementById('status-filter');
   const statusChip = document.getElementById('status-chip');
   const filterPanel = document.getElementById('filter-panel');
+  const filterToggle = document.getElementById('filter-toggle');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
@@ -1909,6 +1910,18 @@ async function init(){
   }
   if (undoBtn) {
     undoBtn.innerHTML = ICONS.undo + ' Undo';
+  }
+  if (filterToggle && filterPanel) {
+    filterToggle.innerHTML = ICONS.filter + ' Filters';
+    filterToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      filterPanel.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!filterPanel.contains(e.target) && e.target !== filterToggle) {
+        filterPanel.classList.remove('show');
+      }
+    });
   }
   if (statusChip && dueFilterEl) {
     if (dueFilterEl.value === 'any') statusChip.classList.add('active');
