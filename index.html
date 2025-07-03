@@ -16,8 +16,8 @@
 <body class="bg-bg text-text min-h-screen">
     <h1 class="app-title text font-bold px-4 py-0">
         My Plant Tracker
-        <button id="show-add-form" class="ml-auto"></button>
-        <button id="export-all" class="ml-2"></button>
+        <button id="show-add-form" class="ml-auto"><span class="visually-hidden">Add Plant</span></button>
+        <button id="export-all" class="ml-2"><span class="visually-hidden">Export</span></button>
     </h1>
     <div id="summary" class="p-4 bg-card rounded-lg mb-4">
         <!-- counts will go here -->
@@ -149,7 +149,7 @@
             <option value="added">Date Added</option>
         </select>
         <div class="overflow-container relative">
-            <button id="filter-btn" class="filter-btn" data-count="0" aria-label="Filters"></button>
+            <button id="filter-btn" class="filter-btn" data-count="0" aria-label="Filters"><span class="visually-hidden">Filters</span></button>
             <div id="filter-panel" class="overflow-menu">
                 <select id="room-filter" class="border rounded-md">
                     <option value="all" selected>All Rooms</option>
@@ -189,9 +189,9 @@
         </div>
 
         <div class="toolbar__view view-toggle-group" id="view-toggle">
-            <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
-            <button type="button" data-view="list" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
-            <button type="button" data-view="text" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
+            <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"><span class="visually-hidden">Grid view</span></button>
+            <button type="button" data-view="list" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"><span class="visually-hidden">List view</span></button>
+            <button type="button" data-view="text" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"><span class="visually-hidden">Text view</span></button>
         </div>
     </div>
     <div id="rainfall-info" class="p-4 bg-card rounded-lg mb-4 hidden"></div>
@@ -205,13 +205,13 @@
     <div id="toast" class="toast" role="status" aria-live="polite" aria-hidden="true"></div>
 
     <div id="plant-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4"></div>
-    <button id="archived-link" type="button" class="text-sm hidden"></button>
+    <button id="archived-link" type="button" class="text-sm hidden"><span class="visually-hidden">Archived</span></button>
 
 
     <h2 id="calendar-heading" class="text-xl font-semibold p-4">Upcoming Tasks</h2>
     <div id="calendar-nav" class="flex justify-end gap-2 px-4 pb-2">
-        <button id="prev-week" class="bg-primary text-white rounded-md px-4 py-2"></button>
-        <button id="next-week" class="bg-primary text-white rounded-md px-4 py-2"></button>
+        <button id="prev-week" class="bg-primary text-white rounded-md px-4 py-2"><span class="visually-hidden">Previous Week</span></button>
+        <button id="next-week" class="bg-primary text-white rounded-md px-4 py-2"><span class="visually-hidden">Next Week</span></button>
     </div>
     <div id="calendar" class="p-4"></div>
 
