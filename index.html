@@ -18,7 +18,6 @@
         My Plant Tracker
         <button id="show-add-form" class="ml-auto"><span class="visually-hidden">Add Plant</span></button>
         <button id="export-all" class="ml-2"><span class="visually-hidden">Export</span></button>
-        <span id="needs-care-alert" class="needs-care-alert hidden"></span>
     </h1>
     <div id="summary" class="p-4 bg-card rounded-lg mb-4">
         <!-- counts will go here -->
@@ -144,7 +143,10 @@
             <button type="button" id="clear-search" class="clear-search-btn hidden" aria-label="Clear search"></button>
         </div>
 
-        <button id="status-chip" type="button" class="btn btn-primary active">Needs Care</button>
+        <button id="status-chip" type="button" class="btn btn-primary active">
+            <span id="status-chip-label">Needs Care</span>
+            <span id="needs-care-alert" class="needs-care-alert hidden"></span>
+        </button>
         <button id="filter-toggle" type="button" class="chip" data-count="0" aria-haspopup="true" aria-expanded="false" aria-controls="filter-panel">Filters</button>
 
         <select id="sort-toggle" class="hidden">
