@@ -104,7 +104,7 @@ test('loadPlants filters by plant type', async () => {
 
 test('status chip text toggles based on filter', async () => {
   setupDOM();
-  document.body.innerHTML += `<button id="status-chip" class="btn btn-primary active">Needs Care</button>`;
+  document.body.innerHTML += `<button id="status-chip" class="btn btn-primary active"><span id="status-chip-label">Needs Care</span><span id="needs-care-alert" class="needs-care-alert hidden"></span></button>`;
   jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
   const plants = [
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
@@ -114,23 +114,24 @@ test('status chip text toggles based on filter', async () => {
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
 
   const statusChip = document.getElementById('status-chip');
+  const statusLabel = document.getElementById('status-chip-label');
   const statusFilter = document.getElementById('status-filter');
 
   statusFilter.value = 'any';
   statusChip.classList.add('active');
   await mod.loadPlants();
-  expect(statusChip.textContent).toBe('Show All');
+  expect(statusLabel.textContent).toBe('Show All');
 
   statusFilter.value = 'all';
   statusChip.classList.remove('active');
   await mod.loadPlants();
-  expect(statusChip.textContent).toBe('Needs Care (1)');
+  expect(statusLabel.textContent).toBe('Needs Care');
   jest.useRealTimers();
 });
 
 test('needs care alert badge shows count', async () => {
   setupDOM();
-  document.body.innerHTML += `<span id="needs-care-alert" class="needs-care-alert hidden"></span>`;
+  document.body.innerHTML += `<button id="status-chip" class="btn btn-primary"><span id="status-chip-label">Needs Care</span><span id="needs-care-alert" class="needs-care-alert hidden"></span></button>`;
   jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
   const plants = [
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
