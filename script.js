@@ -500,7 +500,7 @@ function loadFilterPrefs() {
   }
   if (df) {
     const hasD = dVal !== null && Array.from(df.options).some(o => o.value === dVal);
-    df.value = hasD ? dVal : 'any';
+    df.value = hasD ? dVal : 'all';
   }
   const types = JSON.parse(localStorage.getItem('typeFilters') || '[]');
   document.querySelectorAll('#type-filters input').forEach(cb => {
@@ -574,7 +574,7 @@ function updateFilterChips() {
   const statusEl = document.getElementById('status-filter');
   const sortEl = document.getElementById('sort-toggle');
 
-  const defaultStatus = 'any';
+  const defaultStatus = 'all';
   const defaultSort = 'due';
 
   const chips = [];

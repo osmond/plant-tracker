@@ -4,7 +4,7 @@ function setupDOM() {
   document.body.innerHTML = `
     <div id="plant-grid"></div>
     <select id="room-filter"><option value="all">All</option><option value="Kitchen">Kitchen</option><option value="Patio">Patio</option></select>
-    <select id="status-filter"><option value="all">All</option><option value="water">Watering</option><option value="any">Needs Care</option></select>
+    <select id="status-filter"><option value="all" selected>All</option><option value="water">Watering</option><option value="any">Needs Care</option></select>
     <input id="search-input" value="" />
     <div id="summary"></div>
     <select id="sort-toggle"></select>
