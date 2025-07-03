@@ -1977,11 +1977,15 @@ async function init(){
   if (filterToggle && filterPanel) {
     filterToggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      filterPanel.classList.toggle('show');
+      const expanded = filterPanel.classList.toggle('show');
+      filterToggle.setAttribute('aria-expanded', expanded);
+      filterPanel.setAttribute('aria-hidden', !expanded);
     });
     document.addEventListener('click', (e) => {
       if (!filterPanel.contains(e.target) && e.target !== filterToggle) {
         filterPanel.classList.remove('show');
+        filterToggle.setAttribute('aria-expanded', 'false');
+        filterPanel.setAttribute('aria-hidden', 'true');
       }
     });
   }
@@ -2250,7 +2254,11 @@ async function init(){
       loadPlants();
       checkArchivedLink();
       updateFilterChips();
-      if (filterPanel) filterPanel.classList.remove('show');
+      if (filterPanel) {
+        filterPanel.classList.remove('show');
+        filterToggle.setAttribute('aria-expanded', 'false');
+        filterPanel.setAttribute('aria-hidden', 'true');
+      }
     });
   }
   if (sortToggle) {
@@ -2258,7 +2266,11 @@ async function init(){
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
-      if (filterPanel) filterPanel.classList.remove('show');
+      if (filterPanel) {
+        filterPanel.classList.remove('show');
+        filterToggle.setAttribute('aria-expanded', 'false');
+        filterPanel.setAttribute('aria-hidden', 'true');
+      }
     });
   }
   if (dueFilterEl) {
@@ -2267,7 +2279,11 @@ async function init(){
       loadPlants();
       updateFilterChips();
       statusChip.classList.toggle('active', dueFilterEl.value === 'any');
-      if (filterPanel) filterPanel.classList.remove('show');
+      if (filterPanel) {
+        filterPanel.classList.remove('show');
+        filterToggle.setAttribute('aria-expanded', 'false');
+        filterPanel.setAttribute('aria-hidden', 'true');
+      }
     });
   }
 

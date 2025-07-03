@@ -139,7 +139,7 @@
     <div class="toolbar my-4 p-4 bg-card rounded-lg shadow">
         <label for="search-input" class="sr-only">Search Plants</label>
         <input type="text" id="search-input" class="toolbar__search" placeholder="Search by name or species" />
-        <button id="filter-toggle" type="button" class="chip" data-count="0">Filters</button>
+        <button id="filter-toggle" type="button" class="chip" data-count="0" aria-haspopup="true" aria-expanded="false" aria-controls="filter-panel">Filters</button>
 
         <button id="status-chip" type="button" class="chip active">Needs Care</button>
         <select id="sort-toggle" class="hidden">
@@ -149,7 +149,7 @@
             <option value="added">Date Added</option>
         </select>
         <div class="overflow-container relative">
-            <div id="filter-panel" class="overflow-menu">
+            <div id="filter-panel" class="overflow-menu" role="menu" aria-hidden="true">
                 <select id="room-filter" class="border rounded-md">
                     <option value="all" selected>All Rooms</option>
                 </select>
