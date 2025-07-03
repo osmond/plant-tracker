@@ -2116,14 +2116,10 @@ async function init(){
     }
   }
   if (toolbar) {
+    // keep the search field visible while scrolling
     let lastScrollY = window.scrollY;
     window.addEventListener('scroll', () => {
       const current = window.scrollY;
-      if (current > lastScrollY) {
-        toolbar.classList.add('search-collapsed');
-      } else {
-        toolbar.classList.remove('search-collapsed');
-      }
       lastScrollY = current;
     });
   }
