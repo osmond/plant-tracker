@@ -2063,12 +2063,9 @@ async function init(){
   }
   const statusLabel = document.getElementById('status-chip-label');
   if (statusChip && dueFilterEl && statusLabel) {
-    if (dueFilterEl.value === 'any') {
-      statusChip.classList.add('active');
-      statusLabel.textContent = 'Show All';
-    } else {
-      statusLabel.textContent = 'Needs Care';
-    }
+    const isNeedsCare = dueFilterEl.value === 'any';
+    statusChip.classList.toggle('active', isNeedsCare);
+    statusLabel.textContent = isNeedsCare ? 'Show All' : 'Needs Care';
 
     statusChip.addEventListener('click', () => {
       const active = statusChip.classList.toggle('active');
