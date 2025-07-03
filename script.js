@@ -2052,7 +2052,7 @@ async function init(){
     });
   }
   if (statusChip && dueFilterEl) {
-    if (dueFilterEl.value === 'any') statusChip.classList.add('active');
+    statusChip.classList.toggle('active', dueFilterEl.value === 'any');
     statusChip.addEventListener('click', () => {
       const active = statusChip.classList.toggle('active');
       dueFilterEl.value = active ? 'any' : 'all';
