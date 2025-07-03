@@ -143,45 +143,49 @@
             <button type="button" id="clear-search" class="clear-search-btn hidden" aria-label="Clear search"></button>
         </div>
 
-        <button id="status-chip" type="button" class="chip active">Needs Care</button>
-        <button id="filter-toggle" type="button" class="chip" data-count="0" aria-haspopup="true" aria-expanded="false" aria-controls="filter-panel">Filters</button>
+        <div class="data-controls flex flex-wrap items-center gap-2">
+            <button id="filter-toggle" type="button" class="chip" data-count="0" aria-haspopup="true" aria-expanded="false" aria-controls="filter-panel">Filters</button>
 
-        <select id="sort-toggle" class="hidden">
-            <option value="name">Name (A-Z)</option>
-            <option value="name-desc">Name (Z-A)</option>
-            <option value="due" selected>Due Date</option>
-            <option value="added">Date Added</option>
-        </select>
-        <div class="overflow-container relative">
-            <div id="filter-panel" class="overflow-menu" role="menu" aria-hidden="true">
-                <select id="room-filter" class="border rounded-md">
-                    <option value="all" selected>All Rooms</option>
-                </select>
-                <select id="status-filter" class="border rounded-md hidden">
-                    <option value="all">Status: All</option>
-                    <option value="water">Watering</option>
-                    <option value="fert">Fertilizing</option>
-                    <option value="any" selected>Needs Care</option>
-                </select>
-                <div id="type-filters" class="flex flex-wrap gap-2 text-sm">
-                    <label class="quick-filter"><input type="checkbox" value="succulent">Succulent</label>
-                    <label class="quick-filter"><input type="checkbox" value="herb">Herb</label>
-                    <label class="quick-filter"><input type="checkbox" value="flower">Flowering</label>
-                    <label class="quick-filter"><input type="checkbox" value="vegetable">Vegetable</label>
-                    <label class="quick-filter"><input type="checkbox" value="houseplant">Houseplant</label>
-                    <label class="quick-filter"><input type="checkbox" value="cacti">Cacti</label>
+            <select id="sort-toggle" class="hidden">
+                <option value="name">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+                <option value="due" selected>Due Date</option>
+                <option value="added">Date Added</option>
+            </select>
+            <div class="overflow-container relative">
+                <div id="filter-panel" class="overflow-menu" role="menu" aria-hidden="true">
+                    <select id="room-filter" class="border rounded-md">
+                        <option value="all" selected>All Rooms</option>
+                    </select>
+                    <select id="status-filter" class="border rounded-md hidden">
+                        <option value="all">Status: All</option>
+                        <option value="water">Watering</option>
+                        <option value="fert">Fertilizing</option>
+                        <option value="any" selected>Needs Care</option>
+                    </select>
+                    <div id="type-filters" class="flex flex-wrap gap-2 text-sm">
+                        <label class="quick-filter"><input type="checkbox" value="succulent">Succulent</label>
+                        <label class="quick-filter"><input type="checkbox" value="herb">Herb</label>
+                        <label class="quick-filter"><input type="checkbox" value="flower">Flowering</label>
+                        <label class="quick-filter"><input type="checkbox" value="vegetable">Vegetable</label>
+                        <label class="quick-filter"><input type="checkbox" value="houseplant">Houseplant</label>
+                        <label class="quick-filter"><input type="checkbox" value="cacti">Cacti</label>
+                    </div>
+
                 </div>
-
             </div>
+
+            <div id="filter-chips" class="toolbar__chips"></div>
+            <span id="filter-summary" class="filter-summary"></span>
         </div>
 
-        <div id="filter-chips" class="toolbar__chips"></div>
-        <span id="filter-summary" class="filter-summary"></span>
-
-        <div class="toolbar__view view-toggle-group" id="view-toggle">
-            <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"><span class="visually-hidden">Grid view</span></button>
-            <button type="button" data-view="list" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"><span class="visually-hidden">List view</span></button>
-            <button type="button" data-view="text" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"><span class="visually-hidden">Text view</span></button>
+        <div class="primary-actions flex items-center gap-2 ml-auto">
+            <button id="status-chip" type="button" class="btn btn-primary active">Needs Care</button>
+            <div class="toolbar__view view-toggle-group" id="view-toggle">
+                <button type="button" data-view="grid" class="view-toggle-btn btn btn-primary"><span class="visually-hidden">Grid view</span></button>
+                <button type="button" data-view="list" class="view-toggle-btn btn btn-primary"><span class="visually-hidden">List view</span></button>
+                <button type="button" data-view="text" class="view-toggle-btn btn btn-primary"><span class="visually-hidden">Text view</span></button>
+            </div>
         </div>
     </div>
     <div id="rainfall-info" class="p-4 bg-card rounded-lg mb-4 hidden"></div>

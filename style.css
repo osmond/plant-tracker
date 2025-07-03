@@ -398,16 +398,12 @@ button:focus {
 
 .view-toggle-group {
     display: inline-flex;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
     overflow: hidden;
-    background: var(--color-card);
+    border-radius: var(--radius);
 }
 
 
 .view-toggle-btn {
-    background: var(--color-card);
-    color: var(--color-text);
     border: none;
     padding: 0.5rem 0.75rem;
     display: flex;
@@ -1205,13 +1201,12 @@ button:focus {
 
 /* Distinct styling for the Needs Care toggle */
 #status-chip {
-  border-color: var(--color-plant);
-  color: var(--color-plant);
-  background: transparent;
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
 }
 
 #status-chip.active {
-  color: var(--color-surface);
   background: var(--color-plant);
   border-color: var(--color-plant);
 }
