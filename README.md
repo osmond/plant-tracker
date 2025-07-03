@@ -219,9 +219,9 @@ Selections apply instantly and the panel hides after you choose an option.
 Next to the search box is a **Needs Care** button that acts as a quick filter.
 The button displays a badge with the number of plants that currently have tasks
 due. Clicking it hides all other plants and shows only those that require
-watering or fertilizing. While active, the button switches to a ghost-style
-**Show All** appearance so you can easily return to the full list with another
-click.
+watering or fertilizing. When the filter is active, the button takes on a
+ghost-style appearance to indicate it's toggled on. Click it again to return to
+the full list.
 
 The search box in the toolbar now stays visible while you scroll so you can
 quickly look up plants at any time.
