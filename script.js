@@ -2000,7 +2000,7 @@ async function init(){
     filterBtn.addEventListener('click', () => {
       if (filterPanel) filterPanel.classList.toggle('show');
     });
-    updateFilterChips();
+  }
 
   if (filterToggle && filterPanel) {
     filterToggle.innerHTML = ICONS.filter + ' Filters';
@@ -2012,7 +2012,7 @@ async function init(){
       if (!filterPanel.contains(e.target) && e.target !== filterToggle) {
         filterPanel.classList.remove('show');
       }
-
+    });
   }
   if (statusChip && dueFilterEl) {
     if (dueFilterEl.value === 'any') statusChip.classList.add('active');
@@ -2308,7 +2308,6 @@ async function init(){
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
-      if (filterPanel) filterPanel.classList.remove('show');
     });
   });
 
