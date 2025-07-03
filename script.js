@@ -474,6 +474,20 @@ function saveFilterPrefs() {
   if (rf) localStorage.setItem('roomFilter', rf.value);
   if (sf) localStorage.setItem('sortPref', sf.value);
   if (df) localStorage.setItem('statusFilter', df.value);
+  const locations = Array.from(document.querySelectorAll('#location-filters input:checked'))
+    .map(cb => cb.value);
+  const types = Array.from(document.querySelectorAll('#type-filters input:checked'))
+    .map(cb => cb.value);
+  const care = Array.from(document.querySelectorAll('#care-filters input:checked'))
+    .map(cb => cb.value);
+  const pot = Array.from(document.querySelectorAll('#pot-size-filters input:checked'))
+    .map(cb => cb.value);
+  const recent = document.getElementById('recently-added')?.checked;
+  localStorage.setItem('locationFilters', JSON.stringify(locations));
+  localStorage.setItem('typeFilters', JSON.stringify(types));
+  localStorage.setItem('careFilters', JSON.stringify(care));
+  localStorage.setItem('potFilters', JSON.stringify(pot));
+  localStorage.setItem('recentOnly', recent ? '1' : '0');
 }
 
 function loadFilterPrefs() {
@@ -486,12 +500,36 @@ function loadFilterPrefs() {
   if (rf) rf.value = rVal !== null ? rVal : 'all';
   if (sf) sf.value = sVal !== null ? sVal : 'due';
   if (df) df.value = dVal !== null ? dVal : 'any';
+  const locs = JSON.parse(localStorage.getItem('locationFilters') || '[]');
+  const types = JSON.parse(localStorage.getItem('typeFilters') || '[]');
+  const care = JSON.parse(localStorage.getItem('careFilters') || '[]');
+  const pots = JSON.parse(localStorage.getItem('potFilters') || '[]');
+  const recent = localStorage.getItem('recentOnly') === '1';
+  document.querySelectorAll('#location-filters input').forEach(cb => {
+    cb.checked = locs.includes(cb.value);
+  });
+  document.querySelectorAll('#type-filters input').forEach(cb => {
+    cb.checked = types.includes(cb.value);
+  });
+  document.querySelectorAll('#care-filters input').forEach(cb => {
+    cb.checked = care.includes(cb.value);
+  });
+  document.querySelectorAll('#pot-size-filters input').forEach(cb => {
+    cb.checked = pots.includes(cb.value);
+  });
+  const recentEl = document.getElementById('recently-added');
+  if (recentEl) recentEl.checked = recent;
 }
 
 function clearFilterPrefs() {
   localStorage.removeItem('roomFilter');
   localStorage.removeItem('sortPref');
   localStorage.removeItem('statusFilter');
+  localStorage.removeItem('locationFilters');
+  localStorage.removeItem('typeFilters');
+  localStorage.removeItem('careFilters');
+  localStorage.removeItem('potFilters');
+  localStorage.removeItem('recentOnly');
 }
 
 function saveHistoryValue(key, value) {
@@ -1279,6 +1317,11 @@ async function loadPlants() {
   const statusFilter = document.getElementById('status-filter')
     ? document.getElementById('status-filter').value
     : 'all';
+  const locFilters = Array.from(document.querySelectorAll('#location-filters input:checked')).map(cb => cb.value);
+  const typeFilters = Array.from(document.querySelectorAll('#type-filters input:checked')).map(cb => cb.value);
+  const careFilters = Array.from(document.querySelectorAll('#care-filters input:checked')).map(cb => cb.value);
+  const potFilters = Array.from(document.querySelectorAll('#pot-size-filters input:checked')).map(cb => cb.value);
+  const recentOnly = document.getElementById('recently-added')?.checked;
 
   const rainEl = document.getElementById('rainfall-info');
   if (rainEl) {
@@ -1330,6 +1373,44 @@ async function loadPlants() {
     if (statusFilter === 'water' && !waterDue) return false;
     if (statusFilter === 'fert' && !fertDue) return false;
     if (statusFilter === 'any' && !(waterDue || fertDue)) return false;
+
+    let plantLocation = 'inside';
+    if (plant.room) {
+      const r = plant.room.toLowerCase();
+      if (r.includes('outside') || r.includes('garden') || r.includes('yard')) plantLocation = 'outside';
+      else if (r.includes('office')) plantLocation = 'office';
+      else if (r.includes('library')) plantLocation = 'library';
+    }
+    if (locFilters.length && !locFilters.includes(plantLocation)) return false;
+
+    if (typeFilters.length) {
+      let ptype = plant.plant_type || '';
+      if (ptype === 'flower') ptype = 'flower';
+      if (!typeFilters.includes(ptype)) return false;
+    }
+
+    if (potFilters.length) {
+      const amt = parseFloat(plant.water_amount || 0);
+      let cat = 'small';
+      if (amt > 5) cat = 'large';
+      else if (amt > 2) cat = 'medium';
+      if (!potFilters.includes(cat)) return false;
+    }
+
+    if (careFilters.length) {
+      const soonest = getSoonestDueDate(plant);
+      const nextFert = getNextFertDate(plant);
+      const statuses = [];
+      if (waterDue && soonest < startOfToday) statuses.push('overdue-water');
+      if ((waterDue || fertDue) && soonest >= startOfToday && soonest < startOfTomorrow) statuses.push('due-today');
+      if (nextFert && nextFert > today && nextFert <= addDays(today,3)) statuses.push('fertilizing-soon');
+      if (!careFilters.some(c => statuses.includes(c))) return false;
+    }
+
+    if (recentOnly) {
+      const created = new Date(plant.created_at);
+      if ((today - created) / 86400000 > 30) return false;
+    }
     return true;
   });
 
@@ -2218,6 +2299,18 @@ async function init(){
       if (filterPanel) filterPanel.classList.remove('show');
     });
   }
+
+  const extraFilterInputs = document.querySelectorAll(
+    '#location-filters input,#type-filters input,#care-filters input,#pot-size-filters input,#recently-added'
+  );
+  extraFilterInputs.forEach(input => {
+    input.addEventListener('change', () => {
+      saveFilterPrefs();
+      loadPlants();
+      updateFilterChips();
+      if (filterPanel) filterPanel.classList.remove('show');
+    });
+  });
 
 
 
