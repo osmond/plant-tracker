@@ -1505,8 +1505,11 @@ async function loadPlants() {
 
   const statusChip = document.getElementById('status-chip');
   if (statusChip) {
-    statusChip.textContent = 'Needs Care' +
-      (statusChip.classList.contains('active') ? ` (${needsCareCount})` : '');
+    if (statusChip.classList.contains('active')) {
+      statusChip.textContent = `Needs Care (${needsCareCount})`;
+    } else {
+      statusChip.textContent = 'Show All';
+    }
   }
 
   const sortBy = document.getElementById('sort-toggle').value || 'due';
@@ -2052,12 +2055,19 @@ async function init(){
     });
   }
   if (statusChip && dueFilterEl) {
-    statusChip.classList.toggle('active', dueFilterEl.value === 'any');
+
+    if (dueFilterEl.value === 'any') {
+      statusChip.classList.add('active');
+    } else {
+      statusChip.textContent = 'Show All';
+    }
+
     statusChip.addEventListener('click', () => {
       const active = statusChip.classList.toggle('active');
       dueFilterEl.value = active ? 'any' : 'all';
       saveFilterPrefs();
       updateFilterChips();
+      statusChip.textContent = active ? 'Needs Care' : 'Show All';
       loadPlants();
     });
   }
