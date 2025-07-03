@@ -104,7 +104,7 @@ test('loadPlants filters by plant type', async () => {
 
 test('status chip text toggles based on filter', async () => {
   setupDOM();
-  document.body.innerHTML += `<button id="status-chip" class="chip active">Needs Care</button>`;
+  document.body.innerHTML += `<button id="status-chip" class="btn btn-primary active">Needs Care</button>`;
   jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
   const plants = [
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
