@@ -139,17 +139,9 @@
     <div class="toolbar my-4 p-4 bg-card rounded-lg shadow">
         <label for="search-input" class="sr-only">Search Plants</label>
         <input type="text" id="search-input" class="toolbar__search" placeholder="Search by name or species" />
-        <button id="filter-toggle" type="button" class="chip" data-count="0">Filters</button>
-
-        <button id="status-chip" type="button" class="chip active">Needs Care</button>
-        <select id="sort-toggle" class="hidden">
-            <option value="name">Name (A-Z)</option>
-            <option value="name-desc">Name (Z-A)</option>
-            <option value="due" selected>Due Date</option>
-            <option value="added">Date Added</option>
-        </select>
-        <div class="overflow-container relative">
-            <div id="filter-panel" class="overflow-menu">
+        <details id="filters" class="relative" open>
+            <summary id="filter-toggle" class="chip sm:hidden" data-count="0">Filters</summary>
+            <div id="filter-row" class="flex flex-wrap gap-2">
                 <select id="room-filter" class="border rounded-md">
                     <option value="all" selected>All Rooms</option>
                 </select>
@@ -172,9 +164,16 @@
                     <label class="quick-filter"><input type="checkbox" value="due-today">Due Today</label>
                     <label class="quick-filter"><input type="checkbox" value="fertilizing-soon">Fertilizing Soon</label>
                 </div>
-                
             </div>
-        </div>
+        </details>
+
+        <button id="status-chip" type="button" class="chip active">Needs Care</button>
+        <select id="sort-toggle" class="hidden">
+            <option value="name">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="due" selected>Due Date</option>
+            <option value="added">Date Added</option>
+        </select>
 
         <div class="toolbar__view view-toggle-group" id="view-toggle">
             <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"><span class="visually-hidden">Grid view</span></button>
