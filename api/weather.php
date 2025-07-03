@@ -59,7 +59,9 @@ $result = [
     'temp_max' => $weatherData['main']['temp_max'] ?? null,
     'desc' => $weatherData['weather'][0]['main'] ?? '',
     'icon' => $weatherData['weather'][0]['icon'] ?? '',
-    'rain' => $rain
+    'rain' => $rain,
+    'sunset' => $weatherData['sys']['sunset'] ?? null,
+    'sunrise' => $weatherData['sys']['sunrise'] ?? null
 ];
 http_response_code(200);
 echo json_encode($result);
