@@ -1907,6 +1907,7 @@ async function init(){
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('status-filter');
   const statusChip = document.getElementById('status-chip');
+  const filterPanel = document.getElementById('filter-panel');
   const filterToggle = document.getElementById('filter-toggle');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
@@ -1973,6 +1974,17 @@ async function init(){
   }
 
 
+  if (filterToggle && filterPanel) {
+    filterToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      filterPanel.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!filterPanel.contains(e.target) && e.target !== filterToggle) {
+        filterPanel.classList.remove('show');
+      }
+    });
+  }
   if (statusChip && dueFilterEl) {
     if (dueFilterEl.value === 'any') statusChip.classList.add('active');
     statusChip.addEventListener('click', () => {
@@ -2238,6 +2250,7 @@ async function init(){
       loadPlants();
       checkArchivedLink();
       updateFilterChips();
+      if (filterPanel) filterPanel.classList.remove('show');
     });
   }
   if (sortToggle) {
@@ -2245,6 +2258,7 @@ async function init(){
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
+      if (filterPanel) filterPanel.classList.remove('show');
     });
   }
   if (dueFilterEl) {
@@ -2253,6 +2267,7 @@ async function init(){
       loadPlants();
       updateFilterChips();
       statusChip.classList.toggle('active', dueFilterEl.value === 'any');
+      if (filterPanel) filterPanel.classList.remove('show');
     });
   }
 

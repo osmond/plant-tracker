@@ -1083,6 +1083,9 @@ button:focus {
 
 
 
+.overflow-container {
+  position: relative;
+}
 
 .toolbar {
   display: flex;
@@ -1129,24 +1132,6 @@ button:focus {
   border-radius: var(--radius);
 }
 
-#filter-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--spacing);
-}
-
-#filters summary {
-  list-style: none;
-  cursor: pointer;
-}
-
-@media (min-width: 640px) {
-  #filters summary {
-    display: none;
-  }
-}
-
 .toolbar__chips {
   display: flex;
   flex-wrap: wrap;
@@ -1190,6 +1175,40 @@ button:focus {
 
 
 
+.overflow-menu {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + var(--spacing));
+  left: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  padding: calc(var(--spacing));
+  z-index: 10;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+
+.overflow-menu::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 2.25rem;
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--color-border) transparent transparent transparent;
+}
+.overflow-menu::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 2.25rem;
+  transform: translateY(-1px);
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--color-surface) transparent transparent transparent;
+}
 
 .filter-chip {
   background: var(--color-chip-bg);
@@ -1262,6 +1281,9 @@ button:focus {
   }
 }
 
+.overflow-menu.show {
+  display: flex;
+}
 
 .plant-info {
   display: flex;
