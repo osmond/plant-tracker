@@ -1953,6 +1953,8 @@ async function init(){
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
+  const toolbar = document.querySelector('.toolbar');
+  const searchInputEl = document.getElementById('search-input');
 
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
@@ -2083,7 +2085,19 @@ async function init(){
     }
   });
 
-  document.getElementById('search-input').addEventListener('input',loadPlants);
+  if (searchInputEl) searchInputEl.addEventListener('input', loadPlants);
+  if (toolbar) {
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+      const current = window.scrollY;
+      if (current > lastScrollY) {
+        toolbar.classList.add('search-collapsed');
+      } else {
+        toolbar.classList.remove('search-collapsed');
+      }
+      lastScrollY = current;
+    });
+  }
   document.getElementById('cancel-edit').onclick=resetForm;
   if (photoDrop && photoInput) {
     function previewFile(file) {
