@@ -2286,7 +2286,8 @@ async function init(){
 
   if (viewButtons.length) {
     viewButtons.forEach(btn => {
-      if (!btn.innerHTML.trim()) {
+      // Inject icons if they haven't been added yet
+      if (!btn.querySelector('svg')) {
         const label = btn.dataset.view.charAt(0).toUpperCase() + btn.dataset.view.slice(1);
         btn.innerHTML = `${ICONS[btn.dataset.view] || ''}<span class="visually-hidden">${label}</span>`;
       }
