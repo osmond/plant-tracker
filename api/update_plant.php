@@ -112,10 +112,19 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         mkdir($uploadDir, 0755, true);
     }
 
-    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     $extension = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
 
     if (in_array($extension, $allowedExtensions)) {
+        if (@getimagesize($_FILES['photo']['tmp_name']) === false) {
+            @http_response_code(400);
+            echo json_encode(['error' => 'Invalid image file']);
+            if (!getenv('TESTING')) {
+                exit;
+            }
+            return;
+        }
+
         $fileName = uniqid('plant_', true) . '.' . $extension;
         $dest = $uploadDir . $fileName;
 
