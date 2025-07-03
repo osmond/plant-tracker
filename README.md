@@ -201,6 +201,12 @@ water amount input so you can enter your own value. When editing a plant that
 already has a custom amount saved, the box starts checked and your value is
 preserved until you clear it.
 
+### Filtering Plants
+The toolbar includes a **Filters** button on smaller screens. Clicking it reveals
+dropdowns for narrowing the list. You can filter by **room**, show plants that
+need specific **care** (watering or fertilizing), and change the **sort** order.
+Selections apply instantly and the panel hides after you choose an option.
+
 ## Service Worker
 A small service worker caches the key pages and scripts so the app still opens when you're offline. During development you may need to disable the cache or bump the version in `service-worker.js` to pick up changes.
 
