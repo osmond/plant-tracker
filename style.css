@@ -1692,6 +1692,11 @@ button:focus {
   }
 }
 
+/* Collapse search bar when toolbar has the search-collapsed class */
+.toolbar.search-collapsed .toolbar__search {
+  display: none;
+}
+
 
 
 
