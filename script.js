@@ -567,7 +567,7 @@ function applyViewMode() {
 
 
 function updateFilterChips() {
-  const filterBtn = document.getElementById('filter-btn');
+  const filterToggle = document.getElementById('filter-toggle');
   const room = document.getElementById('room-filter')?.value || 'all';
   const status = document.getElementById('status-filter')?.value || 'any';
   const sort = document.getElementById('sort-toggle')?.value || 'due';
@@ -579,9 +579,9 @@ function updateFilterChips() {
   if (status !== defaultStatus) activeCount++;
   if (sort !== defaultSort) activeCount++;
 
-  if (filterBtn) {
-    filterBtn.innerHTML = ICONS.filter;
-    filterBtn.setAttribute('data-count', activeCount);
+  if (filterToggle) {
+    filterToggle.innerHTML = ICONS.filter + ' Filters';
+    filterToggle.setAttribute('data-count', activeCount);
   }
   return activeCount;
 }
@@ -1930,7 +1930,6 @@ async function init(){
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('status-filter');
   const statusChip = document.getElementById('status-chip');
-  const filterBtn = document.getElementById('filter-btn');
   const filterPanel = document.getElementById('filter-panel');
   const filterToggle = document.getElementById('filter-toggle');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
@@ -1996,17 +1995,8 @@ async function init(){
     undoBtn.innerHTML = ICONS.undo + ' Undo';
   }
 
-  if (filterBtn) {
-    filterBtn.addEventListener('click', () => {
-      if (filterPanel) filterPanel.classList.toggle('show');
-    });
-
-    updateFilterChips();
-
-  }
 
   if (filterToggle && filterPanel) {
-    filterToggle.innerHTML = ICONS.filter + ' Filters';
     filterToggle.addEventListener('click', (e) => {
       e.stopPropagation();
       filterPanel.classList.toggle('show');
