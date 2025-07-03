@@ -1206,6 +1206,17 @@ button:focus {
   border-color: var(--color-primary);
 }
 
+/* Distinct styling for the Needs Care toggle */
+#status-chip {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: transparent;
+}
+
+#status-chip.active {
+  color: var(--color-surface);
+}
+
 
 
 
