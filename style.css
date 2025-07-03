@@ -1117,6 +1117,10 @@ button:focus {
   border-radius: var(--radius);
 }
 
+.toolbar.search-collapsed .toolbar__search {
+  display: none;
+}
+
 #search-input {
   border-radius: var(--radius);
   transition: border-color 0.2s, box-shadow 0.2s;
