@@ -23,6 +23,7 @@
  --color-water:  #3B82F6;  /* Blue-500 for icons and borders */
  --color-water-hover:#3B82F6;  /* Blue-500 for borders */
  --color-water-text:#1E40AF; /* Blue-800 for text */
+ --color-water-icon: #60A5FA; /* Blue-400 for droplet icon */
   /* fertilizing due indicator now uses a white background */
   --color-fert-bg: #ffffff;
   --color-highlight: #faf089;
@@ -1673,7 +1674,7 @@ button:focus {
 
 
 .icon-water {
-  color: var(--color-water);
+  color: var(--color-water-icon);
 }
 
 .icon-water path {
