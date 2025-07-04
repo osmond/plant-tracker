@@ -1638,6 +1638,10 @@ button:focus {
   color: var(--color-success);
 }
 
+#summary .summary-item.active .icon {
+  color: var(--color-sprout-bg);
+}
+
 
 
 /* urgency tag overlaid on the plant photo */
