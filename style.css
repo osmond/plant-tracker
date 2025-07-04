@@ -1224,8 +1224,8 @@ button:focus {
   border-color: var(--color-primary);
 }
 
-/* Distinct styling for the Needs Care toggle as a filled button */
-#status-chip:not(.btn-ghost) {
+/* Distinct styling for the Needs Care toggle when active */
+#status-chip.active {
   background: var(--color-plant);
   color: var(--color-surface);
   border: 1px solid var(--color-plant);

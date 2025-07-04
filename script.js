@@ -584,7 +584,10 @@ function updateFilterChips() {
       remove() { roomEl.value = 'all'; }
     });
   }
-  if (statusEl && statusEl.value !== defaultStatus && statusEl.selectedIndex >= 0) {
+  if (statusEl &&
+      statusEl.value !== defaultStatus &&
+      statusEl.value !== 'any' &&
+      statusEl.selectedIndex >= 0) {
     chips.push({
       text: statusEl.options[statusEl.selectedIndex].textContent,
       remove() { statusEl.value = defaultStatus; }
@@ -605,7 +608,9 @@ function updateFilterChips() {
   });
 
   if (chipsEl) {
-    chipsEl.innerHTML = '';
+    Array.from(chipsEl.children).forEach(child => {
+      if (child.id !== 'status-chip') chipsEl.removeChild(child);
+    });
     chips.forEach(c => {
       const chip = document.createElement('span');
       chip.className = 'filter-chip';
@@ -623,7 +628,7 @@ function updateFilterChips() {
     });
   }
 
-  const activeCount = chips.length;
+  const activeCount = chips.length + (statusEl && statusEl.value === 'any' ? 1 : 0);
 
   if (summaryEl) {
     summaryEl.textContent = activeCount ? `${activeCount} active` : 'No filters';
@@ -1517,10 +1522,9 @@ async function loadPlants() {
   const statusLabel = document.getElementById('status-chip-label');
   const statusChip = document.getElementById('status-chip');
   if (statusChip && statusLabel) {
-    const active = statusChip.classList.contains('active');
-    statusLabel.textContent = 'Needs Care';
-    statusChip.classList.toggle('btn-ghost', active);
-    statusChip.classList.toggle('btn-primary', !active);
+    const isNeedsCare = statusFilter === 'any';
+    statusChip.classList.toggle('active', isNeedsCare);
+    statusLabel.textContent = isNeedsCare ? 'Show All' : 'Needs Care';
   }
 
   const sortBy = document.getElementById('sort-toggle').value || 'due';
@@ -2067,28 +2071,17 @@ async function init(){
   }
   const statusLabel = document.getElementById('status-chip-label');
   if (statusChip && dueFilterEl && statusLabel) {
-
-    if (dueFilterEl.value === 'any') {
-      statusChip.classList.add('active', 'btn-ghost');
-      statusChip.classList.remove('btn-primary');
-    } else {
-      statusChip.classList.remove('btn-ghost');
-      statusChip.classList.add('btn-primary');
-    }
-
     const isNeedsCare = dueFilterEl.value === 'any';
     statusChip.classList.toggle('active', isNeedsCare);
-    statusLabel.textContent = 'Needs Care';
-
+    statusLabel.textContent = isNeedsCare ? 'Show All' : 'Needs Care';
 
     statusChip.addEventListener('click', () => {
-      const active = statusChip.classList.toggle('active');
+      const active = !statusChip.classList.contains('active');
       dueFilterEl.value = active ? 'any' : 'all';
       saveFilterPrefs();
       updateFilterChips();
-      statusChip.classList.toggle('btn-ghost', active);
-      statusChip.classList.toggle('btn-primary', !active);
-      statusLabel.textContent = 'Needs Care';
+      statusChip.classList.toggle('active', active);
+      statusLabel.textContent = active ? 'Show All' : 'Needs Care';
       loadPlants();
     });
   }
@@ -2400,8 +2393,7 @@ async function init(){
       updateFilterChips();
       const isAny = dueFilterEl.value === 'any';
       statusChip.classList.toggle('active', isAny);
-      statusChip.classList.toggle('btn-ghost', isAny);
-      statusChip.classList.toggle('btn-primary', !isAny);
+      statusLabel.textContent = isAny ? 'Show All' : 'Needs Care';
       if (filterPanel) {
         filterPanel.classList.remove('show');
         filterToggle.setAttribute('aria-expanded', 'false');
