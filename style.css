@@ -1744,6 +1744,19 @@ button:focus {
 }
 #archived-link.hidden { display: none; }
 
+#clear-filters {
+  font-size: 0.875rem;
+  margin-left: calc(var(--spacing) * 1);
+  color: var(--color-text);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+#clear-filters.hidden { display: none; }
+
 .suggestions {
   position: absolute;
   top: 100%;

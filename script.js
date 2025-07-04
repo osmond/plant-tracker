@@ -567,6 +567,7 @@ function updateFilterChips() {
   const filterToggle = document.getElementById('filter-toggle');
   const chipsEl = document.getElementById('filter-chips');
   const summaryEl = document.getElementById('filter-summary');
+  const clearBtn = document.getElementById('clear-filters');
 
   const roomEl = document.getElementById('room-filter');
   const statusEl = document.getElementById('status-filter');
@@ -632,6 +633,9 @@ function updateFilterChips() {
   if (filterToggle) {
     filterToggle.innerHTML = ICONS.filter + ' Filters';
     filterToggle.setAttribute('data-count', activeCount);
+  }
+  if (clearBtn) {
+    clearBtn.classList.toggle('hidden', activeCount === 0);
   }
   return activeCount;
 }
@@ -2008,6 +2012,7 @@ async function init(){
   const toolbar = document.querySelector('.toolbar');
   const searchInputEl = document.getElementById('search-input');
   const clearSearchBtn = document.getElementById('clear-search');
+  const clearFiltersBtn = document.getElementById('clear-filters');
   const segButtons = document.querySelectorAll('#status-segments button');
 
   const calendarEl = document.getElementById('calendar');
@@ -2421,6 +2426,19 @@ async function init(){
       updateFilterChips();
     });
   });
+
+  if (clearFiltersBtn) {
+    clearFiltersBtn.addEventListener('click', () => {
+      if (roomFilter) roomFilter.value = 'all';
+      if (dueFilterEl) dueFilterEl.value = 'all';
+      document.querySelectorAll('#type-filters input').forEach(cb => {
+        cb.checked = false;
+      });
+      saveFilterPrefs();
+      loadPlants();
+      updateFilterChips();
+    });
+  }
 
 
 
