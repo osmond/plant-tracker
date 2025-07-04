@@ -10,24 +10,8 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#8d67d6">
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              bg: 'var(--color-bg)',
-              card: 'var(--color-card)',
-              primary: '#8d67d6',
-              accent: '#ffa5d8',
-              text: 'var(--color-text)'
-            }
-          }
-        },
-        plugins: [tailwindcss.forms]
-      }
-    </script>
+    <meta name="theme-color" content="#4caf50">
+    <link rel="stylesheet" href="css/tailwind.css">
 </head>
 <body class="bg-bg text-text min-h-screen">
     <div id="login-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;display:none;z-index:10000;align-items:center;justify-content:center;">
@@ -39,21 +23,14 @@
     </div>
     <h1 class="app-title text font-bold px-4 py-0">
         My Plant Tracker
-        <button id="show-add-form" class="bg-primary text-white rounded-md px-4 py-2 ml-auto"></button>
-        <button id="export-all" class="bg-primary text-white rounded-md px-4 py-2 ml-2"></button>
-        <button id="toggle-search" class="bg-primary text-white rounded-md px-4 py-2 ml-2">Search</button>
+        <button id="show-add-form" class="ml-auto"><span class="visually-hidden">Add Plant</span></button>
+        <button id="export-all" class="ml-2"><span class="visually-hidden">Export</span></button>
     </h1>
     <div id="summary" class="p-4 bg-card rounded-lg mb-4">
         <!-- counts will go here -->
     </div>
 
-    <div id="search-container" class="mb-4 hidden flex items-center gap-2">
-        <label for="search-input" class="sr-only">Search Plants</label>
-        <div class="relative flex-grow">
-            <input type="text" id="search-input" placeholder="Search by name or species" class="w-full p-2 border rounded-md" />
-        </div>
-        <button id="close-search" type="button" class="bg-gray-200 rounded-md px-3 py-2"></button>
-    </div>
+
 
 
     <form id="plant-form" class="flex flex-col gap-6 p-4 bg-card rounded-lg shadow hidden" enctype="multipart/form-data">
@@ -62,8 +39,9 @@
             <legend class="font-semibold">Plant Basics</legend>
             <div>
                 <label for="name" class="block mb-1">Plant Name <span class="required-star" aria-hidden="true">*</span></label>
-                <input type="text" name="name" id="name" list="common-list" placeholder="Plant Name" class="w-full border rounded-md p-2" required />
-                <datalist id="common-list"></datalist>
+                <div class="relative">
+                    <input type="text" name="name" id="name" placeholder="Plant Name" class="w-full border rounded-md p-2" autocomplete="off" required />
+                </div>
                 <div class="error" id="name-error"></div>
             </div>
             <div>
@@ -86,8 +64,12 @@
                 <label for="species" class="block mb-1">Scientific Name <span class="required-star" aria-hidden="true">*</span></label>
                 <input type="text" name="species" id="species" list="species-list" placeholder="Scientific Name" class="w-full border rounded-md p-2" required />
                 <datalist id="species-list"></datalist>
+                <ul id="name-suggestions" class="suggestions hidden"></ul>
                 <div class="error" id="species-error"></div>
                 <div id="taxonomy-info" class="taxonomy-info"></div>
+                <input type="hidden" name="scientific_name" id="scientific_name">
+                <input type="hidden" name="thumbnail_url" id="thumbnail_url">
+                <img id="name-preview" class="mt-2 w-16 h-16 hidden" alt="preview">
             </div>
         </fieldset>
 
@@ -117,6 +99,7 @@
                 <p class="helper">Enter ounces of water</p>
                 <div class="error" id="water_amount-error"></div>
             </div>
+            <p id="auto-water-display" class="helper hidden">Auto-calculated: <span id="auto-water-oz">0</span> oz</p>
             <div>
                 <label for="watering_frequency" class="block mb-1">Watering Frequency (days) <span class="required-star" aria-hidden="true">*</span></label>
                 <input type="number" name="watering_frequency" id="watering_frequency" class="w-full border rounded-md p-2" min="1" max="365" required />
@@ -155,53 +138,85 @@
         </details>
 
         <div class="flex gap-2 justify-end mt-4 sticky bottom-0 bg-card p-4">
-            <button type="button" id="cancel-edit" class="bg-gray-200 rounded-md px-4 py-2 hidden inline-flex items-center gap-2">Cancel</button>
-            <button type="submit" id="submit-btn" class="bg-primary text-white rounded-md px-4 py-2 inline-flex items-center gap-2">Add Plant</button>
+            <button type="button" id="cancel-edit" class="btn btn-secondary">Cancel</button>
+            <button type="submit" id="submit-btn" class="btn btn-primary">Add Plant</button>
         </div>
     </form>
 
-    <div class="my-4 flex flex-wrap gap-2 p-4">
-        <select id="room-filter" class="border rounded-md">
-            <option value="all" selected>All Rooms</option>
+    <div class="toolbar my-4 p-4 bg-card rounded-lg shadow">
+        <div class="search-wrapper">
+            <label for="search-input" class="sr-only">Search Plants</label>
+            <input type="text" id="search-input" class="toolbar__search" placeholder="Search by name or species" />
+            <button type="button" id="clear-search" class="clear-search-btn hidden" aria-label="Clear search"></button>
+        </div>
+        <button type="button" id="clear-filters" class="clear-filters hidden">Clear Filters</button>
+
+        <button id="filter-toggle" type="button" class="chip" data-count="0" aria-haspopup="true" aria-expanded="false" aria-controls="filter-panel">Filters</button>
+
+        <select id="sort-toggle" class="hidden">
+            <option value="name">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="due" selected>Due Date</option>
+            <option value="added">Date Added</option>
         </select>
-        <select id="sort-toggle" class="border rounded-md">
-            <option value="name">Sort by: Name</option>
-            <option value="due" selected>Sort by: Due Date</option>
-        </select>
-        <select id="due-filter" class="border rounded-md">
-            <option value="all">Show: All</option>
-            <option value="water">Needs Watering</option>
-            <option value="fert">Needs Fertilizing</option>
-            <option value="any" selected>Needs Care</option>
-        </select>
-        <div id="view-toggle" class="view-toggle-group inline-flex rounded-lg border border-gray-300 overflow-hidden">
-            <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
-            <button type="button" data-view="list" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
-            <button type="button" data-view="text" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"></button>
+        <div class="overflow-container relative">
+            <div id="filter-panel" class="overflow-menu" role="menu" aria-hidden="true">
+                <select id="room-filter" class="border rounded-md">
+                    <option value="all" selected>All Rooms</option>
+                </select>
+                <select id="status-filter" class="border rounded-md hidden">
+                    <option value="all" selected>Status: All</option>
+                    <option value="water">Watering</option>
+                    <option value="fert">Fertilizing</option>
+                    <option value="any">Needs Care</option>
+                </select>
+                <div id="type-filters" class="flex flex-wrap gap-2 text-sm">
+                    <label class="quick-filter"><input type="checkbox" value="succulent">Succulent</label>
+                    <label class="quick-filter"><input type="checkbox" value="herb">Herb</label>
+                    <label class="quick-filter"><input type="checkbox" value="flower">Flowering</label>
+                    <label class="quick-filter"><input type="checkbox" value="vegetable">Vegetable</label>
+                    <label class="quick-filter"><input type="checkbox" value="houseplant">Houseplant</label>
+                    <label class="quick-filter"><input type="checkbox" value="cacti">Cacti</label>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="filter-chips" class="toolbar__chips"></div>
+        <span id="filter-summary" class="filter-summary"></span>
+
+        <div class="toolbar__view view-toggle-group" id="view-toggle">
+            <button type="button" data-view="grid" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"><span class="visually-hidden">Grid view</span></button>
+            <button type="button" data-view="list" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"><span class="visually-hidden">List view</span></button>
+            <button type="button" data-view="text" class="view-toggle-btn px-4 py-2 text-gray-600 hover:bg-gray-100 focus:z-10"><span class="visually-hidden">Text view</span></button>
         </div>
     </div>
     <div id="rainfall-info" class="p-4 bg-card rounded-lg mb-4 hidden"></div>
 
+
+
     <!-- Undo delete snackbar -->
-    <div id="undo-banner" class="mb-4" role="alert">
+    <div id="undo-banner" class="mb-4" role="status" aria-live="polite" aria-hidden="true">
         <span id="undo-message">Plant deleted.</span>
         <button id="undo-btn">Undo</button>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-hidden="true"></div>
 
     <div id="plant-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4"></div>
-    <button id="archived-link" type="button" class="text-sm hidden"></button>
+    <div id="loading-overlay" class="loading-overlay hidden" aria-hidden="true"></div>
+    <button id="archived-link" type="button" class="text-sm hidden"><span class="visually-hidden">Archived</span></button>
 
 
     <h2 id="calendar-heading" class="text-xl font-semibold p-4">Upcoming Tasks</h2>
     <div id="calendar-nav" class="flex justify-end gap-2 px-4 pb-2">
-        <button id="prev-week" class="bg-primary text-white rounded-md px-4 py-2"></button>
-        <button id="next-week" class="bg-primary text-white rounded-md px-4 py-2"></button>
+        <button id="prev-week" class="btn btn-primary"><span class="visually-hidden">Previous Week</span></button>
+        <button id="next-week" class="btn btn-primary"><span class="visually-hidden">Next Week</span></button>
     </div>
     <div id="calendar" class="p-4"></div>
 
-    <script type="module" src="script.js?v=1.0"></script>
+
+    <script type="module" src="script.js"></script>
 
     <script>
       if ("serviceWorker" in navigator) {
@@ -210,6 +225,7 @@
         });
       }
     </script>
+
 
   <script>
       const script = document.createElement('script');
@@ -243,6 +259,7 @@
       });
       window.addEventListener('load', checkLogin);
     </script>
+
 
   </body>
 </html>

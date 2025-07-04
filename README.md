@@ -1,19 +1,33 @@
 # Plant Tracker
 
-Plant Tracker is a lightweight PHP application for managing your houseplants. It stores
-plant records in a MySQL database and provides a simple web interface to track
-watering and fertilizing. The project also includes small calculators for estimating
-water requirements using local weather data.
+Plant Tracker is a small PHP web app that helps you keep your houseplants healthy. It stores each plant in a MySQL database and lets you tick off watering and fertilizing tasks right in your browser. A couple of tiny calculators use local weather data to estimate how much water your plants need.
+
+<details>
+<summary>Technical TL;DR</summary>
+
+- API endpoints live under `api/` and communicate with MySQL using PDO.
+- OpenWeather data is cached by `weather_cache.php` for one hour.
+- Images you upload are stored in `uploads/` with their paths saved in the database.
+- Unit tests reside in `tests/` for PHP and `__tests__/` for JavaScript.
+- Helper scripts such as the migration runner are in `scripts/`.
+- A simple service worker provides offline support and pre-caches key files.
+
+</details>
+
+*Overview of the main interface listing plants and upcoming tasks.*
+
+## Prerequisites
+- [PHP](https://www.php.net/manual/en/install.php)
+- [MySQL](https://dev.mysql.com/doc/refman/8.0/en/installing.html)
+- [Node.js](https://nodejs.org/en/download/)
 
 ## Setup
-
-1. Clone the repository and install PHP and MySQL.
-2. Copy `config.example.php` to `config.php` and update the values:
+1. Clone this repository.
+2. Copy `config.example.php` to `config.php` and edit the settings, including your OpenWeather API key:
 
 ```php
 'openweather_key' => 'YOUR_API_KEY',
 'location'        => 'City,Country',
-'ra'              => 20.0,
 'kc'              => 0.8,
 'kc_map' => [
     'succulent'  => 0.3,
@@ -42,49 +56,85 @@ water requirements using local weather data.
 ],
 ```
 
+   Extraterrestrial radiation (RA) is calculated automatically from the
+   latitude returned by OpenWeather and the current day of year, so no
+   configuration value is required.
+
    The OpenWeather API key and location are required for the water calculators.
-3. Configure your MySQL connection in `db.php` or using environment variables in
-   the testing stubs located under `tests/`.
+   The client now calls `api/weather.php`, which proxies requests to
+   OpenWeather so the key is never exposed in the browser.
+3. Copy `db.example.php` to `db.php` and add your MySQL credentials.
 4. Run the database migrations:
 
 ```bash
 php scripts/run_migrations.php
 ```
 
-5. Start a local server from the project root:
+5. Start the PHP development server and open the app:
 
 ```bash
 php -S localhost:8000
 ```
 
-   Then open `http://localhost:8000/index.html` in your browser.
+   Then visit `http://localhost:8000/index.html` in your browser.
+   To jump directly to a particular plant when the page loads, append
+   `#plant-{id}` to the URL, for example `http://localhost:8000/index.html#plant-5`.
+   **Note:** Opening `index.html` directly as a file won't work because the JavaScript needs the PHP API endpoints.
 
-   **Note:** Opening `index.html` directly as a file won't work because the
-   JavaScript needs the PHP API endpoints. Always access the app through the
-   local server above.
+## Deployment
+Deploying the app to a server running PHP is straightforward:
+
+1. Copy this repository to your host, either by cloning it with `git` or uploading the files via FTP.
+2. On the server, create `config.php` and `db.php` from their respective `*.example.php` templates and adjust the settings.
+3. Run `php scripts/run_migrations.php` to initialize the database.
+4. Ensure the `uploads/` directory is writable by the web server so image uploads work.
+
+## Project Structure
+- `api/` holds the PHP endpoints used by the front end.
+- `uploads/` stores images you attach to plants.
+- `scripts/` contains helper scripts such as the migration runner.
 
 ## Running Tests
+PHPUnit exercises the API code. Make sure the `phpunit` command is
+available—either by installing it globally with Composer,
 
-PHPUnit tests are provided for the API endpoints. Run them from the project root:
+```bash
+composer global require phpunit/phpunit
+```
+
+or by downloading the
+[PHPUnit PHAR](https://phpunit.de/getting-started/phpunit-9.html) and running it
+with `php phpunit.phar`. Once installed, run the suite from the project root:
 
 ```bash
 phpunit
 ```
 
-JavaScript unit tests are written with Jest and live in the `__tests__/`
-directory. They exercise the front‑end utility functions and DOM helpers.
-Install the Node dependencies and run them with:
+It loads a stub database config from `tests/db_stub.php` unless you override
+`DB_CONFIG`.
+
+The JavaScript helpers use Jest. Install the Node packages first:
 
 ```bash
 npm install
+```
+
+then run:
+
+```bash
 npm test
 ```
 
-Together the suites validate basic input handling for the API as well as
-core front‑end behaviour.
+## Building CSS
+The project uses Tailwind CSS for styling. If you modify `tailwind.config.js` or
+update HTML templates, regenerate the stylesheet with:
+
+```bash
+npm run build:css
+```
+This command outputs `css/tailwind.css`.
 
 ## Calculators
-
 Two small utilities help estimate watering needs:
 
 - `calculator.php` &mdash; calculates daily water for a single pot using weather data.
@@ -92,25 +142,85 @@ Two small utilities help estimate watering needs:
 
 Both rely on the coefficients defined in `config.php`.
 
-Weather data retrieved from OpenWeather is cached for one hour to limit API
-requests and speed up page loads. The calculators automatically use the cached
-response if available.
+Weather data retrieved from OpenWeather is cached for one hour to limit API requests and speed up page loads. The calculators automatically use the cached response if available.
+
+## How the Watering Calculator Works
+
+### Temperature input
+We pull today’s minimum and maximum air temperatures (°C) from OpenWeatherMap and compute the average:
+
+```
+Tavg = (Tmin + Tmax) / 2
+```
+
+### Reference evapotranspiration (ET₀)
+We apply the Hargreaves equation:
+
+```
+ET0 = 0.0023 × (Tavg + 17.8) × √(Tmax – Tmin) × Ra
+```
+
+with Ra (extraterrestrial radiation) defaulting to 20 MJ·m⁻²·day⁻¹ in `config.php`.
+
+### Crop adjustment (ETc)
+Multiply ET₀ by the plant’s crop coefficient (Kc) from your `kc_map` (e.g. 0.3 for succulents, 0.8 for houseplants) to get ETc:
+
+```
+ETc = Kc × ET0
+```
+
+### Volume conversion
+Convert depth (mm) to volume (mL) using the pot’s surface area:
+
+```
+area_cm2 = π × (diameter_cm / 2)²
+water_mL = ETc × area_cm2 × 0.1
+```
+
+Finally, we convert to U.S. fluid ounces (1 oz = 29.5735 mL) and round to one decimal.
+
+### References
+- FAO-56 “Crop Evapotranspiration” (Allen et al., 1998)
+- Hargreaves & Samani (1985)
+- `script.js` (`calculateET0` function)
+- `config.php` (default Ra & Kc values)
 
 ## Basic Usage
+Use the main interface at `index.html` to add plants, mark them as watered or fertilized, and upload photos. The API endpoints under `api/` are used by the front‑end JavaScript (`script.js`) to interact with the database.
 
-Use the main interface at `index.html` to add plants, mark them as watered or
-fertilized, and upload photos. The API endpoints under `api/` are used by the
-front‑end JavaScript (`script.js`) to interact with the database.
+In list or text view you can swipe right on a plant card to complete all due tasks (watering and fertilizing) at once. The card slides with your finger and smoothly snaps back if you don't pass the threshold.
 
-In list or text view you can swipe right on a plant card to complete all due
-tasks (watering and fertilizing) at once. The card slides with your finger
-and smoothly snaps back if you don't pass the threshold.
+You can also export your current plant list as JSON or CSV using the download buttons at the top of the page.
+The **Analytics** link now opens the analytics page in a new tab with charts of historical ET₀ and water use.
 
-You can also export your current plant list as JSON or CSV using the download
-buttons at the top of the page.
+The plant form offers live suggestions for scientific names as you type a common
+plant name. Selecting a scientific name fills the field and loads a thumbnail
+preview fetched from the
+[iNaturalist](https://api.inaturalist.org) API. Thumbnails now use the API's
+`medium_url` variant (~368×500 pixels) so they remain sharp when displayed.
+The previous OpenFarm integration was removed because that service is no longer
+available. Ensure outbound access to `api.inaturalist.org` is allowed or the
+suggestions and images won't appear.
 
+Below the **Water Amount** field you'll now see an **Auto-calculated** line
+showing the recommended volume in ounces and milliliters. This value updates
+whenever you change the pot diameter, pick a different plant type, or when new
+weather data is retrieved. The `Override auto-calculate` checkbox reveals the
+water amount input so you can enter your own value. When editing a plant that
+already has a custom amount saved, the box starts checked and your value is
+preserved until you clear it.
 
+### Filtering Plants
+The toolbar includes a **Filters** button on smaller screens. Clicking it reveals
+dropdowns for narrowing the list. You can filter by **room**, show plants that
+need specific **care** (watering or fertilizing), and change the **sort** order.
+Selections apply instantly and the panel hides after you choose an option.
+
+The search box in the toolbar now stays visible while you scroll so you can
+quickly look up plants at any time.
 
 ## Service Worker
+A small service worker caches the key pages and scripts so the app still opens when you're offline. During development you may need to disable the cache or bump the version in `service-worker.js` to pick up changes.
 
-The app uses a simple service worker to cache core assets for offline access. During development you may need to update the cache when making changes. Bump the cache version in `service-worker.js` or run **Disable cache** in your browser's developer tools and reload to ensure the latest files are served.
+
+

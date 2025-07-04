@@ -24,15 +24,13 @@ node_modules/
 # PHPUnit result cache
 .phpunit.result.cache
 
-# PHP unit cache
-.phpunit.result.cache
-
 # Editor swap files and other temp files
 *~
 *.swp
 *.swo
 *.tmp
 db.php
+config.php
 uploads/
 !uploads/.htaccess
 plant-tracker-starter.code-workspace

@@ -4,24 +4,39 @@ let deleteTimer = null;
 let lastCompletedAction = null;
 let actionTimer = null;
 
-import { calculateET0, computeArea } from "./js/calc.js";
+import { calculateET0, computeArea, computeRA } from "./js/calc.js";
 import { parseLocalDate, addDays, formatDateShort } from "./js/dates.js";
 import { showToast, toggleLoading } from "./js/dom.js";
+import { ICONS } from "./js/icons.js";
+
+const indexParams = new URLSearchParams(window.location.search);
+let focusPlantId = null;
+const hashMatch = location.hash.match(/^#plant-(\d+)/);
+if (hashMatch) {
+  focusPlantId = hashMatch[1];
+} else {
+  focusPlantId = indexParams.get('plant_id');
+}
 
 // show archived plants instead of active ones
 let showArchive = false;
 let archivedCache = null;
 let plantCache = [];
 
+// track counts for active filters
+let filterCounts = {
+  watering: 0,
+  fertilizing: 0,
+  needsCare: 0,
+};
+
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
+const FILTER_PREF_VERSION = 2;
 // track weather info so the summary can include current conditions
 let currentWeather = null;
 let currentWeatherIcon = null;
 let currentWeatherDesc = null;
-
-// public OpenWeather API key provided by user
-const WEATHER_API_KEY = '2aa3ade8428368a141f7951420570c16';
 
 // number of milliliters in one US fluid ounce
 const ML_PER_US_FL_OUNCE = 29.5735;
@@ -32,10 +47,6 @@ const WEATHER_UPDATE_INTERVAL = 60 * 60 * 1000; // 1 hour
 
 // configuration values mirrored from config.php
 const DEFAULT_KC = 0.8;
-// GBIF backbone usageKey for Plantae
-const PLANTAE_KEY = 6;
-// number of specimen photos to show for taxonomy lookup
-const SPECIMEN_PHOTO_LIMIT = 8;
 const KC_MAP = {
   succulent: 0.3,
   houseplant: 0.8,
@@ -46,6 +57,7 @@ const KC_MAP = {
 
 let weatherTminC = null;
 let weatherTmaxC = null;
+let raValue = null;
 
 // forecast rainfall totals in inches (initialized to zeros in case fetch fails)
 let rainForecastInches = [0, 0, 0];
@@ -56,12 +68,12 @@ let userWaterFreqEdited = false;
 let calendarStartDate = new Date();
 calendarStartDate.setHours(0, 0, 0, 0);
 
-// simple in-memory caches for taxonomy lookups
-const classificationCache = new Map();
-const commonNamesCache = new Map();
-const synonymsCache = new Map();
-const specimenPhotosCache = new Map();
-const speciesKeyCache = new Map();
+// simple in-memory caches for plant lookups
+const iNatCache = new Map();
+const plantInfoCache = new Map();
+
+// DOM elements used across functions
+let suggestionList = null;
 
 
 function debounce(fn, delay = 300) {
@@ -114,10 +126,12 @@ function showUndoActionBanner(plant, actions, prevWater, prevFert) {
   }
   banner.classList.add('success');
   banner.classList.add('show');
+  banner.setAttribute('aria-hidden', 'false');
   clearTimeout(actionTimer);
   actionTimer = setTimeout(() => {
     banner.classList.remove('show');
     banner.classList.remove('success');
+    banner.setAttribute('aria-hidden', 'true');
     lastCompletedAction = null;
   }, 5000);
 }
@@ -178,8 +192,8 @@ function formatWaterAmount(ml) {
   const ounces = ml / ML_PER_US_FL_OUNCE;
   const mlDisplay = Math.round(ml);
   const ozDisplay = ounces.toFixed(1).replace(/\.0$/, '');
-  return `<span class="oz-line">${ozDisplay}oz</span>` +
-         `<span class="ml-line">(${mlDisplay} ml)</span>`;
+  return `<span class="oz-line">${ozDisplay}oz</span> / ` +
+         `<span class="ml-line">${mlDisplay} ml</span>`;
 }
 
 
@@ -198,204 +212,185 @@ function hexToRgb(hex) {
 }
 async function fetchScientificNames(query) {
   if (!query) return [];
-  if (speciesKeyCache.has(`s:${query}`)) return speciesKeyCache.get(`s:${query}`);
+  if (iNatCache.has(query)) return iNatCache.get(query);
   try {
-    const params = new URLSearchParams({
-      q: query,
-      limit: '10',
-      kingdomKey: PLANTAE_KEY,
-      rank: 'SPECIES',
-      status: 'ACCEPTED'
+    const res = await fetch(`https://api.inaturalist.org/v1/taxa/autocomplete?q=${encodeURIComponent(query)}`);
+    if (!res.ok) return [];
+    const json = await res.json();
+    const names = [...new Set((json.results || []).map(t => t.name).filter(Boolean))];
+    iNatCache.set(query, names);
+    return names;
+  } catch (e) {
+    return [];
+  }
+}
+
+function renderTaxonomyData(data) {
+  const infoEl = document.getElementById('taxonomy-info');
+  if (!infoEl) return;
+  infoEl.textContent = '';
+  const frag = document.createDocumentFragment();
+  if (data.commonName) {
+    const div = document.createElement('div');
+    const strong = document.createElement('strong');
+    strong.textContent = 'Common Name:';
+    div.appendChild(strong);
+    div.appendChild(document.createTextNode(' ' + data.commonName));
+    frag.appendChild(div);
+  }
+  if (data.sciName) {
+    const div = document.createElement('div');
+    const strong = document.createElement('strong');
+    strong.textContent = 'Scientific Name:';
+    div.appendChild(strong);
+    div.appendChild(document.createTextNode(' ' + data.sciName));
+    frag.appendChild(div);
+  }
+  if (data.photos && data.photos.length) {
+    const galleryDiv = document.createElement('div');
+    galleryDiv.className = 'specimen-gallery';
+    data.photos.forEach((url, idx) => {
+      const imgEl = document.createElement('img');
+      imgEl.src = url;
+      imgEl.alt = data.sciName || '';
+      imgEl.loading = 'lazy';
+      if (idx === 0) imgEl.classList.add('selected');
+      galleryDiv.appendChild(imgEl);
     });
-    const res = await fetch(`https://api.gbif.org/v1/species/search?${params}`);
-    if (!res.ok) return [];
-    const json = await res.json();
-    const names = (json.results || [])
-      .map(r => r.scientificName)
-      .filter(Boolean);
-    speciesKeyCache.set(`s:${query}`, names);
-    return names;
-  } catch (e) {
-    return [];
+    frag.appendChild(galleryDiv);
   }
+  infoEl.appendChild(frag);
 }
 
-async function fetchCommonNameSuggestions(query) {
-  if (!query) return [];
-  const key = await getSpeciesKey(query);
-  if (!key) return [];
-  return fetchCommonNames(key);
-}
-
-async function getSpeciesKey(name) {
-  if (!name) return null;
-  if (speciesKeyCache.has(name)) return speciesKeyCache.get(name);
-  try {
-    const res = await fetch(
-      `https://api.gbif.org/v1/species/match?name=${encodeURIComponent(name)}`
-    );
-    if (!res.ok) return null;
-    const json = await res.json();
-    const key = json.usageKey || null;
-    speciesKeyCache.set(name, key);
-    return key;
-  } catch (e) {
-    return null;
-  }
-}
-
-async function fetchClassification(key) {
-  if (!key) return '';
-  if (classificationCache.has(key)) return classificationCache.get(key);
-  try {
-    const res = await fetch(`https://api.gbif.org/v1/species/${key}`);
-    if (!res.ok) return '';
-    const json = await res.json();
-    const parts = [
-      json.kingdom,
-      json.phylum,
-      json.class,
-      json.order,
-      json.family,
-      json.genus,
-      json.species,
-    ];
-    const out = parts.filter(Boolean).join(' \u203a ');
-    classificationCache.set(key, out);
-    return out;
-  } catch (e) {
-    return '';
-  }
-}
-
-async function fetchCommonNames(key) {
-  if (!key) return [];
-  if (commonNamesCache.has(key)) return commonNamesCache.get(key);
-  try {
-    const res = await fetch(`https://api.gbif.org/v1/species/${key}/vernacularNames`);
-    if (!res.ok) return [];
-    const json = await res.json();
-    const names = [...new Set((json.results || []).map(r => r.vernacularName).filter(Boolean))];
-    commonNamesCache.set(key, names);
-    return names;
-  } catch (e) {
-    return [];
-  }
-}
-
-async function fetchSynonyms(key) {
-  if (!key) return [];
-  if (synonymsCache.has(key)) return synonymsCache.get(key);
-  try {
-    const res = await fetch(`https://api.gbif.org/v1/species/${key}/synonyms`);
-    if (!res.ok) return [];
-    const json = await res.json();
-    const arr = Array.isArray(json) ? json : json.results || [];
-    const names = [...new Set(arr.map(r => r.scientificName).filter(Boolean))];
-    synonymsCache.set(key, names);
-    return names;
-  } catch (e) {
-    return [];
-  }
-}
-
-async function fetchSpecimenPhotos(key) {
-  if (!key) return [];
-  if (specimenPhotosCache.has(key)) return specimenPhotosCache.get(key);
-  try {
-    const imgRes = await fetch(
-      `https://api.gbif.org/v1/occurrence/search?taxonKey=${key}&mediaType=StillImage&limit=${SPECIMEN_PHOTO_LIMIT}`
-    );
-    if (!imgRes.ok) return [];
-    const data = await imgRes.json();
-    const photos = (data.results || [])
-      .flatMap(o => o.media || [])
-      .map(m => m.identifier)
-      .filter(Boolean);
-    specimenPhotosCache.set(key, photos);
-    return photos;
-  } catch (e) {
-    return [];
-  }
+function attachGalleryHandlers(gallery) {
+  const imageUrlInput = document.getElementById('thumbnail_url');
+  const previewImg = document.getElementById('name-preview');
+  if (!gallery) return;
+  gallery.querySelectorAll('img').forEach(imgEl => {
+    imgEl.addEventListener('click', () => {
+      gallery.querySelectorAll('img').forEach(i => i.classList.remove('selected'));
+      imgEl.classList.add('selected');
+      if (imageUrlInput) imageUrlInput.value = imgEl.src;
+      if (previewImg) {
+        previewImg.src = imgEl.src;
+        previewImg.classList.remove('hidden');
+      }
+    });
+  });
 }
 
 async function showTaxonomyInfo(name) {
   const infoEl = document.getElementById('taxonomy-info');
+  const imageUrlInput = document.getElementById('thumbnail_url');
+  const sciNameInput = document.getElementById('scientific_name');
+  const previewImg = document.getElementById('name-preview');
   if (!infoEl) return;
   infoEl.textContent = '';
-  const key = await getSpeciesKey(name);
-  if (!key) {
-    showToast("Couldn't fetch taxonomy data", true);
+  if (!name) {
+    if (imageUrlInput) imageUrlInput.value = '';
+    if (sciNameInput) sciNameInput.value = '';
+    if (previewImg) previewImg.classList.add('hidden');
     return;
   }
-  const [classification, common, syn, photos] = await Promise.all([
-    fetchClassification(key),
-    fetchCommonNames(key),
-    fetchSynonyms(key),
-    fetchSpecimenPhotos(key),
-  ]);
-  if (classification) {
-    const div = document.createElement('div');
-    const strong = document.createElement('strong');
-    strong.textContent = 'Classification:';
-    div.appendChild(strong);
-    div.appendChild(document.createTextNode(' ' + classification));
-    infoEl.appendChild(div);
+
+  if (plantInfoCache.has(name)) {
+    const cached = plantInfoCache.get(name);
+    renderTaxonomyData(cached);
+    if (imageUrlInput) imageUrlInput.value = cached.photos[0] || '';
+    if (sciNameInput) sciNameInput.value = cached.sciName || name;
+    if (previewImg && cached.photos[0]) {
+      previewImg.src = cached.photos[0];
+      previewImg.classList.remove('hidden');
+    }
+    const gallery = infoEl.querySelector('.specimen-gallery');
+    attachGalleryHandlers(gallery);
+    return;
   }
-  if (common && common.length) {
-    const div = document.createElement('div');
-    const strong = document.createElement('strong');
-    strong.textContent = 'Common Names:';
-    div.appendChild(strong);
-    div.appendChild(document.createTextNode(' ' + common.join(', ')));
-    infoEl.appendChild(div);
-  }
-  if (syn && syn.length) {
-    const div = document.createElement('div');
-    const strong = document.createElement('strong');
-    strong.textContent = 'Synonyms:';
-    div.appendChild(strong);
-    div.appendChild(document.createTextNode(' ' + syn.join(', ')));
-    infoEl.appendChild(div);
-  }
-  if (photos && photos.length) {
-    const gallery = document.createElement('div');
-    gallery.classList.add('specimen-gallery');
-    photos.forEach(url => {
-      const img = document.createElement('img');
-      img.src = url;
-      img.alt = name + ' specimen';
-      img.loading = 'lazy';
 
-      // allow user to select a specimen photo
-      img.addEventListener('click', () => {
-        // remove previous selection
-        gallery.querySelectorAll('img').forEach(i => i.classList.remove('selected'));
-        img.classList.add('selected');
+  try {
+    const res = await fetch(`https://api.inaturalist.org/v1/taxa/autocomplete?q=${encodeURIComponent(name)}`);
+    if (!res.ok) return;
+    const json = await res.json();
+    const taxon = (json.results || [])[0];
+    if (!taxon) return;
+    const data = {
+      commonName: taxon.preferred_common_name || '',
+      sciName: taxon.name || name,
+      photos: []
+    };
+    let photos = [];
+    try {
+      const detailRes = await fetch(`https://api.inaturalist.org/v1/taxa/${taxon.id}`);
+      if (detailRes.ok) {
+        const detailJson = await detailRes.json();
+        const detail = (detailJson.results || [])[0] || {};
+        // prefer the medium variant for sharper thumbnails, falling back to
+        // square if it is unavailable
+        photos = (detail.taxon_photos || []).map(tp => {
+          const p = tp.photo || {};
+          return p.medium_url || p.square_url;
+        }).filter(Boolean);
+      }
+    } catch (e) {}
+    if (!photos.length && taxon.default_photo) {
+      photos = [taxon.default_photo.medium_url || taxon.default_photo.square_url];
+    }
 
-        const photoUrlInput = document.getElementById('photo_url');
-        if (photoUrlInput) photoUrlInput.value = url;
+    data.photos = photos.slice(0, 10);
+    if (sciNameInput) sciNameInput.value = data.sciName;
+    if (imageUrlInput) imageUrlInput.value = data.photos[0] || '';
+    if (previewImg && data.photos[0]) {
+      previewImg.src = data.photos[0];
+      previewImg.classList.remove('hidden');
+    } else if (previewImg) {
+      previewImg.classList.add('hidden');
+    }
 
-        const drop = document.getElementById('photo-drop');
-        if (drop) {
-          drop.textContent = 'Using specimen photo';
-          drop.style.backgroundImage = `url(${url})`;
-          drop.style.backgroundSize = 'cover';
-          drop.style.color = 'white';
-        }
-      });
-
-      gallery.appendChild(img);
-    });
-    infoEl.appendChild(gallery);
+    renderTaxonomyData(data);
+    attachGalleryHandlers(infoEl.querySelector('.specimen-gallery'));
+    plantInfoCache.set(name, data);
+  } catch (e) {
+    // ignore network errors
   }
 }
+
+async function lookupPlants(query) {
+  if (!suggestionList) return;
+  suggestionList.innerHTML = '';
+  if (!query) {
+    suggestionList.classList.add('hidden');
+    return;
+  }
+  try {
+    const res = await fetch(`https://api.inaturalist.org/v1/taxa/autocomplete?q=${encodeURIComponent(query)}`);
+    if (!res.ok) return;
+    const json = await res.json();
+    (json.results || []).forEach(taxon => {
+      const li = document.createElement('li');
+      li.textContent = taxon.preferred_common_name || taxon.name;
+      li.dataset.sci = taxon.name || '';
+      li.dataset.img = (taxon.default_photo && (taxon.default_photo.medium_url || taxon.default_photo.square_url)) || '';
+      suggestionList.appendChild(li);
+    });
+    suggestionList.classList.toggle('hidden', suggestionList.children.length === 0);
+  } catch (e) {
+    // ignore network errors
+  }
+}
+
+const debouncedLookupPlants = debounce(lookupPlants, 300);
 
 function updateWaterAmount() {
   const diamInput = document.getElementById('pot_diameter');
   const unitSelect = document.getElementById('pot_diameter_unit');
   const typeSelect = document.getElementById('plant_type');
   const waterAmtInput = document.getElementById('water_amount');
+
+  const autoDisplay = document.getElementById('auto-water-oz');
+
+  const overrideCheck = document.getElementById('override_water');
+  const autoWater = document.getElementById('auto-water-oz');
+
   if (!diamInput || !waterAmtInput) return;
   const diam = parseFloat(diamInput.value);
   if (isNaN(diam) || weatherTminC === null || weatherTmaxC === null) return;
@@ -404,13 +399,35 @@ function updateWaterAmount() {
   const plantType = typeSelect ? typeSelect.value : null;
   let kc = DEFAULT_KC;
   if (plantType && KC_MAP[plantType] !== undefined) kc = KC_MAP[plantType];
-  const et0 = calculateET0(weatherTminC, weatherTmaxC);
+  const et0 = calculateET0(
+    weatherTminC,
+    weatherTmaxC,
+    raValue !== null ? raValue : undefined
+  );
   const etc = kc * et0;
   const area = computeArea(diamCm);
   const waterMl = etc * area * 0.1;
   const oz = waterMl / ML_PER_US_FL_OUNCE;
-  waterAmtInput.value = oz.toFixed(1);
+
+  const ozStr = oz.toFixed(1);
+  waterAmtInput.value = ozStr;
+  if (autoDisplay) autoDisplay.textContent = ozStr;
   waterAmtInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+  if (!overrideCheck || !overrideCheck.checked) {
+    waterAmtInput.value = oz.toFixed(1);
+    waterAmtInput.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  if (autoWater) autoWater.textContent = oz.toFixed(1);
+
+  if (editingPlantId) {
+    const body = new URLSearchParams({
+      plant_id: editingPlantId,
+      et0_mm: et0.toFixed(2),
+      water_ml: waterMl.toFixed(1)
+    });
+    fetch('api/log_et0.php', { method: 'POST', body }).catch(() => {});
+  }
 }
 
 function updateWateringFrequency() {
@@ -435,62 +452,67 @@ function updateWateringFrequency() {
   freqInput.value = Math.max(1, base);
 }
 
-const ICONS = {
-  trash: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
-  water: '<svg class="icon icon-water" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>',
-
-  fert: '<svg class="icon icon-sprout" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 512 512" fill="currentColor"><path d="M512 32c0 113.6-84.6 207.5-194.2 222c-7.1-53.4-30.6-101.6-65.3-139.3C290.8 46.3 364 0 448 0l32 0c17.7 0 32 14.3 32 32zM0 96C0 78.3 14.3 64 32 64l32 0c123.7 0 224 100.3 224 224l0 32 0 160c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-160C100.3 320 0 219.7 0 96z"/></svg>',
-  plant: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1.4 1.7c.217.289.65.84 1.725 1.274 1.093.44 2.885.774 5.834.528 2.02-.168 3.431.51 4.326 1.556C14.161 6.082 14.5 7.41 14.5 8.5q0 .344-.027.734C13.387 8.252 11.877 7.76 10.39 7.5c-2.016-.288-4.188-.445-5.59-2.045-.142-.162-.402-.102-.379.112.108.985 1.104 1.82 1.844 2.308 2.37 1.566 5.772-.118 7.6 3.071.505.8 1.374 2.7 1.75 4.292.07.298-.066.611-.354.715a.7.7 0 0 1-.161.042 1 1 0 0 1-1.08-.794c-.13-.97-.396-1.913-.868-2.77C12.173 13.386 10.565 14 8 14c-1.854 0-3.32-.544-4.45-1.435-1.124-.887-1.889-2.095-2.39-3.383-1-2.562-1-5.536-.65-7.28L.73.806z"/></svg>',
-
-  plus: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
-  edit: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
-  duplicate: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
-  cancel: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-  undo: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
-  check: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-  photo: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
-  sun: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
-  moon: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 0111.21 3 7 7 0 004.22 15.78 9 9 0 0021 12.79z"/></svg>',
-  search: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
-  calendar: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
-  rain: '<svg class="icon icon-rain" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16" y1="13" x2="16" y2="21"/><line x1="8" y1="13" x2="8" y2="21"/><line x1="12" y1="15" x2="12" y2="23"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>',
-  download: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
-  left: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
-  right: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>',
-  list: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3" y2="6"/><line x1="3" y1="12" x2="3" y2="12"/><line x1="3" y1="18" x2="3" y2="18"/></svg>',
-  grid: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
-  text: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>',
-  menu: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>',
-  archive: '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5" rx="2" ry="2"/><line x1="10" y1="12" x2="14" y2="12"/></svg>'
-};
 
 
 // --- filter preference helpers ---
 function saveFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
-  const df = document.getElementById('due-filter');
+  const df = document.getElementById('status-filter');
   if (rf) localStorage.setItem('roomFilter', rf.value);
   if (sf) localStorage.setItem('sortPref', sf.value);
-  if (df) localStorage.setItem('dueFilter', df.value);
+  if (df) localStorage.setItem('statusFilter', df.value);
+  const types = Array.from(
+    document.querySelectorAll('#type-filters input:checked')
+  ).map(cb => cb.value);
+  localStorage.setItem('typeFilters', JSON.stringify(types));
 }
 
 function loadFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
-  const df = document.getElementById('due-filter');
+  const df = document.getElementById('status-filter');
   const rVal = localStorage.getItem('roomFilter');
   const sVal = localStorage.getItem('sortPref');
-  const dVal = localStorage.getItem('dueFilter');
-  if (rf) rf.value = rVal !== null ? rVal : 'all';
-  if (sf) sf.value = sVal !== null ? sVal : 'due';
-  if (df) df.value = dVal !== null ? dVal : 'any';
+  const dVal = localStorage.getItem('statusFilter');
+  if (rf) {
+    const hasR = rVal !== null && Array.from(rf.options).some(o => o.value === rVal);
+    rf.value = hasR ? rVal : 'all';
+  }
+  if (sf) {
+    const hasS = sVal !== null && Array.from(sf.options).some(o => o.value === sVal);
+    sf.value = hasS ? sVal : 'due';
+  }
+  if (df) {
+    const hasD = dVal !== null && Array.from(df.options).some(o => o.value === dVal);
+    df.value = hasD ? dVal : 'all';
+  }
+  const types = JSON.parse(localStorage.getItem('typeFilters') || '[]');
+  document.querySelectorAll('#type-filters input').forEach(cb => {
+    cb.checked = types.includes(cb.value);
+  });
+
+
+  const recentEl = document.getElementById('recently-added');
+  if (recentEl) recentEl.checked = false;
+
 }
 
 function clearFilterPrefs() {
   localStorage.removeItem('roomFilter');
   localStorage.removeItem('sortPref');
-  localStorage.removeItem('dueFilter');
+  localStorage.removeItem('statusFilter');
+  localStorage.removeItem('typeFilters');
+
+}
+
+function migrateFilterPrefs() {
+  const stored = localStorage.getItem('filterPrefVersion');
+  if (stored !== String(FILTER_PREF_VERSION)) {
+    clearFilterPrefs();
+    localStorage.setItem('filterPrefVersion', String(FILTER_PREF_VERSION));
+  }
+
 }
 
 function saveHistoryValue(key, value) {
@@ -512,6 +534,7 @@ function loadHistoryValues(key) {
 
 // expose so it can be called externally
 window.clearFilterPrefs = clearFilterPrefs;
+window.migrateFilterPrefs = migrateFilterPrefs;
 
 function applyViewMode() {
   const container = document.getElementById('plant-grid');
@@ -523,6 +546,104 @@ function applyViewMode() {
     btn.classList.toggle('active', btn.dataset.view === viewMode);
   });
   localStorage.setItem('viewMode', viewMode);
+}
+
+
+
+function updateFilterChips() {
+  const filterToggle = document.getElementById('filter-toggle');
+  const chipsEl = document.getElementById('filter-chips');
+  const summaryEl = document.getElementById('filter-summary');
+  const clearBtn = document.getElementById('clear-filters');
+
+  const roomEl = document.getElementById('room-filter');
+  const statusEl = document.getElementById('status-filter');
+  const sortEl = document.getElementById('sort-toggle');
+
+  const defaultStatus = 'all';
+  const defaultSort = 'due';
+
+  const chips = [];
+  if (roomEl && roomEl.value !== 'all' && roomEl.selectedIndex >= 0) {
+    chips.push({
+      text: roomEl.options[roomEl.selectedIndex].textContent,
+      remove() { roomEl.value = 'all'; }
+    });
+  }
+  if (statusEl &&
+      statusEl.value !== defaultStatus &&
+      statusEl.value !== 'any' &&
+      statusEl.selectedIndex >= 0) {
+    const val = statusEl.value;
+    let label = statusEl.options[statusEl.selectedIndex].textContent;
+    if (val === 'water') label += ` (${filterCounts.watering})`;
+    if (val === 'fert') label += ` (${filterCounts.fertilizing})`;
+    chips.push({
+      text: label,
+      remove() { statusEl.value = defaultStatus; }
+    });
+  }
+  if (sortEl && sortEl.value !== defaultSort && sortEl.selectedIndex >= 0) {
+    chips.push({
+      text: sortEl.options[sortEl.selectedIndex].textContent,
+      remove() { sortEl.value = defaultSort; }
+    });
+  }
+  document.querySelectorAll('#type-filters input:checked').forEach(cb => {
+    const label = cb.closest('label');
+    chips.push({
+      text: label ? label.textContent.trim() : cb.value,
+      remove() { cb.checked = false; }
+    });
+  });
+
+  if (chipsEl) {
+    chipsEl.innerHTML = '';
+    chips.forEach(c => {
+      const chip = document.createElement('span');
+      chip.className = 'filter-chip';
+      chip.textContent = c.text;
+      const btn = document.createElement('button');
+      btn.innerHTML = ICONS.cancel;
+      btn.addEventListener('click', () => {
+        c.remove();
+        saveFilterPrefs();
+        loadPlants();
+        updateFilterChips();
+      });
+      chip.appendChild(btn);
+      chipsEl.appendChild(chip);
+    });
+  }
+
+  const activeCount = chips.length;
+
+  if (summaryEl) {
+    summaryEl.textContent = activeCount ? `${activeCount} active` : 'No filters';
+  }
+  if (filterToggle) {
+    filterToggle.innerHTML = ICONS.filter + ' Filters';
+    filterToggle.setAttribute('data-count', activeCount);
+  }
+  if (clearBtn) {
+    clearBtn.classList.toggle('hidden', activeCount === 0);
+  }
+  return activeCount;
+}
+
+function updateSegments(total, water, fert) {
+  const allEl = document.getElementById('seg-all-count');
+  const waterEl = document.getElementById('seg-water-count');
+  const fertEl = document.getElementById('seg-fert-count');
+  if (allEl) allEl.textContent = total;
+  if (waterEl) waterEl.textContent = water;
+  if (fertEl) fertEl.textContent = fert;
+  const statusVal = document.getElementById('status-filter')
+    ? document.getElementById('status-filter').value
+    : 'all';
+  document.querySelectorAll('#status-segments button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.status === statusVal);
+  });
 }
 
 
@@ -931,6 +1052,7 @@ function showUndoBanner(plant) {
   if (msg) msg.textContent = 'Plant deleted.';
   banner.classList.remove('success');
   banner.classList.add('show');
+  banner.setAttribute('aria-hidden', 'false');
   clearTimeout(deleteTimer);
   deleteTimer = setTimeout(async () => {
     await fetch('api/delete_plant.php', {
@@ -939,6 +1061,7 @@ function showUndoBanner(plant) {
       body: `id=${plant.id}`
     });
     banner.classList.remove('show');
+    banner.setAttribute('aria-hidden', 'true');
     lastDeletedPlant = null;
     loadPlants();
   }, 5000);
@@ -959,6 +1082,8 @@ async function updatePlantInline(plant, field, newValue) {
   data.append('last_watered', plant.last_watered || '');
   data.append('last_fertilized', plant.last_fertilized || '');
   data.append('photo_url', plant.photo_url || '');
+  data.append('scientific_name', plant.scientific_name || '');
+  data.append('thumbnail_url', plant.thumbnail_url || '');
 
   data.set(field, newValue);
 
@@ -990,6 +1115,8 @@ async function updatePlantPhoto(plant, file) {
   data.append('room', plant.room);
   data.append('last_watered', plant.last_watered || '');
   data.append('last_fertilized', plant.last_fertilized || '');
+  data.append('scientific_name', plant.scientific_name || '');
+  data.append('thumbnail_url', plant.thumbnail_url || '');
   data.append('photo', file);
 
   toggleLoading(true);
@@ -1034,43 +1161,7 @@ async function duplicatePlant(plant) {
 }
 
 // --- weather helper ---
-async function fetch3DayForecastRain(lat, lon) {
-  const url =
-    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}` +
-    `&appid=${WEATHER_API_KEY}`;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) return [0, 0, 0];
-    const json = await res.json();
-    if (!json.list) return [0, 0, 0];
-    const daily = [0, 0, 0];
-    const now = new Date();
-    for (const entry of json.list) {
-      const t = new Date(entry.dt * 1000);
-      const diff = Math.floor((t - now) / 86400000);
-      if (diff >= 0 && diff < 3) {
-        daily[diff] += (entry.rain?.['3h'] || 0) / 25.4;
-      }
-    }
-    return daily;
-  } catch (e) {
-    showToast("Couldn't fetch rainfall forecast", true);
-    return [0, 0, 0];
-  }
-}
-
-async function fetchRainData(lat, lon) {
-  try {
-    const next = await fetch3DayForecastRain(lat, lon);
-    rainForecastInches = next.length === 3 ? next : [0, 0, 0];
-    loadPlants();
-  } catch (e) {
-    console.error('Rain fetch failed', e);
-    rainForecastInches = [0, 0, 0];
-    showToast("Couldn't fetch rainfall forecast", true);
-    loadPlants();
-  }
-}
+// Weather data is fetched server-side to keep the API key private.
 
 function fetchWeather() {
   const addWeather = (temp, desc, icon) => {
@@ -1082,14 +1173,18 @@ function fetchWeather() {
 
   const fetchByCoords = async (lat, lon) => {
   try {
-      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${WEATHER_API_KEY}`);
+      const res = await fetch(`api/weather.php?lat=${lat}&lon=${lon}`);
       if (!res.ok) return;
       const data = await res.json();
-      weatherTminC = (data.main.temp_min - 32) * 5/9;
-      weatherTmaxC = (data.main.temp_max - 32) * 5/9;
-      addWeather(Math.round(data.main.temp), data.weather[0].main, data.weather[0].icon);
+      weatherTminC = (data.temp_min - 32) * 5/9;
+      weatherTmaxC = (data.temp_max - 32) * 5/9;
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 0);
+      const doy = Math.floor((now - start) / 86400000);
+      raValue = computeRA(lat, doy);
+      rainForecastInches = Array.isArray(data.rain) && data.rain.length === 3 ? data.rain : [0, 0, 0];
+      addWeather(Math.round(data.temp), data.desc, data.icon);
       updateWaterAmount();
-      fetchRainData(lat, lon);
     } catch (e) {
       console.error('Weather fetch failed', e);
       showToast("Couldn't fetch weather data; water amounts may be off", true);
@@ -1122,18 +1217,26 @@ function populateForm(plant) {
       form.water_amount.value = oz.toFixed(1).replace(/\.0$/, '');
       const oc = document.getElementById('override_water');
       const wg = document.getElementById('water-amount-group');
+      const ad = document.getElementById('auto-water-display');
+      const av = document.getElementById('auto-water-oz');
       if (oc && wg) {
         oc.checked = true;
         wg.classList.remove('hidden');
+        if (ad) ad.classList.add('hidden');
       }
+      if (av) av.textContent = oz.toFixed(1).replace(/\.0$/, '');
     } else {
       form.water_amount.value = '';
       const oc = document.getElementById('override_water');
       const wg = document.getElementById('water-amount-group');
+      const ad = document.getElementById('auto-water-display');
+      const av = document.getElementById('auto-water-oz');
       if (oc && wg) {
         oc.checked = false;
         wg.classList.add('hidden');
+        if (ad) ad.classList.remove('hidden');
       }
+      if (av) av.textContent = '';
     }
   }
   form.fertilizing_frequency.value = plant.fertilizing_frequency;
@@ -1142,6 +1245,13 @@ function populateForm(plant) {
   form.last_fertilized.value = plant.last_fertilized;
   const photoUrlInput = document.getElementById('photo_url');
   if (photoUrlInput) photoUrlInput.value = plant.photo_url || '';
+  const thumbInput = document.getElementById('thumbnail_url');
+  if (thumbInput) thumbInput.value = plant.thumbnail_url || '';
+  const previewImg = document.getElementById('name-preview');
+  if (previewImg && plant.thumbnail_url) {
+    previewImg.src = plant.thumbnail_url;
+    previewImg.classList.remove('hidden');
+  }
   editingPlantId = plant.id;
 
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -1156,12 +1266,23 @@ function resetForm() {
   if (form.water_amount) form.water_amount.value = '';
   const oc = document.getElementById('override_water');
   const wg = document.getElementById('water-amount-group');
+  const ad = document.getElementById('auto-water-display');
+  const av = document.getElementById('auto-water-oz');
   if (oc && wg) {
     oc.checked = false;
     wg.classList.add('hidden');
   }
+  if (ad) ad.classList.remove('hidden');
+  if (av) av.textContent = '';
   const taxInfo = document.getElementById('taxonomy-info');
   if (taxInfo) taxInfo.innerHTML = '';
+  const thumbInput = document.getElementById('thumbnail_url');
+  if (thumbInput) thumbInput.value = '';
+  const previewImg = document.getElementById('name-preview');
+  if (previewImg) {
+    previewImg.src = '';
+    previewImg.classList.add('hidden');
+  }
   const photoInput = document.getElementById('photo');
   if (photoInput) photoInput.value = '';
   const photoUrlInput = document.getElementById('photo_url');
@@ -1244,18 +1365,25 @@ async function exportPlantsBoth() {
 
 // --- main render & filter loop ---
 async function loadPlants() {
-  const res = await fetch(`api/get_plants.php${showArchive ? '?archived=1' : ''}`);
-  const plants = await res.json();
-  plantCache = plants;
   const list = document.getElementById('plant-grid');
-  if (list) {
-    list.classList.toggle('list-view', viewMode === 'list');
-    list.classList.toggle('text-view', viewMode === 'text');
-  }
+  toggleLoading(true);
+  if (list) list.classList.add('updating-grid');
+  try {
+    const res = await fetch(`api/get_plants.php${showArchive ? '?archived=1' : ''}`);
+    const plants = await res.json();
+    plantCache = plants;
+    if (list) {
+      list.classList.toggle('list-view', viewMode === 'list');
+      list.classList.toggle('text-view', viewMode === 'text');
+    }
   const selectedRoom = document.getElementById('room-filter').value;
-  const dueFilter = document.getElementById('due-filter')
-    ? document.getElementById('due-filter').value
+  const statusFilter = document.getElementById('status-filter')
+    ? document.getElementById('status-filter').value
     : 'all';
+  const typeFilters = Array.from(
+    document.querySelectorAll('#type-filters input:checked')
+  ).map(cb => cb.value);
+
 
   const rainEl = document.getElementById('rainfall-info');
   if (rainEl) {
@@ -1295,6 +1423,27 @@ async function loadPlants() {
   const startOfDayAfterTomorrow = addDays(startOfTomorrow,1);
 
   list.innerHTML = '';
+
+  // global counts used for summary regardless of filter
+  const totalPlants = plants.length;
+  let wateringDue = 0,
+      fertilizingDue = 0;
+  plants.forEach(plant => {
+    if (needsWatering(plant, today)) wateringDue++;
+    if (needsFertilizing(plant, today)) fertilizingDue++;
+  });
+
+  filterCounts.watering = wateringDue;
+  filterCounts.fertilizing = fertilizingDue;
+
+  let needsCareCount = 0;
+  plants.forEach(plant => {
+    if (needsWatering(plant, today) || needsFertilizing(plant, today)) {
+      needsCareCount++;
+    }
+  });
+  filterCounts.needsCare = needsCareCount;
+
   const filtered = plants.filter(plant => {
     if (selectedRoom !== 'all' && plant.room !== selectedRoom) return false;
     const haystack = (plant.name + ' ' + plant.species).toLowerCase();
@@ -1302,9 +1451,16 @@ async function loadPlants() {
 
     const waterDue = needsWatering(plant, today);
     const fertDue = needsFertilizing(plant, today);
-    if (dueFilter === 'water' && !waterDue) return false;
-    if (dueFilter === 'fert' && !fertDue) return false;
-    if (dueFilter === 'any' && !(waterDue || fertDue)) return false;
+    if (statusFilter === 'water' && !waterDue) return false;
+    if (statusFilter === 'fert' && !fertDue) return false;
+    if (statusFilter === 'any' && !(waterDue || fertDue)) return false;
+
+    if (typeFilters.length) {
+      let ptype = plant.plant_type || '';
+      if (ptype === 'flower') ptype = 'flower';
+      if (!typeFilters.includes(ptype)) return false;
+    }
+
     return true;
   });
 
@@ -1312,32 +1468,44 @@ async function loadPlants() {
     list.innerHTML = '<p class="no-results">No plants match your filters.</p>';
   }
 
-  // summary of due counts and totals for filtered plants
-  let wateringDue = 0, fertilizingDue = 0;
-  const totalPlants = filtered.length;
-  filtered.forEach(p => {
-    if (p.last_watered) {
-      const nxt = addDays(parseLocalDate(p.last_watered), p.watering_frequency);
-      if (nxt <= today) wateringDue++;
-    }
-    if (p.last_fertilized && p.fertilizing_frequency) {
-      const nxt = addDays(parseLocalDate(p.last_fertilized), p.fertilizing_frequency);
-      if (nxt <= today) fertilizingDue++;
-    }
-  });
+  // update summary counts using totals from all plants
+  updateSegments(totalPlants, wateringDue, fertilizingDue);
   const summaryEl = document.getElementById('summary');
   summaryEl.innerHTML = '';
   const row1 = document.createElement('div');
   row1.classList.add('summary-row');
   const row1Items = [
-    `${ICONS.plant} ${totalPlants} plants`,
-    `${ICONS.water} ${wateringDue} need watering`,
-    `${ICONS.fert} ${fertilizingDue} need fertilizing`
+    { html: `${ICONS.plant} ${totalPlants} plants`, status: 'all' },
+    { html: `${ICONS.water} ${wateringDue} need watering`, status: 'water' },
+    { html: `${ICONS.fert} ${fertilizingDue} need fertilizing`, status: 'fert' }
   ];
-  row1Items.forEach(text => {
+  row1Items.forEach(item => {
     const span = document.createElement('span');
     span.classList.add('summary-item');
-    span.innerHTML = text;
+    span.dataset.status = item.status;
+    span.setAttribute('role', 'button');
+    span.setAttribute('aria-pressed', item.status === statusFilter);
+    span.tabIndex = 0;
+    span.innerHTML = item.html;
+    if (item.status === statusFilter) {
+      span.classList.add('active');
+    }
+    span.addEventListener('click', () => {
+      const dueInput = document.getElementById('status-filter');
+      if (dueInput) {
+        dueInput.value = item.status;
+        dueInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      row1.querySelectorAll('.summary-item').forEach(s => {
+        s.setAttribute('aria-pressed', s === span);
+      });
+    });
+    span.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        span.click();
+      }
+    });
     row1.appendChild(span);
   });
 
@@ -1367,16 +1535,36 @@ async function loadPlants() {
   summaryEl.appendChild(row2);
   summaryEl.classList.add('show');
 
-  const sortBy = document.getElementById('sort-toggle').value || 'name';
-  filtered.sort((a, b) =>
-    sortBy === 'due'
-      ? getSoonestDueDate(a) - getSoonestDueDate(b)
-      : a.name.localeCompare(b.name)
-  );
+  const statusLabel = document.getElementById('status-chip-label');
+  const alertBadge = document.getElementById('needs-care-alert');
+  if (statusLabel) {
+    statusLabel.textContent = statusFilter === 'any' ? 'Show All' : 'Needs Care';
+  }
+  if (alertBadge) {
+    alertBadge.textContent = needsCareCount ? String(needsCareCount) : '';
+    alertBadge.classList.toggle('hidden', needsCareCount === 0);
+  }
+
+
+
+  const sortBy = document.getElementById('sort-toggle').value || 'due';
+  filtered.sort((a, b) => {
+    if (sortBy === 'name-desc') {
+      return b.name.localeCompare(a.name);
+    }
+    if (sortBy === 'due') {
+      return getSoonestDueDate(a) - getSoonestDueDate(b);
+    }
+    if (sortBy === 'added') {
+      return new Date(b.created_at) - new Date(a.created_at);
+    }
+    return a.name.localeCompare(b.name);
+  });
 
   filtered.forEach(plant => {
     const wrapper = document.createElement('div');
     wrapper.classList.add('plant-card-wrapper');
+    wrapper.id = `plant-${plant.id}`;
 
     const overlay = document.createElement('div');
     overlay.classList.add('swipe-overlay');
@@ -1423,9 +1611,10 @@ async function loadPlants() {
     }
 
     const img = document.createElement('img');
-    img.src = plant.photo_url ||
+    const photoSrc = plant.photo_url || plant.thumbnail_url ||
       'https://placehold.co/600x600?text=Add+Photo';
-    if (plant.photo_url) {
+    img.src = photoSrc;
+    if (plant.photo_url || plant.thumbnail_url) {
       img.alt = plant.name;
     } else {
       img.alt = 'No photo available for ' + plant.name;
@@ -1433,13 +1622,16 @@ async function loadPlants() {
     img.loading = 'lazy';
     img.width = 300;
     img.height = 300;
-    if (plant.photo_url && plant.photo_url.endsWith('.webp')) {
-      const base = plant.photo_url.slice(0, -5);
-      img.srcset = `${base}-400.webp 400w, ${plant.photo_url} 800w`;
+    if (photoSrc.endsWith('.webp')) {
+      const base = photoSrc.slice(0, -5);
+      img.srcset = `${base}-400.webp 400w, ${photoSrc} 800w`;
       img.sizes = '(max-width: 640px) 100vw, 400px';
     }
     img.classList.add('plant-photo');
-    card.appendChild(img);
+    const photoWrap = document.createElement('div');
+    photoWrap.classList.add('photo-wrap');
+    photoWrap.appendChild(img);
+    card.appendChild(photoWrap);
 
     const infoWrap = document.createElement('div');
     infoWrap.classList.add('plant-info');
@@ -1470,7 +1662,7 @@ async function loadPlants() {
     if (!isNaN(ml) && ml > 0) {
       const amtTag = document.createElement('span');
       amtTag.classList.add('tag', 'amt-tag');
-      amtTag.textContent = `${(ml / ML_PER_US_FL_OUNCE).toFixed(1).replace(/\.0$/, '')} oz / ${Math.round(ml)} ml`;
+      amtTag.innerHTML = formatWaterAmount(ml);
       amtTag.title = amtTag.textContent;
       tagList.appendChild(amtTag);
     }
@@ -1594,6 +1786,15 @@ async function loadPlants() {
       actionsDiv.appendChild(snooze);
     }
 
+    const analyticsLink = document.createElement('a');
+    analyticsLink.classList.add('action-btn');
+    analyticsLink.innerHTML = ICONS.analytics + '<span class="visually-hidden">Analytics</span>';
+    analyticsLink.title = 'Analytics';
+    analyticsLink.href = `analytics.html?plant_id=${plant.id}`;
+    analyticsLink.target = '_blank';
+    analyticsLink.rel = 'noopener';
+    actionsDiv.appendChild(analyticsLink);
+
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
@@ -1702,6 +1903,23 @@ async function loadPlants() {
     list.appendChild(wrapper);
   });
 
+  if (focusPlantId) {
+    const el = document.getElementById(`plant-${focusPlantId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('just-updated');
+      setTimeout(() => el.classList.remove('just-updated'), 2000);
+      history.replaceState(null, '', location.pathname + '#plant-' + focusPlantId);
+
+      const clearHash = () => {
+        history.replaceState(null, '', location.pathname);
+        focusPlantId = null;
+        document.removeEventListener('click', clearHash);
+      };
+      document.addEventListener('click', clearHash, { once: true });
+    }
+  }
+
   // refresh room filter and datalist
 
   const roomSet = new Set();
@@ -1739,6 +1957,12 @@ async function loadPlants() {
 
   checkArchivedLink(plants);
   loadCalendar(plants);
+  } catch (err) {
+    console.error('Failed to load plants', err);
+  } finally {
+    if (list) list.classList.remove('updating-grid');
+    toggleLoading(false);
+  }
 }
 
 async function checkArchivedLink(plantsList) {
@@ -1768,23 +1992,27 @@ async function checkArchivedLink(plantsList) {
 }
 
 // --- init ---
-function init(){
+async function init(){
   const showBtn = document.getElementById('show-add-form');
   const exportBtn = document.getElementById('export-all');
   const form = document.getElementById('plant-form');
   const cancelBtn = document.getElementById('cancel-edit');
   const undoBtn = document.getElementById('undo-btn');
-  const toggleSearch = document.getElementById('toggle-search');
-  const searchContainer = document.getElementById('search-container');
-  const closeSearch = document.getElementById('close-search');
   const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
   const roomFilter = document.getElementById('room-filter');
   const archivedLink = document.getElementById('archived-link');
   const sortToggle = document.getElementById('sort-toggle');
-  const dueFilterEl = document.getElementById('due-filter');
+  const dueFilterEl = document.getElementById('status-filter');
+  const filterPanel = document.getElementById('filter-panel');
+  const filterToggle = document.getElementById('filter-toggle');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
   const prevBtn = document.getElementById('prev-week');
   const nextBtn = document.getElementById('next-week');
+  const toolbar = document.querySelector('.toolbar');
+  const searchInputEl = document.getElementById('search-input');
+  const clearSearchBtn = document.getElementById('clear-search');
+  const clearFiltersBtn = document.getElementById('clear-filters');
+  const segButtons = document.querySelectorAll('#status-segments button');
 
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
@@ -1797,12 +2025,17 @@ function init(){
   const plantTypeSelect = document.getElementById('plant_type');
   const overrideCheck = document.getElementById('override_water');
   const waterGroup = document.getElementById('water-amount-group');
+  const autoWaterDisplay = document.getElementById('auto-water-display');
   const roomInput = document.getElementById('room');
   const nameInput = document.getElementById('name');
   const speciesInput = document.getElementById('species');
   const potHelp = document.getElementById('pot_diameter_help');
   const speciesList = document.getElementById('species-list');
-  const commonList = document.getElementById('common-list');
+  suggestionList = document.getElementById('name-suggestions');
+  const sciNameInput = document.getElementById('scientific_name');
+  const imageUrlInput = document.getElementById('thumbnail_url');
+  const previewImg = document.getElementById('name-preview');
+
 
   // populate datalists from saved history
   const savedRooms = loadHistoryValues('rooms');
@@ -1815,21 +2048,28 @@ function init(){
     });
   }
 
-  const savedNames = loadHistoryValues('plantNames');
-  if (commonList && savedNames.length) {
-    savedNames.forEach(n => {
-      const opt = document.createElement('option');
-      opt.value = n;
-      commonList.appendChild(opt);
-    });
-  }
+
 
 
   // apply saved preferences before initial load
+  migrateFilterPrefs();
   loadFilterPrefs();
   showFormStep(1);
 
   applyViewMode();
+  updateFilterChips();
+  updateSegments(0, 0, 0);
+
+  segButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const status = btn.dataset.status;
+      if (dueFilterEl) {
+        dueFilterEl.value = status;
+        dueFilterEl.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      segButtons.forEach(b => b.classList.toggle('active', b === btn));
+    });
+  });
 
 
   if (showBtn) {
@@ -1845,28 +2085,21 @@ function init(){
   if (undoBtn) {
     undoBtn.innerHTML = ICONS.undo + ' Undo';
   }
-  if (toggleSearch) {
-    toggleSearch.innerHTML = ICONS.search + '<span class="visually-hidden">Search</span>';
-    toggleSearch.addEventListener('click', () => {
-      if (form) {
-        form.style.display = 'none';
-        if (showBtn) showBtn.style.display = 'inline-block';
-        const cancel = document.getElementById('cancel-edit');
-        if (cancel) cancel.style.display = 'none';
-      }
-      if (searchContainer) searchContainer.classList.remove('hidden');
-      toggleSearch.style.display = 'none';
-      const input = document.getElementById('search-input');
-      if (input) input.focus();
+
+
+  if (filterToggle && filterPanel) {
+    filterToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const expanded = filterPanel.classList.toggle('show');
+      filterToggle.setAttribute('aria-expanded', expanded);
+      filterPanel.setAttribute('aria-hidden', !expanded);
     });
-  }
-  if (closeSearch) {
-    closeSearch.innerHTML = ICONS.cancel + '<span class="visually-hidden">Close Search</span>';
-    closeSearch.addEventListener('click', () => {
-      if (searchContainer) searchContainer.classList.add('hidden');
-      toggleSearch.style.display = 'inline-block';
-      document.getElementById('search-input').value = '';
-      loadPlants();
+    document.addEventListener('click', (e) => {
+      if (!filterPanel.contains(e.target) && e.target !== filterToggle) {
+        filterPanel.classList.remove('show');
+        filterToggle.setAttribute('aria-expanded', 'false');
+        filterPanel.setAttribute('aria-hidden', 'true');
+      }
     });
   }
   if (submitBtn) {
@@ -1880,10 +2113,6 @@ function init(){
   }
   if (showBtn && form) {
     showBtn.addEventListener('click', () => {
-      if (searchContainer) {
-        searchContainer.classList.add('hidden');
-        toggleSearch.style.display = 'inline-block';
-      }
       form.style.display = 'block';
       showBtn.style.display = 'none';
       const cancel = document.getElementById('cancel-edit');
@@ -1898,6 +2127,7 @@ function init(){
   document.getElementById('undo-btn').addEventListener('click', async () => {
     const banner = document.getElementById('undo-banner');
     banner.classList.remove('show');
+    banner.setAttribute('aria-hidden', 'true');
     if (lastDeletedPlant) {
       clearTimeout(deleteTimer);
       lastDeletedPlant = null;
@@ -1915,7 +2145,34 @@ function init(){
     }
   });
 
-  document.getElementById('search-input').addEventListener('input',loadPlants);
+  if (searchInputEl) {
+    const toggleClear = () => {
+      if (clearSearchBtn) {
+        clearSearchBtn.classList.toggle('hidden', searchInputEl.value === '');
+      }
+    };
+    searchInputEl.addEventListener('input', () => {
+      toggleClear();
+      loadPlants();
+    });
+    if (clearSearchBtn) {
+      clearSearchBtn.innerHTML = ICONS.cancel;
+      clearSearchBtn.addEventListener('click', () => {
+        searchInputEl.value = '';
+        toggleClear();
+        loadPlants();
+      });
+      toggleClear();
+    }
+  }
+  if (toolbar) {
+    // keep the search field visible while scrolling
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+      const current = window.scrollY;
+      lastScrollY = current;
+    });
+  }
   document.getElementById('cancel-edit').onclick=resetForm;
   if (photoDrop && photoInput) {
     function previewFile(file) {
@@ -1969,9 +2226,12 @@ function init(){
   });
   if (overrideCheck && waterGroup) {
     overrideCheck.addEventListener('change', () => {
-      waterGroup.classList.toggle('hidden', !overrideCheck.checked);
-      if (!overrideCheck.checked && waterAmtInput) {
+      const checked = overrideCheck.checked;
+      waterGroup.classList.toggle('hidden', !checked);
+      if (autoWaterDisplay) autoWaterDisplay.classList.toggle('hidden', checked);
+      if (!checked && waterAmtInput) {
         waterAmtInput.value = '';
+        updateWaterAmount();
       }
     });
   }
@@ -2002,33 +2262,20 @@ function init(){
       }
     });
   }
-  if (nameInput && commonList) {
-    let lastQueryName = '';
+  if (nameInput && speciesInput && speciesList) {
+    let lastNameQuery = '';
     nameInput.addEventListener('input', debounce(async () => {
       const query = nameInput.value.trim();
-      if (query === lastQueryName) return;
-      lastQueryName = query;
+      if (query === lastNameQuery) return;
+      lastNameQuery = query;
       if (!query) {
-        commonList.innerHTML = '';
-        if (speciesList) speciesList.innerHTML = '';
+        speciesList.innerHTML = '';
         return;
       }
-      const [commonNames, scientificNames] = await Promise.all([
-        fetchCommonNameSuggestions(query),
-        fetchScientificNames(query)
-      ]);
-      commonList.innerHTML = commonNames
+      const names = await fetchScientificNames(query);
+      speciesList.innerHTML = names
         .map(n => `<option value="${n}"></option>`)
         .join('');
-      if (speciesList) {
-        speciesList.innerHTML = scientificNames
-          .map(n => `<option value="${n}"></option>`)
-          .join('');
-        if (scientificNames.length && speciesInput && !speciesInput.value) {
-          speciesInput.value = scientificNames[0];
-          showTaxonomyInfo(scientificNames[0]);
-        }
-      }
     }, 300));
   }
   if (speciesInput && speciesList) {
@@ -2049,6 +2296,37 @@ function init(){
     }, 300));
     speciesInput.addEventListener('change', () => {
       showTaxonomyInfo(speciesInput.value.trim());
+    });
+  }
+
+  if (nameInput && suggestionList) {
+    let lastLookup = '';
+    nameInput.addEventListener('input', () => {
+      const q = nameInput.value.trim();
+      if (q === lastLookup) return;
+      lastLookup = q;
+      debouncedLookupPlants(q);
+    });
+    nameInput.addEventListener('focus', () => {
+      if (suggestionList.children.length) suggestionList.classList.remove('hidden');
+    });
+    nameInput.addEventListener('blur', () => {
+      setTimeout(() => suggestionList.classList.add('hidden'), 100);
+    });
+    suggestionList.addEventListener('click', e => {
+      if (e.target.tagName === 'LI') {
+        nameInput.value = e.target.textContent;
+        if (speciesInput) {
+          speciesInput.value = e.target.dataset.sci || '';
+          speciesInput.dispatchEvent(new Event('change'));
+        }
+        if (imageUrlInput) imageUrlInput.value = e.target.dataset.img || '';
+        if (previewImg && e.target.dataset.img) {
+          previewImg.src = e.target.dataset.img;
+          previewImg.classList.remove('hidden');
+        }
+        suggestionList.classList.add('hidden');
+      }
     });
   }
   const potDiamUnit = document.getElementById('pot_diameter_unit');
@@ -2079,11 +2357,6 @@ function init(){
         const roomVal = form.room.value.trim();
         saveHistoryValue('plantNames', nameVal);
         saveHistoryValue('rooms', roomVal);
-        if (commonList && nameVal) {
-          const opt = document.createElement('option');
-          opt.value = nameVal;
-          commonList.appendChild(opt);
-        }
         const roomList = document.getElementById('room-options');
         if (roomList && roomVal) {
           const opt = document.createElement('option');
@@ -2110,24 +2383,68 @@ function init(){
       saveFilterPrefs();
       loadPlants();
       checkArchivedLink();
+      updateFilterChips();
+      if (filterPanel) {
+        filterPanel.classList.remove('show');
+        filterToggle.setAttribute('aria-expanded', 'false');
+        filterPanel.setAttribute('aria-hidden', 'true');
+      }
     });
   }
   if (sortToggle) {
     sortToggle.addEventListener('change', () => {
       saveFilterPrefs();
       loadPlants();
+      updateFilterChips();
+      if (filterPanel) {
+        filterPanel.classList.remove('show');
+        filterToggle.setAttribute('aria-expanded', 'false');
+        filterPanel.setAttribute('aria-hidden', 'true');
+      }
     });
   }
   if (dueFilterEl) {
     dueFilterEl.addEventListener('change', () => {
       saveFilterPrefs();
+      updateSegments(0, 0, 0);
       loadPlants();
+      updateFilterChips();
+      if (filterPanel) {
+        filterPanel.classList.remove('show');
+        filterToggle.setAttribute('aria-expanded', 'false');
+        filterPanel.setAttribute('aria-hidden', 'true');
+      }
     });
   }
 
+  const extraFilterInputs = document.querySelectorAll('#type-filters input');
+  extraFilterInputs.forEach(input => {
+    input.addEventListener('change', () => {
+      saveFilterPrefs();
+      loadPlants();
+      updateFilterChips();
+    });
+  });
+
+  if (clearFiltersBtn) {
+    clearFiltersBtn.addEventListener('click', () => {
+      if (roomFilter) roomFilter.value = 'all';
+      if (dueFilterEl) dueFilterEl.value = 'all';
+      document.querySelectorAll('#type-filters input').forEach(cb => {
+        cb.checked = false;
+      });
+      saveFilterPrefs();
+      loadPlants();
+      updateFilterChips();
+    });
+  }
+
+
+
   if (viewButtons.length) {
     viewButtons.forEach(btn => {
-      if (!btn.innerHTML.trim()) {
+      // Inject icons if they haven't been added yet
+      if (!btn.querySelector('svg')) {
         const label = btn.dataset.view.charAt(0).toUpperCase() + btn.dataset.view.slice(1);
         btn.innerHTML = `${ICONS[btn.dataset.view] || ''}<span class="visually-hidden">${label}</span>`;
       }
@@ -2171,4 +2488,4 @@ if (document.readyState === 'loading') {
   init();
 }
 
-export { loadCalendar };
+export { loadCalendar, focusPlantId, loadPlants, updateFilterChips, loadFilterPrefs };

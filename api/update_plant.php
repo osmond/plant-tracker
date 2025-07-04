@@ -33,6 +33,8 @@ $water_amount            = isset($_POST['water_amount']) ? floatval($_POST['wate
 $last_watered            = $_POST['last_watered'] ?? null;
 $last_fertilized         = $_POST['last_fertilized'] ?? null;
 $photo_url               = trim($_POST['photo_url'] ?? '');
+$scientific_name         = trim($_POST['scientific_name'] ?? '');
+$thumbnail_url           = trim($_POST['thumbnail_url'] ?? '');
 
 $errors = [];
 $namePattern = "/^[\p{L}0-9\s'-]{1,100}$/u";
@@ -49,6 +51,21 @@ if ($photo_url === '' && (!isset($_FILES['photo']) || $_FILES['photo']['error'] 
             $stmt->bind_result($existingUrl);
             if ($stmt->fetch()) {
                 $photo_url = $existingUrl;
+            }
+        }
+        $stmt->close();
+    }
+}
+
+// If no thumbnail URL is provided, retain the existing one
+if ($thumbnail_url === '') {
+    $stmt = $conn->prepare("SELECT thumbnail_url FROM plants WHERE id = ?");
+    if ($stmt) {
+        $stmt->bind_param('i', $id);
+        if ($stmt->execute()) {
+            $stmt->bind_result($existingThumb);
+            if ($stmt->fetch()) {
+                $thumbnail_url = $existingThumb;
             }
         }
         $stmt->close();
@@ -80,15 +97,34 @@ if ($errors) {
 
 // Handle uploaded photo
 if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+    $maxFileSize = 5 * 1024 * 1024; // 5MB
+    if ($_FILES['photo']['size'] > $maxFileSize) {
+        @http_response_code(400);
+        echo json_encode(['error' => 'Photo exceeds 5MB size limit']);
+        if (!getenv('TESTING')) {
+            exit;
+        }
+        return;
+    }
+
     $uploadDir = __DIR__ . '/../uploads/';
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
 
-    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     $extension = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
 
     if (in_array($extension, $allowedExtensions)) {
+        if (@getimagesize($_FILES['photo']['tmp_name']) === false) {
+            @http_response_code(400);
+            echo json_encode(['error' => 'Invalid image file']);
+            if (!getenv('TESTING')) {
+                exit;
+            }
+            return;
+        }
+
         $fileName = uniqid('plant_', true) . '.' . $extension;
         $dest = $uploadDir . $fileName;
 
@@ -136,11 +172,13 @@ $stmt = $conn->prepare("
         last_watered       = ?,
         last_fertilized    = ?,
         photo_url          = ?,
-        water_amount       = ?
+        water_amount       = ?,
+        scientific_name    = ?,
+        thumbnail_url      = ?
     WHERE id = ?
 ");
 $stmt->bind_param(
-    'ssssiisssdi',
+    'ssssiisssdssi',
     $name,
     $species,
     $plant_type,
@@ -151,6 +189,8 @@ $stmt->bind_param(
     $last_fertilized,
     $photo_url,
     $water_amount,
+    $scientific_name,
+    $thumbnail_url,
     $id
 );
 

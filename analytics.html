@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plant Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4caf50">
+  <link rel="stylesheet" href="css/tailwind.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-bg text-text min-h-screen">
+  <div class="max-w-3xl mx-auto bg-card rounded-lg shadow p-4 my-4">
+    <h1 class="app-title text font-bold mb-4">
+      Plant Analytics
+    </h1>
+
+    <h2 class="font-semibold mb-2">Filters</h2>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <select id="plantSelect" class="border rounded-md p-2"></select>
+      <input type="date" id="startDate" class="border rounded-md p-2">
+      <input type="date" id="endDate" class="border rounded-md p-2">
+      <button id="refresh" class="btn btn-primary px-3">Show</button>
+    </div>
+
+    <h2 class="font-semibold mb-2">ET₀ Chart</h2>
+    <div class="bg-gray-50 p-4 rounded-lg mb-4">
+      <canvas id="et0Chart" width="600" height="300" class="mb-4"></canvas>
+      <div id="heatmap" class=""></div>
+    </div>
+
+    <h2 class="font-semibold mb-2">Data</h2>
+    <table id="dataTable" class="min-w-full text-sm w-full border-collapse"></table>
+  </div>
+  <script type="module" src="analytics.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js").catch(e => console.log("Service Worker registration failed:", e));
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,17 +1,27 @@
+
 const CACHE_NAME = 'plant-tracker-v3';
+
+
+
 const ASSETS = [
-  '/',
-  'index.html',
-  'script.js',
-  'style.css',
-  'favicon.svg',
-  'manifest.json',
-  'screenshot.png'
+  './index.html',
+  './analytics.html',
+  './script.js',
+  './analytics.js',
+  './style.css',
+  './css/tailwind.css',
+  './favicon.svg',
+  './manifest.json',
+  './screenshot.png'
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then(cache =>
+      Promise.all(
+        ASSETS.map(asset => cache.add(asset).catch(() => {}))
+      )
+    )
   );
 });
 
@@ -25,6 +35,10 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   const req = event.request;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) {
+    return;
+  }
   if (req.method === 'GET' && req.url.includes('/api/')) {
     event.respondWith(
       caches.open('api-cache').then(cache =>
@@ -33,6 +47,16 @@ self.addEventListener('fetch', event => {
           return res;
         }).catch(() => cache.match(req))
       )
+    );
+    return;
+  }
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req).catch(() => {
+        const fallback = req.url.includes('analytics') ?
+          './analytics.html' : './index.html';
+        return caches.match(fallback);
+      })
     );
     return;
   }
