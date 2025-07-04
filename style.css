@@ -1563,6 +1563,7 @@ button:focus {
   border-radius: var(--radius);
   background-color: var(--color-badge-inactive);
   color: var(--color-text);
+  border: 1px solid transparent;
 }
 
 #summary .summary-item[data-status="all"].active {
@@ -1584,13 +1585,31 @@ button:focus {
   filter: brightness(0.95);
 }
 
+#summary .summary-item[data-status="all"]:hover,
+#summary .summary-item[data-status="fert"]:hover {
+  border-color: var(--color-plant);
+}
+
+#summary .summary-item[data-status="water"]:hover {
+  border-color: var(--color-water);
+}
+
 #summary .summary-item:focus {
   outline: 2px solid var(--color-border);
   outline-offset: 2px;
 }
 
 #summary .summary-item.active {
-  border: 1px solid var(--color-primary);
+  border-width: 1px;
+}
+
+#summary .summary-item[data-status="water"].active {
+  border-color: var(--color-water);
+}
+
+#summary .summary-item[data-status="all"].active,
+#summary .summary-item[data-status="fert"].active {
+  border-color: var(--color-plant);
 }
 
 #rainfall-info .summary-item {
@@ -1615,7 +1634,15 @@ button:focus {
   width: 1em;
   height: 1em;
   vertical-align: -0.125em;
-  color: var(--color-success);
+}
+
+#summary .summary-item[data-status="water"] .icon {
+  color: var(--color-water);
+}
+
+#summary .summary-item[data-status="all"] .icon,
+#summary .summary-item[data-status="fert"] .icon {
+  color: var(--color-plant);
 }
 
 .weather-icon {
@@ -1641,9 +1668,6 @@ button:focus {
   color: var(--color-success);
 }
 
-#summary .summary-item.active .icon {
-  color: var(--color-sprout-bg);
-}
 
 
 
