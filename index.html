@@ -14,6 +14,13 @@
     <link rel="stylesheet" href="css/tailwind.css">
 </head>
 <body class="bg-bg text-text min-h-screen">
+    <div id="login-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;display:none;z-index:10000;align-items:center;justify-content:center;">
+        <div style="text-align:center;">
+            <label for="login-pass">Enter Password</label>
+            <input id="login-pass" type="password" class="border rounded-md p-2 mx-2">
+            <button id="login-btn" class="bg-primary text-white rounded-md px-4 py-2">Login</button>
+        </div>
+    </div>
     <h1 class="app-title text font-bold px-4 py-0">
         My Plant Tracker
         <button id="show-add-form" class="ml-auto"><span class="visually-hidden">Add Plant</span></button>
@@ -218,6 +225,41 @@
         });
       }
     </script>
+
+
+  <script>
+      const script = document.createElement('script');
+      script.src = 'script.js?v=1.0';
+      script.async = false;
+      document.body.appendChild(script);
+    </script>
+
+    <script>
+      function showOverlay() {
+        document.getElementById('login-overlay').style.display = 'flex';
+      }
+      function hideOverlay() {
+        document.getElementById('login-overlay').style.display = 'none';
+      }
+      function checkLogin() {
+        if (localStorage.getItem('pt_logged_in') === 'yes') {
+          hideOverlay();
+        } else {
+          showOverlay();
+        }
+      }
+      document.getElementById('login-btn').addEventListener('click', () => {
+        const pw = document.getElementById('login-pass').value;
+        if (pw === 'plants123') {
+          localStorage.setItem('pt_logged_in', 'yes');
+          hideOverlay();
+        } else {
+          alert('Incorrect password');
+        }
+      });
+      window.addEventListener('load', checkLogin);
+    </script>
+
 
   </body>
 </html>

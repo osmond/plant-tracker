@@ -1,4 +1,8 @@
-const CACHE_NAME = 'plant-tracker-v4';
+
+const CACHE_NAME = 'plant-tracker-v3';
+
+
+
 const ASSETS = [
   './index.html',
   './analytics.html',
