@@ -19,7 +19,7 @@
   --color-error-bg: #fff5f5;
   --color-warning-bg: #fefcbf;
   --color-success-bg: #f0fff4;
- /* Lighter blue background */
+ --color-water-bg: #ebf8ff;  /* Lighter blue background */
   --color-water:  #ebf8ff;  /* Primary blue for water icons */
   --color-water-hover:#1976D2;  /* Blue 700 – for hover or active states */
   /* fertilizing due indicator now uses a white background */
