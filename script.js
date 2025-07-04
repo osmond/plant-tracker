@@ -1489,6 +1489,7 @@ async function loadPlants() {
     span.classList.add('summary-item');
     span.dataset.status = item.status;
     span.setAttribute('role', 'button');
+    span.setAttribute('aria-pressed', item.status === statusFilter);
     span.tabIndex = 0;
     span.innerHTML = item.html;
     if (item.status === statusFilter) {
@@ -1500,6 +1501,9 @@ async function loadPlants() {
         dueInput.value = item.status;
         dueInput.dispatchEvent(new Event('change', { bubbles: true }));
       }
+      row1.querySelectorAll('.summary-item').forEach(s => {
+        s.setAttribute('aria-pressed', s === span);
+      });
     });
     span.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
