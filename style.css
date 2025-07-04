@@ -1432,7 +1432,7 @@ button:focus {
 .water-snooze {
   background-color: var(--color-water-bg);
   color: var(--color-water);
-  border: 1px solid var(--color-water);
+  border: 1px solid var(--color-water-hover);
 }
 
 .fert-snooze {
@@ -1506,7 +1506,7 @@ button:focus {
 .amt-tag {
   background-color: var(--color-water-bg);
   color: var(--color-water-hover);
-  border: 1px solid var(--color-water);
+  border: 1px solid var(--color-water-hover);
 }
 
 /* tag showing the plant's room - color is set inline via JS */
@@ -1676,8 +1676,9 @@ button:focus {
 }
 
 .icon-water path {
-  fill: var(--color-water-bg);
-  stroke: var(--color-water-hover);
+  /* Slightly darker fill and outline just for the water icon */
+  fill: #d0e7ff;
+  stroke: #1565c0;
   stroke-width: 1px;
 }
 
