@@ -1582,7 +1582,7 @@ button:focus {
 
 #summary .summary-item[data-status="water"].active {
   background-color: var(--color-water-bg);
-  color: var(--color-water);
+  color: var(--color-water-hover);
 }
 
 #summary .summary-item[data-status="fert"].active {
@@ -1614,6 +1614,10 @@ button:focus {
 
 #summary .summary-item[data-status="water"].active {
   border-color: var(--color-water-hover);
+}
+
+#summary .summary-item[data-status="water"].active .icon {
+  color: var(--color-water-hover);
 }
 
 #summary .summary-item[data-status="all"].active,
