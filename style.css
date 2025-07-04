@@ -1679,11 +1679,8 @@ button:focus {
   color: var(--color-water);
 }
 
-.icon-sprout {
-  color: var(--color-success);
-}
 
-.icon-plant {
+.icon-success {
   color: var(--color-success);
 }
 
