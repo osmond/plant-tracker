@@ -11,6 +11,16 @@ function setupDOM() {
 
     <div id="filter-chips"></div>
 
+    <button id="clear-filters"></button>
+
+    <span id="seg-all-count"></span>
+    <span id="seg-water-count"></span>
+    <span id="seg-fert-count"></span>
+
+    <form id="plant-form"></form>
+    <button id="undo-btn"></button>
+    <button id="cancel-edit"></button>
+
     <div id="type-filters"><label><input type="checkbox" value="succulent" /></label></div>
 
     <div id="location-filters"><label><input type="checkbox" value="outside" /></label><label><input type="checkbox" value="inside" checked /></label></div>
@@ -182,5 +192,52 @@ test('summary item click updates status filter', async () => {
   const waterItem = document.querySelector('#summary .summary-item[data-status="water"]');
   waterItem.click();
   expect(document.getElementById('status-filter').value).toBe('water');
+});
+
+test('segment totals persist across filtering', async () => {
+  setupDOM();
+  jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
+  const plants = [
+    { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
+    { id: 2, name: 'B', species: 'sp', room: 'Patio', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-09', last_fertilized: null, created_at: '2023-01-01' }
+  ];
+  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  let mod;
+  await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
+
+  await mod.loadPlants();
+  expect(document.getElementById('seg-all-count').textContent).toBe('2');
+
+  document.getElementById('status-filter').value = 'water';
+  await mod.loadPlants();
+  expect(document.getElementById('seg-all-count').textContent).toBe('2');
+  jest.useRealTimers();
+});
+
+test('clear filters button resets values and recounts', async () => {
+  setupDOM();
+  jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
+  const plants = [
+    { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
+    { id: 2, name: 'B', species: 'sp', room: 'Patio', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-09', last_fertilized: null, created_at: '2023-01-01' }
+  ];
+  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  let mod;
+  await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
+  document.dispatchEvent(new Event('DOMContentLoaded'));
+
+  document.getElementById('room-filter').value = 'Kitchen';
+  await mod.loadPlants();
+  expect(document.querySelectorAll('.plant-card-wrapper').length).toBe(1);
+
+  document.getElementById('clear-filters').click();
+
+  expect(document.getElementById('room-filter').value).toBe('all');
+  expect(document.getElementById('status-filter').value).toBe('all');
+
+  await mod.loadPlants();
+  expect(document.querySelectorAll('.plant-card-wrapper').length).toBe(2);
+  expect(document.getElementById('seg-all-count').textContent).toBe('2');
+  jest.useRealTimers();
 });
 
