@@ -1556,6 +1556,14 @@ button:focus {
   display: flex;
   align-items: center;
   gap: 4px;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius);
+}
+
+#summary .summary-item.active {
+  background: var(--color-primary);
+  color: var(--color-surface);
 }
 
 #rainfall-info .summary-item {

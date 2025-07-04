@@ -1478,14 +1478,33 @@ async function loadPlants() {
   const row1 = document.createElement('div');
   row1.classList.add('summary-row');
   const row1Items = [
-    `${ICONS.plant} ${totalPlants} plants`,
-    `${ICONS.water} ${wateringDue} need watering`,
-    `${ICONS.fert} ${fertilizingDue} need fertilizing`
+    { html: `${ICONS.plant} ${totalPlants} plants`, status: 'all' },
+    { html: `${ICONS.water} ${wateringDue} need watering`, status: 'water' },
+    { html: `${ICONS.fert} ${fertilizingDue} need fertilizing`, status: 'fert' }
   ];
-  row1Items.forEach(text => {
+  row1Items.forEach(item => {
     const span = document.createElement('span');
     span.classList.add('summary-item');
-    span.innerHTML = text;
+    span.dataset.status = item.status;
+    span.setAttribute('role', 'button');
+    span.tabIndex = 0;
+    span.innerHTML = item.html;
+    if (item.status === statusFilter) {
+      span.classList.add('active');
+    }
+    span.addEventListener('click', () => {
+      const dueInput = document.getElementById('status-filter');
+      if (dueInput) dueInput.value = item.status;
+      saveFilterPrefs();
+      updateFilterChips();
+      loadPlants();
+    });
+    span.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        span.click();
+      }
+    });
     row1.appendChild(span);
   });
 
