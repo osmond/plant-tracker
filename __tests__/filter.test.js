@@ -192,6 +192,9 @@ test('summary item click updates status filter', async () => {
   const waterItem = document.querySelector('#summary .summary-item[data-status="water"]');
   waterItem.click();
   expect(document.getElementById('status-filter').value).toBe('water');
+  expect(waterItem.getAttribute('aria-pressed')).toBe('true');
+  const other = document.querySelector('#summary .summary-item[data-status="all"]');
+  expect(other.getAttribute('aria-pressed')).toBe('false');
 });
 
 test('segment totals persist across filtering', async () => {
