@@ -6,7 +6,7 @@ function setupDOM() {
     <div id="filter-chips"></div>
     <span id="filter-summary"></span>
     <select id="room-filter"><option value="all">All Rooms</option><option value="Kitchen">Kitchen</option></select>
-    <select id="status-filter"><option value="all" selected>All</option><option value="any">Needs Care</option></select>
+    <select id="status-filter"><option value="all" selected>All</option><option value="water">Watering</option></select>
     <select id="sort-toggle"><option value="due">Due Date</option><option value="name">Name</option></select>
     <div id="type-filters"><label>Succulent<input type="checkbox" value="succulent"></label></div>
     <button id="undo-btn"></button>
