@@ -1492,10 +1492,10 @@ async function loadPlants() {
     }
     span.addEventListener('click', () => {
       const dueInput = document.getElementById('status-filter');
-      if (dueInput) dueInput.value = item.status;
-      saveFilterPrefs();
-      updateFilterChips();
-      loadPlants();
+      if (dueInput) {
+        dueInput.value = item.status;
+        dueInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
     });
     span.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -2059,11 +2059,11 @@ async function init(){
   segButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const status = btn.dataset.status;
-      if (dueFilterEl) dueFilterEl.value = status;
-      saveFilterPrefs();
-      updateFilterChips();
+      if (dueFilterEl) {
+        dueFilterEl.value = status;
+        dueFilterEl.dispatchEvent(new Event('change', { bubbles: true }));
+      }
       segButtons.forEach(b => b.classList.toggle('active', b === btn));
-      loadPlants();
     });
   });
 
@@ -2402,6 +2402,7 @@ async function init(){
   if (dueFilterEl) {
     dueFilterEl.addEventListener('change', () => {
       saveFilterPrefs();
+      updateSegments(0, 0, 0);
       loadPlants();
       updateFilterChips();
       if (filterPanel) {
