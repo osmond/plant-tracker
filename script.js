@@ -1428,6 +1428,16 @@ async function loadPlants() {
   const startOfDayAfterTomorrow = addDays(startOfTomorrow,1);
 
   list.innerHTML = '';
+
+  // global counts used for summary regardless of filter
+  const totalPlants = plants.length;
+  let wateringDue = 0,
+      fertilizingDue = 0;
+  plants.forEach(plant => {
+    if (needsWatering(plant, today)) wateringDue++;
+    if (needsFertilizing(plant, today)) fertilizingDue++;
+  });
+
   let needsCareCount = 0;
   plants.forEach(plant => {
     if (needsWatering(plant, today) || needsFertilizing(plant, today)) {
@@ -1459,19 +1469,7 @@ async function loadPlants() {
     list.innerHTML = '<p class="no-results">No plants match your filters.</p>';
   }
 
-  // summary of due counts and totals for filtered plants
-  let wateringDue = 0, fertilizingDue = 0;
-  const totalPlants = filtered.length;
-  filtered.forEach(p => {
-    if (p.last_watered) {
-      const nxt = addDays(parseLocalDate(p.last_watered), p.watering_frequency);
-      if (nxt <= today) wateringDue++;
-    }
-    if (p.last_fertilized && p.fertilizing_frequency) {
-      const nxt = addDays(parseLocalDate(p.last_fertilized), p.fertilizing_frequency);
-      if (nxt <= today) fertilizingDue++;
-    }
-  });
+  // update summary counts using totals from all plants
   updateSegments(totalPlants, wateringDue, fertilizingDue);
   const summaryEl = document.getElementById('summary');
   summaryEl.innerHTML = '';
@@ -1533,6 +1531,16 @@ async function loadPlants() {
   summaryEl.appendChild(row1);
   summaryEl.appendChild(row2);
   summaryEl.classList.add('show');
+
+  const statusLabel = document.getElementById('status-chip-label');
+  const alertBadge = document.getElementById('needs-care-alert');
+  if (statusLabel) {
+    statusLabel.textContent = statusFilter === 'any' ? 'Show All' : 'Needs Care';
+  }
+  if (alertBadge) {
+    alertBadge.textContent = needsCareCount ? String(needsCareCount) : '';
+    alertBadge.classList.toggle('hidden', needsCareCount === 0);
+  }
 
 
 
