@@ -639,6 +639,21 @@ function updateFilterChips() {
   return activeCount;
 }
 
+function updateSegments(total, water, fert) {
+  const allEl = document.getElementById('seg-all-count');
+  const waterEl = document.getElementById('seg-water-count');
+  const fertEl = document.getElementById('seg-fert-count');
+  if (allEl) allEl.textContent = total;
+  if (waterEl) waterEl.textContent = water;
+  if (fertEl) fertEl.textContent = fert;
+  const statusVal = document.getElementById('status-filter')
+    ? document.getElementById('status-filter').value
+    : 'all';
+  document.querySelectorAll('#status-segments button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.status === statusVal);
+  });
+}
+
 
 
 
@@ -1460,6 +1475,7 @@ async function loadPlants() {
       if (nxt <= today) fertilizingDue++;
     }
   });
+  updateSegments(totalPlants, wateringDue, fertilizingDue);
   const summaryEl = document.getElementById('summary');
   summaryEl.innerHTML = '';
   const row1 = document.createElement('div');
@@ -1982,6 +1998,7 @@ async function init(){
   const toolbar = document.querySelector('.toolbar');
   const searchInputEl = document.getElementById('search-input');
   const clearSearchBtn = document.getElementById('clear-search');
+  const segButtons = document.querySelectorAll('#status-segments button');
 
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
@@ -2027,6 +2044,18 @@ async function init(){
 
   applyViewMode();
   updateFilterChips();
+  updateSegments(0, 0, 0);
+
+  segButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const status = btn.dataset.status;
+      if (dueFilterEl) dueFilterEl.value = status;
+      saveFilterPrefs();
+      updateFilterChips();
+      segButtons.forEach(b => b.classList.toggle('active', b === btn));
+      loadPlants();
+    });
+  });
 
 
   if (showBtn) {
