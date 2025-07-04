@@ -19,9 +19,10 @@
   --color-error-bg: #fff5f5;
   --color-warning-bg: #fefcbf;
   --color-success-bg: #f0fff4;
- --color-water-bg: #ebf8ff;  /* Lighter blue background */
-  --color-water:  #ebf8ff;  /* Primary blue for water icons */
-  --color-water-hover:#1976D2;  /* Blue 700 – for hover or active states */
+ --color-water-bg: #EFF6FF;  /* Blue-50 background */
+ --color-water:  #3B82F6;  /* Blue-500 for icons and borders */
+ --color-water-hover:#3B82F6;  /* Blue-500 for borders */
+ --color-water-text:#1E40AF; /* Blue-800 for text */
   /* fertilizing due indicator now uses a white background */
   --color-fert-bg: #ffffff;
   --color-highlight: #faf089;
@@ -550,7 +551,7 @@ button:focus {
 .water-due {
     background-color: var(--color-water-bg);
     border: 1px solid var(--color-water-hover);
-    color: var(--color-water-hover);
+    color: var(--color-water-text);
 }
 
 .water-due:hover,
@@ -558,7 +559,7 @@ button:focus {
 .water-due:active {
     background-color: var(--color-water-bg);
     border-color: var(--color-water-hover);
-    color: var(--color-water-hover);
+    color: var(--color-water-text);
 }
 
 .fert-due {
@@ -1431,7 +1432,7 @@ button:focus {
 /* color variants for snooze dropdowns */
 .water-snooze {
   background-color: var(--color-water-bg);
-  color: var(--color-water);
+  color: var(--color-water-text);
   border: 1px solid var(--color-water-hover);
 }
 
@@ -1505,7 +1506,7 @@ button:focus {
 /* water amount tags use the blue palette */
 .amt-tag {
   background-color: var(--color-water-bg);
-  color: var(--color-water-hover);
+  color: var(--color-water-text);
   border: 1px solid var(--color-water-hover);
 }
 
@@ -1588,7 +1589,7 @@ button:focus {
 
 #summary .summary-item[data-status="water"].active {
   background-color: var(--color-water-bg);
-  color: var(--color-water-hover);
+  color: var(--color-water-text);
 }
 
 #summary .summary-item[data-status="fert"].active {
@@ -1623,7 +1624,7 @@ button:focus {
 }
 
 #summary .summary-item[data-status="water"].active .icon {
-  color: var(--color-water-hover);
+  color: var(--color-water);
 }
 
 #summary .summary-item[data-status="all"].active,
@@ -1676,9 +1677,8 @@ button:focus {
 }
 
 .icon-water path {
-  /* Slightly darker fill and outline just for the water icon */
-  fill: #d0e7ff;
-  stroke: #1565c0;
+  fill: currentColor;
+  stroke: currentColor;
   stroke-width: 1px;
 }
 
