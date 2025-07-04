@@ -41,9 +41,9 @@ function drawChart(data) {
           label: 'Water (mL)',
           data: water,
           yAxisID: 'y2',
-          borderColor: '#2196F3',
+          borderColor: '#3182ce',
           fill: true,
-          backgroundColor: 'rgba(33,150,243,0.2)'
+          backgroundColor: 'rgba(49,130,206,0.2)'
         }
       ]
     },
