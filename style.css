@@ -30,7 +30,7 @@
   /* chip background with 30% opacity of primary color for better contrast */
   --color-chip-bg: rgba(76, 175, 80, 0.3);
   /* inactive badge background */
-  --color-badge-inactive: #e0ede3;
+  --color-badge-inactive: #ffffff;
   /* action button colors */
   --color-sprout-bg: #E8F5E9;  /* Green 50 – soft background */
   --color-plant: #388E3C;      /* Green 600 – vibrant leaf */
