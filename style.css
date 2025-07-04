@@ -836,7 +836,7 @@ button:focus {
 
 #calendar .cal-event.water-due {
   background-color: var(--color-water-bg);
-  color: var(--color-water);
+  color: #1976D2;
 }
 
 #calendar .cal-event.fert-due {
