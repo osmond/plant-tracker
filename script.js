@@ -22,6 +22,13 @@ let showArchive = false;
 let archivedCache = null;
 let plantCache = [];
 
+// track counts for active filters
+let filterCounts = {
+  watering: 0,
+  fertilizing: 0,
+  needsCare: 0,
+};
+
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
 const FILTER_PREF_VERSION = 2;
@@ -597,8 +604,12 @@ function updateFilterChips() {
       statusEl.value !== defaultStatus &&
       statusEl.value !== 'any' &&
       statusEl.selectedIndex >= 0) {
+    const val = statusEl.value;
+    let label = statusEl.options[statusEl.selectedIndex].textContent;
+    if (val === 'water') label += ` (${filterCounts.watering})`;
+    if (val === 'fert') label += ` (${filterCounts.fertilizing})`;
     chips.push({
-      text: statusEl.options[statusEl.selectedIndex].textContent,
+      text: label,
       remove() { statusEl.value = defaultStatus; }
     });
   }
@@ -1452,12 +1463,16 @@ async function loadPlants() {
     if (needsFertilizing(plant, today)) fertilizingDue++;
   });
 
+  filterCounts.watering = wateringDue;
+  filterCounts.fertilizing = fertilizingDue;
+
   let needsCareCount = 0;
   plants.forEach(plant => {
     if (needsWatering(plant, today) || needsFertilizing(plant, today)) {
       needsCareCount++;
     }
   });
+  filterCounts.needsCare = needsCareCount;
 
   const filtered = plants.filter(plant => {
     if (selectedRoom !== 'all' && plant.room !== selectedRoom) return false;
