@@ -620,6 +620,14 @@ button:focus {
   animation: fade-up 2s forwards;
 }
 
+.needs-care-alert {
+  background: var(--color-trash);
+  color: var(--color-bg);
+  border-radius: 9999px;
+  padding: 2px 6px;
+  font-size: var(--font-size-sm);
+  margin-left: 0.5rem;
+}
 
 @keyframes fade-up {
   0% { opacity: 1; transform: translateY(0); }
@@ -1143,14 +1151,6 @@ button:focus {
   justify-content: center;
 }
 
-#clear-filter {
-  margin-left: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--color-primary);
-  text-decoration: underline;
-  cursor: pointer;
-}
-
 
 #search-input {
   border: 1px solid var(--color-border-light);
@@ -1210,6 +1210,31 @@ button:focus {
   filter: brightness(95%);
 }
 
+/* Needs Care toggle default state */
+#status-chip {
+  background: #276749;
+  color: var(--color-surface);
+  border: 1px solid #276749;
+}
+
+.chip.active,
+.chip.filled {
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+/* Distinct styling for the Needs Care toggle when active */
+#status-chip.active {
+  background: #2f855a;
+  color: var(--color-surface);
+  border: 1px solid #2f855a;
+}
+
+#status-chip:hover,
+#status-chip:focus {
+  filter: brightness(110%);
+}
 
 
 
@@ -1517,23 +1542,6 @@ button:focus {
   display: flex;
   align-items: center;
   gap: 4px;
-}
-
-.summary-badge {
-  background: var(--color-chip-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 0.25rem 0.5rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.summary-badge.active {
-  background: var(--color-success);
-  color: var(--color-surface);
-  border-color: var(--color-success);
 }
 
 #rainfall-info .summary-item {

@@ -102,3 +102,67 @@ test('loadPlants filters by plant type', async () => {
   expect(cards[0].id).toBe('plant-1');
 });
 
+test('status chip label toggles with filter', async () => {
+  setupDOM();
+  document.body.innerHTML += `<button id="status-chip" class="chip active"><span id="status-chip-label">Show All</span><span id="needs-care-alert" class="needs-care-alert hidden"></span></button>`;
+  jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
+  const plants = [
+    { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
+  ];
+  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  let mod;
+  await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
+
+  const statusChip = document.getElementById('status-chip');
+  const statusLabel = document.getElementById('status-chip-label');
+  const statusFilter = document.getElementById('status-filter');
+
+  statusFilter.value = 'any';
+  statusChip.classList.add('active');
+  await mod.loadPlants();
+  expect(statusLabel.textContent).toBe('Show All');
+
+  statusFilter.value = 'all';
+  statusChip.classList.remove('active');
+  await mod.loadPlants();
+  expect(statusLabel.textContent).toBe('Needs Care');
+  jest.useRealTimers();
+});
+
+test('needs care alert badge shows count', async () => {
+  setupDOM();
+  document.body.innerHTML += `<button id="status-chip" class="chip"><span id="status-chip-label">Needs Care</span><span id="needs-care-alert" class="needs-care-alert hidden"></span></button>`;
+  jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
+  const plants = [
+    { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
+  ];
+  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  let mod;
+  await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
+
+  await mod.loadPlants();
+  const badge = document.getElementById('needs-care-alert');
+  expect(badge.textContent).toBe('1');
+  expect(badge.classList.contains('hidden')).toBe(false);
+  jest.useRealTimers();
+});
+
+test('needs care alert count ignores room filter', async () => {
+  setupDOM();
+  document.body.innerHTML += `<button id="status-chip" class="chip"><span id="status-chip-label">Needs Care</span><span id="needs-care-alert" class="needs-care-alert hidden"></span></button>`;
+  jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
+  const plants = [
+    { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
+    { id: 2, name: 'B', species: 'sp', room: 'Patio', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-05', last_fertilized: null, created_at: '2023-01-01' }
+  ];
+  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  let mod;
+  await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
+
+  document.getElementById('room-filter').value = 'Patio';
+  await mod.loadPlants();
+  const badge = document.getElementById('needs-care-alert');
+  expect(badge.textContent).toBe('1');
+  expect(badge.classList.contains('hidden')).toBe(false);
+  jest.useRealTimers();
+});

@@ -584,6 +584,7 @@ function updateFilterChips() {
   }
   if (statusEl &&
       statusEl.value !== defaultStatus &&
+      statusEl.value !== 'any' &&
       statusEl.selectedIndex >= 0) {
     chips.push({
       text: statusEl.options[statusEl.selectedIndex].textContent,
@@ -605,7 +606,9 @@ function updateFilterChips() {
   });
 
   if (chipsEl) {
-    chipsEl.innerHTML = '';
+    Array.from(chipsEl.children).forEach(child => {
+      if (child.id !== 'status-chip') chipsEl.removeChild(child);
+    });
     chips.forEach(c => {
       const chip = document.createElement('span');
       chip.className = 'filter-chip';
@@ -623,7 +626,7 @@ function updateFilterChips() {
     });
   }
 
-  const activeCount = chips.length;
+  const activeCount = chips.length + (statusEl && statusEl.value === 'any' ? 1 : 0);
 
   if (summaryEl) {
     summaryEl.textContent = activeCount ? `${activeCount} active` : 'No filters';
@@ -1366,8 +1369,9 @@ async function loadPlants() {
       list.classList.toggle('text-view', viewMode === 'text');
     }
   const selectedRoom = document.getElementById('room-filter').value;
-  const dueFilterEl = document.getElementById('status-filter');
-  const statusFilter = dueFilterEl ? dueFilterEl.value : 'all';
+  const statusFilter = document.getElementById('status-filter')
+    ? document.getElementById('status-filter').value
+    : 'all';
   const typeFilters = Array.from(
     document.querySelectorAll('#type-filters input:checked')
   ).map(cb => cb.value);
@@ -1411,6 +1415,12 @@ async function loadPlants() {
   const startOfDayAfterTomorrow = addDays(startOfTomorrow,1);
 
   list.innerHTML = '';
+  let needsCareCount = 0;
+  plants.forEach(plant => {
+    if (needsWatering(plant, today) || needsFertilizing(plant, today)) {
+      needsCareCount++;
+    }
+  });
 
   const filtered = plants.filter(plant => {
     if (selectedRoom !== 'all' && plant.room !== selectedRoom) return false;
@@ -1453,27 +1463,17 @@ async function loadPlants() {
   summaryEl.innerHTML = '';
   const row1 = document.createElement('div');
   row1.classList.add('summary-row');
-
-  const totalSpan = document.createElement('span');
-  totalSpan.classList.add('summary-item');
-  totalSpan.innerHTML = `${ICONS.plant} ${totalPlants} plants`;
-  row1.appendChild(totalSpan);
-
-  const waterBtn = document.createElement('button');
-  waterBtn.type = 'button';
-  waterBtn.id = 'water-badge';
-  waterBtn.classList.add('summary-item', 'summary-badge');
-  waterBtn.title = 'Show plants needing watering';
-  waterBtn.innerHTML = `${ICONS.water} ${wateringDue}`;
-  row1.appendChild(waterBtn);
-
-  const fertBtn = document.createElement('button');
-  fertBtn.type = 'button';
-  fertBtn.id = 'fert-badge';
-  fertBtn.classList.add('summary-item', 'summary-badge');
-  fertBtn.title = 'Show plants needing fertilizing';
-  fertBtn.innerHTML = `${ICONS.fert} ${fertilizingDue}`;
-  row1.appendChild(fertBtn);
+  const row1Items = [
+    `${ICONS.plant} ${totalPlants} plants`,
+    `${ICONS.water} ${wateringDue} need watering`,
+    `${ICONS.fert} ${fertilizingDue} need fertilizing`
+  ];
+  row1Items.forEach(text => {
+    const span = document.createElement('span');
+    span.classList.add('summary-item');
+    span.innerHTML = text;
+    row1.appendChild(span);
+  });
 
   const row2 = document.createElement('div');
   row2.classList.add('summary-row');
@@ -1501,34 +1501,19 @@ async function loadPlants() {
   summaryEl.appendChild(row2);
   summaryEl.classList.add('show');
 
-  if (dueFilterEl) {
-    waterBtn.classList.toggle('active', dueFilterEl.value === 'water');
-    fertBtn.classList.toggle('active', dueFilterEl.value === 'fert');
+  const alertBadge = document.getElementById('needs-care-alert');
+  if (alertBadge) {
+    alertBadge.textContent = needsCareCount;
+    const isActive = statusFilter === 'any';
+    alertBadge.classList.toggle('hidden', needsCareCount === 0 || isActive);
   }
 
-  waterBtn.addEventListener('click', () => {
-    const active = dueFilterEl && dueFilterEl.value === 'water';
-    if (dueFilterEl) {
-      dueFilterEl.value = active ? 'all' : 'water';
-      saveFilterPrefs();
-      updateFilterChips();
-      loadPlants();
-    }
-  });
-
-  fertBtn.addEventListener('click', () => {
-    const active = dueFilterEl && dueFilterEl.value === 'fert';
-    if (dueFilterEl) {
-      dueFilterEl.value = active ? 'all' : 'fert';
-      saveFilterPrefs();
-      updateFilterChips();
-      loadPlants();
-    }
-  });
-
-  const clearLink = document.getElementById('clear-filter');
-  if (clearLink && dueFilterEl) {
-    clearLink.classList.toggle('hidden', dueFilterEl.value === 'all');
+  const statusLabel = document.getElementById('status-chip-label');
+  const statusChip = document.getElementById('status-chip');
+  if (statusChip && statusLabel) {
+    const isNeedsCare = statusFilter === 'any';
+    statusChip.classList.toggle('active', isNeedsCare);
+    statusLabel.textContent = isNeedsCare ? 'Show All' : 'Needs Care';
   }
 
   const sortBy = document.getElementById('sort-toggle').value || 'due';
@@ -1987,6 +1972,7 @@ async function init(){
   const archivedLink = document.getElementById('archived-link');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('status-filter');
+  const statusChip = document.getElementById('status-chip');
   const filterPanel = document.getElementById('filter-panel');
   const filterToggle = document.getElementById('filter-toggle');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
@@ -2072,13 +2058,19 @@ async function init(){
       }
     });
   }
-  const clearLink = document.getElementById('clear-filter');
-  if (clearLink && dueFilterEl) {
-    clearLink.addEventListener('click', e => {
-      e.preventDefault();
-      dueFilterEl.value = 'all';
+  const statusLabel = document.getElementById('status-chip-label');
+  if (statusChip && dueFilterEl && statusLabel) {
+    const isNeedsCare = dueFilterEl.value === 'any';
+    statusChip.classList.toggle('active', isNeedsCare);
+    statusLabel.textContent = isNeedsCare ? 'Show All' : 'Needs Care';
+
+    statusChip.addEventListener('click', () => {
+      const active = !statusChip.classList.contains('active');
+      dueFilterEl.value = active ? 'any' : 'all';
       saveFilterPrefs();
       updateFilterChips();
+      statusChip.classList.toggle('active', active);
+      statusLabel.textContent = active ? 'Show All' : 'Needs Care';
       loadPlants();
     });
   }
@@ -2388,6 +2380,9 @@ async function init(){
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
+      const isAny = dueFilterEl.value === 'any';
+      statusChip.classList.toggle('active', isAny);
+      statusLabel.textContent = isAny ? 'Show All' : 'Needs Care';
       if (filterPanel) {
         filterPanel.classList.remove('show');
         filterToggle.setAttribute('aria-expanded', 'false');
