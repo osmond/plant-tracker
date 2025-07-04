@@ -29,8 +29,6 @@ const FILTER_PREF_VERSION = 2;
 let currentWeather = null;
 let currentWeatherIcon = null;
 let currentWeatherDesc = null;
-let sunsetTimestamp = null;
-let sunriseTimestamp = null;
 
 // number of milliliters in one US fluid ounce
 const ML_PER_US_FL_OUNCE = 29.5735;
@@ -1157,21 +1155,11 @@ async function duplicatePlant(plant) {
 // --- weather helper ---
 // Weather data is fetched server-side to keep the API key private.
 
-function checkAndApplyDarkMode() {
-  if (sunsetTimestamp === null || sunriseTimestamp === null) return;
-  const nowSec = Date.now() / 1000;
-  const isNight = nowSec >= sunsetTimestamp || nowSec < sunriseTimestamp;
-  document.body.classList.toggle('dark', isNight);
-}
-
 function fetchWeather() {
-  const addWeather = (temp, desc, icon, sunset, sunrise) => {
+  const addWeather = (temp, desc, icon) => {
     currentWeather = `${temp}°F ${desc}`;
     currentWeatherIcon = `https://openweathermap.org/img/wn/${icon}@2x.png`;
     currentWeatherDesc = desc;
-    sunsetTimestamp = sunset;
-    sunriseTimestamp = sunrise;
-    checkAndApplyDarkMode();
     loadPlants();
   };
 
@@ -1187,7 +1175,7 @@ function fetchWeather() {
       const doy = Math.floor((now - start) / 86400000);
       raValue = computeRA(lat, doy);
       rainForecastInches = Array.isArray(data.rain) && data.rain.length === 3 ? data.rain : [0, 0, 0];
-      addWeather(Math.round(data.temp), data.desc, data.icon, data.sunset, data.sunrise);
+      addWeather(Math.round(data.temp), data.desc, data.icon);
       updateWaterAmount();
     } catch (e) {
       console.error('Weather fetch failed', e);
@@ -2452,9 +2440,7 @@ async function init(){
   loadPlants();
   syncPendingActions();
   fetchWeather();
-  checkAndApplyDarkMode();
   setInterval(fetchWeather, WEATHER_UPDATE_INTERVAL);
-  setInterval(checkAndApplyDarkMode, 60000);
 }
 
 if (document.readyState === 'loading') {
