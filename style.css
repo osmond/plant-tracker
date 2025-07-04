@@ -1561,7 +1561,7 @@ button:focus {
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   border-radius: var(--radius);
-  background-color: var(--color-badge-inactive);
+ 
   color: var(--color-text);
   border: 1px solid transparent;
 }
