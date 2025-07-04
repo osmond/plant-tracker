@@ -629,7 +629,7 @@ button:focus {
 }
 
 .needs-care-alert {
-  background: var(--color-error);
+  background: var(--color-trash);
   color: var(--color-bg);
   border-radius: 9999px;
   padding: 2px 6px;
@@ -1212,9 +1212,17 @@ button:focus {
   cursor: pointer;
 }
 
+
 .chip:hover {
   background: var(--color-chip-bg);
   filter: brightness(95%);
+}
+
+/* Needs Care toggle default state */
+#status-chip {
+  background: #276749;
+  color: var(--color-surface);
+  border: 1px solid #276749;
 }
 
 .chip.active,
@@ -1226,14 +1234,14 @@ button:focus {
 
 /* Distinct styling for the Needs Care toggle when active */
 #status-chip.active {
-  background: var(--color-plant);
+  background: #2f855a;
   color: var(--color-surface);
-  border: 1px solid var(--color-plant);
+  border: 1px solid #2f855a;
 }
 
 #status-chip:hover,
 #status-chip:focus {
-  filter: brightness(95%);
+  filter: brightness(110%);
 }
 
 

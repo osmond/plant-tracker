@@ -1516,7 +1516,8 @@ async function loadPlants() {
   const alertBadge = document.getElementById('needs-care-alert');
   if (alertBadge) {
     alertBadge.textContent = needsCareCount;
-    alertBadge.classList.toggle('hidden', needsCareCount === 0);
+    const isActive = statusFilter === 'any';
+    alertBadge.classList.toggle('hidden', needsCareCount === 0 || isActive);
   }
 
   const statusLabel = document.getElementById('status-chip-label');
