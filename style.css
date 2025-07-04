@@ -1561,6 +1561,30 @@ button:focus {
   border-radius: var(--radius);
 }
 
+#summary .summary-item[data-status="all"] {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+#summary .summary-item[data-status="water"] {
+  background-color: var(--color-water-bg);
+  color: var(--color-water);
+}
+
+#summary .summary-item[data-status="fert"] {
+  background-color: var(--color-sprout-bg);
+  color: var(--color-plant);
+}
+
+#summary .summary-item:hover {
+  filter: brightness(0.95);
+}
+
+#summary .summary-item:focus {
+  outline: 2px solid var(--color-border);
+  outline-offset: 2px;
+}
+
 #summary .summary-item.active {
   background: var(--color-primary);
   color: var(--color-surface);
@@ -1600,7 +1624,6 @@ button:focus {
 
 .icon-water {
   color: var(--color-water);
-  fill: var(--color-water-bg);
 }
 
 .icon-rain {
