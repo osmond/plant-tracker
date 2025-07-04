@@ -1490,14 +1490,15 @@ async function loadPlants() {
   const row1 = document.createElement('div');
   row1.classList.add('summary-row');
   const row1Items = [
-    { html: `${ICONS.plant} ${totalPlants} plants`, status: 'all' },
-    { html: `${ICONS.water} ${wateringDue} need watering`, status: 'water' },
-    { html: `${ICONS.fert} ${fertilizingDue} need fertilizing`, status: 'fert' }
+    { html: `${ICONS.plant} ${totalPlants} plants`, status: 'all', title: 'Show all plants' },
+    { html: `${ICONS.water} ${wateringDue} need watering`, status: 'water', title: 'Filter to plants needing watering' },
+    { html: `${ICONS.fert} ${fertilizingDue} need fertilizing`, status: 'fert', title: 'Filter to plants needing fertilizing' }
   ];
   row1Items.forEach(item => {
     const span = document.createElement('span');
     span.classList.add('summary-item');
     span.dataset.status = item.status;
+    if (item.title) span.title = item.title;
     span.setAttribute('role', 'button');
     span.setAttribute('aria-pressed', item.status === statusFilter);
     span.tabIndex = 0;
@@ -1521,6 +1522,18 @@ async function loadPlants() {
         span.click();
       }
     });
+    if (item.title) {
+      const tip = document.createElement('div');
+      tip.className = 'tooltip hidden';
+      tip.textContent = item.title;
+      span.appendChild(tip);
+      const showTip = () => tip.classList.remove('hidden');
+      const hideTip = () => tip.classList.add('hidden');
+      span.addEventListener('mouseenter', showTip);
+      span.addEventListener('focus', showTip);
+      span.addEventListener('mouseleave', hideTip);
+      span.addEventListener('blur', hideTip);
+    }
     row1.appendChild(span);
   });
 
