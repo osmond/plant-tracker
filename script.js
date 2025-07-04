@@ -606,8 +606,9 @@ function updateFilterChips() {
   });
 
   if (chipsEl) {
+    const statusChip = chipsEl.querySelector('button.chip');
     Array.from(chipsEl.children).forEach(child => {
-      if (child.id !== 'status-chip') chipsEl.removeChild(child);
+      if (child !== statusChip) chipsEl.removeChild(child);
     });
     chips.forEach(c => {
       const chip = document.createElement('span');
@@ -1509,7 +1510,7 @@ async function loadPlants() {
   }
 
   const statusLabel = document.getElementById('status-chip-label');
-  const statusChip = document.getElementById('status-chip');
+  const statusChip = document.querySelector('#filter-chips button.chip');
   if (statusChip && statusLabel) {
     const isNeedsCare = statusFilter === 'any';
     statusChip.classList.toggle('active', isNeedsCare);
@@ -1972,7 +1973,7 @@ async function init(){
   const archivedLink = document.getElementById('archived-link');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('status-filter');
-  const statusChip = document.getElementById('status-chip');
+  const statusChip = document.querySelector('#filter-chips button.chip');
   const filterPanel = document.getElementById('filter-panel');
   const filterToggle = document.getElementById('filter-toggle');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');

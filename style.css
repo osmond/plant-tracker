@@ -1210,30 +1210,12 @@ button:focus {
   filter: brightness(95%);
 }
 
-/* Needs Care toggle default state */
-#status-chip {
-  background: #276749;
-  color: var(--color-surface);
-  border: 1px solid #276749;
-}
-
+/* Needs Care toggle default state - removed status-chip id */
 .chip.active,
 .chip.filled {
   background: var(--color-primary);
   color: var(--color-surface);
   border-color: var(--color-primary);
-}
-
-/* Distinct styling for the Needs Care toggle when active */
-#status-chip.active {
-  background: #2f855a;
-  color: var(--color-surface);
-  border: 1px solid #2f855a;
-}
-
-#status-chip:hover,
-#status-chip:focus {
-  filter: brightness(110%);
 }
 
 
