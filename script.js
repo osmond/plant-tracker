@@ -217,6 +217,60 @@ async function fetchScientificNames(query) {
   }
 }
 
+function renderTaxonomyData(data) {
+  const infoEl = document.getElementById('taxonomy-info');
+  if (!infoEl) return;
+  infoEl.textContent = '';
+  const frag = document.createDocumentFragment();
+  if (data.commonName) {
+    const div = document.createElement('div');
+    const strong = document.createElement('strong');
+    strong.textContent = 'Common Name:';
+    div.appendChild(strong);
+    div.appendChild(document.createTextNode(' ' + data.commonName));
+    frag.appendChild(div);
+  }
+  if (data.sciName) {
+    const div = document.createElement('div');
+    const strong = document.createElement('strong');
+    strong.textContent = 'Scientific Name:';
+    div.appendChild(strong);
+    div.appendChild(document.createTextNode(' ' + data.sciName));
+    frag.appendChild(div);
+  }
+  if (data.photos && data.photos.length) {
+    const galleryDiv = document.createElement('div');
+    galleryDiv.className = 'specimen-gallery';
+    data.photos.forEach((url, idx) => {
+      const imgEl = document.createElement('img');
+      imgEl.src = url;
+      imgEl.alt = data.sciName || '';
+      imgEl.loading = 'lazy';
+      if (idx === 0) imgEl.classList.add('selected');
+      galleryDiv.appendChild(imgEl);
+    });
+    frag.appendChild(galleryDiv);
+  }
+  infoEl.appendChild(frag);
+}
+
+function attachGalleryHandlers(gallery) {
+  const imageUrlInput = document.getElementById('thumbnail_url');
+  const previewImg = document.getElementById('name-preview');
+  if (!gallery) return;
+  gallery.querySelectorAll('img').forEach(imgEl => {
+    imgEl.addEventListener('click', () => {
+      gallery.querySelectorAll('img').forEach(i => i.classList.remove('selected'));
+      imgEl.classList.add('selected');
+      if (imageUrlInput) imageUrlInput.value = imgEl.src;
+      if (previewImg) {
+        previewImg.src = imgEl.src;
+        previewImg.classList.remove('hidden');
+      }
+    });
+  });
+}
+
 async function showTaxonomyInfo(name) {
   const infoEl = document.getElementById('taxonomy-info');
   const imageUrlInput = document.getElementById('thumbnail_url');
@@ -233,28 +287,15 @@ async function showTaxonomyInfo(name) {
 
   if (plantInfoCache.has(name)) {
     const cached = plantInfoCache.get(name);
-    infoEl.innerHTML = cached.html;
-    if (imageUrlInput) imageUrlInput.value = cached.img || '';
-    if (sciNameInput) sciNameInput.value = cached.sci || name;
-    if (previewImg && cached.img) {
-      previewImg.src = cached.img;
+    renderTaxonomyData(cached);
+    if (imageUrlInput) imageUrlInput.value = cached.photos[0] || '';
+    if (sciNameInput) sciNameInput.value = cached.sciName || name;
+    if (previewImg && cached.photos[0]) {
+      previewImg.src = cached.photos[0];
       previewImg.classList.remove('hidden');
     }
-    // re-attach handlers to cached gallery images
     const gallery = infoEl.querySelector('.specimen-gallery');
-    if (gallery) {
-      gallery.querySelectorAll('img').forEach(imgEl => {
-        imgEl.addEventListener('click', () => {
-          gallery.querySelectorAll('img').forEach(i => i.classList.remove('selected'));
-          imgEl.classList.add('selected');
-          if (imageUrlInput) imageUrlInput.value = imgEl.src;
-          if (previewImg) {
-            previewImg.src = imgEl.src;
-            previewImg.classList.remove('hidden');
-          }
-        });
-      });
-    }
+    attachGalleryHandlers(gallery);
     return;
   }
 
@@ -264,13 +305,11 @@ async function showTaxonomyInfo(name) {
     const json = await res.json();
     const taxon = (json.results || [])[0];
     if (!taxon) return;
-    const parts = [];
-    if (taxon.preferred_common_name) {
-      parts.push(`<div><strong>Common Name:</strong> ${taxon.preferred_common_name}</div>`);
-    }
-    if (taxon.name) {
-      parts.push(`<div><strong>Scientific Name:</strong> ${taxon.name}</div>`);
-    }
+    const data = {
+      commonName: taxon.preferred_common_name || '',
+      sciName: taxon.name || name,
+      photos: []
+    };
     let photos = [];
     try {
       const detailRes = await fetch(`https://api.inaturalist.org/v1/taxa/${taxon.id}`);
@@ -289,48 +328,19 @@ async function showTaxonomyInfo(name) {
       photos = [taxon.default_photo.medium_url || taxon.default_photo.square_url];
     }
 
-    let img = photos[0] || '';
-    if (photos.length) {
-      const galleryDiv = document.createElement('div');
-      galleryDiv.className = 'specimen-gallery';
-      photos.slice(0, 10).forEach((url, idx) => {
-        const imgEl = document.createElement('img');
-        imgEl.src = url;
-        imgEl.alt = taxon.name || name;
-        imgEl.loading = 'lazy';
-        if (idx === 0) imgEl.classList.add('selected');
-        galleryDiv.appendChild(imgEl);
-      });
-      parts.push(galleryDiv.outerHTML);
-      if (imageUrlInput) imageUrlInput.value = img;
-      if (previewImg && img) {
-        previewImg.src = img;
-        previewImg.classList.remove('hidden');
-      }
-    } else if (imageUrlInput) {
-      imageUrlInput.value = '';
-      if (previewImg) previewImg.classList.add('hidden');
+    data.photos = photos.slice(0, 10);
+    if (sciNameInput) sciNameInput.value = data.sciName;
+    if (imageUrlInput) imageUrlInput.value = data.photos[0] || '';
+    if (previewImg && data.photos[0]) {
+      previewImg.src = data.photos[0];
+      previewImg.classList.remove('hidden');
+    } else if (previewImg) {
+      previewImg.classList.add('hidden');
     }
-    const sci = taxon.name || name;
-    if (sciNameInput) sciNameInput.value = sci;
-    const html = parts.join('');
-    infoEl.innerHTML = html;
-    // attach handlers to newly created gallery
-    const galleryEl = infoEl.querySelector('.specimen-gallery');
-    if (galleryEl) {
-      galleryEl.querySelectorAll('img').forEach(imgEl => {
-        imgEl.addEventListener('click', () => {
-          galleryEl.querySelectorAll('img').forEach(i => i.classList.remove('selected'));
-          imgEl.classList.add('selected');
-          if (imageUrlInput) imageUrlInput.value = imgEl.src;
-          if (previewImg) {
-            previewImg.src = imgEl.src;
-            previewImg.classList.remove('hidden');
-          }
-        });
-      });
-    }
-    plantInfoCache.set(name, { html, img, sci });
+
+    renderTaxonomyData(data);
+    attachGalleryHandlers(infoEl.querySelector('.specimen-gallery'));
+    plantInfoCache.set(name, data);
   } catch (e) {
     // ignore network errors
   }
