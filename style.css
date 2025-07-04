@@ -408,6 +408,46 @@ button:focus {
     background: var(--color-card);
 }
 
+.segmented-control {
+    display: inline-flex;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--color-card);
+}
+
+.segmented-control button {
+    background: var(--color-card);
+    color: var(--color-text);
+    border: none;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.segmented-control button + button {
+    border-left: 1px solid var(--color-border);
+}
+
+.segmented-control button.active {
+    background: var(--color-primary);
+    color: var(--color-surface);
+}
+
+.segmented-control .count-badge {
+    background: var(--color-chip-bg);
+    border-radius: 9999px;
+    padding: 2px 6px;
+    font-size: var(--font-size-sm);
+}
+
+.segmented-control button.active .count-badge {
+    background: var(--color-surface);
+    color: var(--color-primary);
+}
+
 
 .view-toggle-btn {
     background: var(--color-card);
