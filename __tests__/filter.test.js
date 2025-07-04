@@ -102,9 +102,9 @@ test('loadPlants filters by plant type', async () => {
   expect(cards[0].id).toBe('plant-1');
 });
 
-test('status chip label stays constant while filter toggles', async () => {
+test('status chip label toggles with filter', async () => {
   setupDOM();
-  document.body.innerHTML += `<button id="status-chip" class="btn btn-primary active"><span id="status-chip-label">Needs Care</span><span id="needs-care-alert" class="needs-care-alert hidden"></span></button>`;
+  document.body.innerHTML += `<button id="status-chip" class="chip active"><span id="status-chip-label">Show All</span><span id="needs-care-alert" class="needs-care-alert hidden"></span></button>`;
   jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
   const plants = [
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
@@ -120,20 +120,18 @@ test('status chip label stays constant while filter toggles', async () => {
   statusFilter.value = 'any';
   statusChip.classList.add('active');
   await mod.loadPlants();
-  expect(statusLabel.textContent).toBe('Needs Care');
-  expect(statusChip.classList.contains('btn-ghost')).toBe(true);
+  expect(statusLabel.textContent).toBe('Show All');
 
   statusFilter.value = 'all';
   statusChip.classList.remove('active');
   await mod.loadPlants();
   expect(statusLabel.textContent).toBe('Needs Care');
-  expect(statusChip.classList.contains('btn-ghost')).toBe(false);
   jest.useRealTimers();
 });
 
 test('needs care alert badge shows count', async () => {
   setupDOM();
-  document.body.innerHTML += `<button id="status-chip" class="btn btn-primary"><span id="status-chip-label">Needs Care</span><span id="needs-care-alert" class="needs-care-alert hidden"></span></button>`;
+  document.body.innerHTML += `<button id="status-chip" class="chip"><span id="status-chip-label">Needs Care</span><span id="needs-care-alert" class="needs-care-alert hidden"></span></button>`;
   jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
   const plants = [
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
@@ -151,7 +149,7 @@ test('needs care alert badge shows count', async () => {
 
 test('needs care alert count ignores room filter', async () => {
   setupDOM();
-  document.body.innerHTML += `<button id="status-chip" class="btn btn-primary"><span id="status-chip-label">Needs Care</span><span id="needs-care-alert" class="needs-care-alert hidden"></span></button>`;
+  document.body.innerHTML += `<button id="status-chip" class="chip"><span id="status-chip-label">Needs Care</span><span id="needs-care-alert" class="needs-care-alert hidden"></span></button>`;
   jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
   const plants = [
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
