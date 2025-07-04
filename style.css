@@ -660,14 +660,6 @@ button:focus {
   animation: fade-up 2s forwards;
 }
 
-.needs-care-alert {
-  background: var(--color-trash);
-  color: var(--color-bg);
-  border-radius: 9999px;
-  padding: 2px 6px;
-  font-size: var(--font-size-sm);
-  margin-left: 0.5rem;
-}
 
 @keyframes fade-up {
   0% { opacity: 1; transform: translateY(0); }
@@ -1250,7 +1242,7 @@ button:focus {
   filter: brightness(95%);
 }
 
-/* Needs Care toggle default state - removed status-chip id */
+/* Active chip style */
 .chip.active,
 .chip.filled {
   background: var(--color-primary);

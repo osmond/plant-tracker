@@ -606,10 +606,7 @@ function updateFilterChips() {
   });
 
   if (chipsEl) {
-    const statusChip = chipsEl.querySelector('button.chip');
-    Array.from(chipsEl.children).forEach(child => {
-      if (child !== statusChip) chipsEl.removeChild(child);
-    });
+    chipsEl.innerHTML = '';
     chips.forEach(c => {
       const chip = document.createElement('span');
       chip.className = 'filter-chip';
@@ -627,7 +624,7 @@ function updateFilterChips() {
     });
   }
 
-  const activeCount = chips.length + (statusEl && statusEl.value === 'any' ? 1 : 0);
+  const activeCount = chips.length;
 
   if (summaryEl) {
     summaryEl.textContent = activeCount ? `${activeCount} active` : 'No filters';
@@ -1537,20 +1534,7 @@ async function loadPlants() {
   summaryEl.appendChild(row2);
   summaryEl.classList.add('show');
 
-  const alertBadge = document.getElementById('needs-care-alert');
-  if (alertBadge) {
-    alertBadge.textContent = needsCareCount;
-    const isActive = statusFilter === 'any';
-    alertBadge.classList.toggle('hidden', needsCareCount === 0 || isActive);
-  }
 
-  const statusLabel = document.getElementById('status-chip-label');
-  const statusChip = document.querySelector('#filter-chips button.chip');
-  if (statusChip && statusLabel) {
-    const isNeedsCare = statusFilter === 'any';
-    statusChip.classList.toggle('active', isNeedsCare);
-    statusLabel.textContent = isNeedsCare ? 'Show All' : 'Needs Care';
-  }
 
   const sortBy = document.getElementById('sort-toggle').value || 'due';
   filtered.sort((a, b) => {
@@ -2008,7 +1992,6 @@ async function init(){
   const archivedLink = document.getElementById('archived-link');
   const sortToggle = document.getElementById('sort-toggle');
   const dueFilterEl = document.getElementById('status-filter');
-  const statusChip = document.querySelector('#filter-chips button.chip');
   const filterPanel = document.getElementById('filter-panel');
   const filterToggle = document.getElementById('filter-toggle');
   const viewButtons = document.querySelectorAll('#view-toggle .view-toggle-btn');
@@ -2105,22 +2088,6 @@ async function init(){
         filterToggle.setAttribute('aria-expanded', 'false');
         filterPanel.setAttribute('aria-hidden', 'true');
       }
-    });
-  }
-  const statusLabel = document.getElementById('status-chip-label');
-  if (statusChip && dueFilterEl && statusLabel) {
-    const isNeedsCare = dueFilterEl.value === 'any';
-    statusChip.classList.toggle('active', isNeedsCare);
-    statusLabel.textContent = isNeedsCare ? 'Show All' : 'Needs Care';
-
-    statusChip.addEventListener('click', () => {
-      const active = !statusChip.classList.contains('active');
-      dueFilterEl.value = active ? 'any' : 'all';
-      saveFilterPrefs();
-      updateFilterChips();
-      statusChip.classList.toggle('active', active);
-      statusLabel.textContent = active ? 'Show All' : 'Needs Care';
-      loadPlants();
     });
   }
   if (submitBtn) {
@@ -2429,9 +2396,6 @@ async function init(){
       saveFilterPrefs();
       loadPlants();
       updateFilterChips();
-      const isAny = dueFilterEl.value === 'any';
-      statusChip.classList.toggle('active', isAny);
-      statusLabel.textContent = isAny ? 'Show All' : 'Needs Care';
       if (filterPanel) {
         filterPanel.classList.remove('show');
         filterToggle.setAttribute('aria-expanded', 'false');

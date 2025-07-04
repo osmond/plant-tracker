@@ -183,3 +183,4 @@ test('summary item click updates status filter', async () => {
   waterItem.click();
   expect(document.getElementById('status-filter').value).toBe('water');
 });
+
