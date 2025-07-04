@@ -1561,19 +1561,21 @@ button:focus {
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   border-radius: var(--radius);
+  background-color: var(--color-badge-inactive);
+  color: var(--color-text);
 }
 
-#summary .summary-item[data-status="all"] {
+#summary .summary-item[data-status="all"].active {
   background-color: var(--color-success-bg);
   color: var(--color-success);
 }
 
-#summary .summary-item[data-status="water"] {
+#summary .summary-item[data-status="water"].active {
   background-color: var(--color-water-bg);
   color: var(--color-water);
 }
 
-#summary .summary-item[data-status="fert"] {
+#summary .summary-item[data-status="fert"].active {
   background-color: var(--color-sprout-bg);
   color: var(--color-plant);
 }
@@ -1588,8 +1590,7 @@ button:focus {
 }
 
 #summary .summary-item.active {
-  background: var(--color-primary);
-  color: var(--color-surface);
+  border: 1px solid var(--color-primary);
 }
 
 #rainfall-info .summary-item {
