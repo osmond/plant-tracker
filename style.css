@@ -1678,8 +1678,8 @@ button:focus {
 }
 
 .icon-water path {
-  fill: currentColor;
-  stroke: currentColor;
+  fill: var(--color-water-icon);
+  stroke: var(--color-water);
   stroke-width: 1px;
 }
 
