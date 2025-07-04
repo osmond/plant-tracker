@@ -168,3 +168,18 @@ test('needs care alert count ignores room filter', async () => {
   expect(badge.classList.contains('hidden')).toBe(false);
   jest.useRealTimers();
 });
+
+test('summary item click updates status filter', async () => {
+  setupDOM();
+  const plants = [
+    { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
+  ];
+  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  let mod;
+  await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
+
+  await mod.loadPlants();
+  const waterItem = document.querySelector('#summary .summary-item[data-status="water"]');
+  waterItem.click();
+  expect(document.getElementById('status-filter').value).toBe('water');
+});
