@@ -1569,16 +1569,10 @@ button:focus {
 
 #summary {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: var(--spacing);
   background: transparent;
   align-items: center;
-}
-
-@media (min-width: 768px) {
-  #summary {
-    grid-template-columns: repeat(5, 1fr);
-  }
 }
 
 #summary-counts {
