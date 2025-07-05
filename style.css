@@ -1578,8 +1578,12 @@ button:focus {
 #summary-counts {
   display: flex;
   flex-wrap: wrap;
-  width: 100%;
+  flex-grow: 1;
   gap: calc(var(--spacing) * 1.5);
+}
+
+#summary-date {
+  margin-left: auto;
 }
 
 .summary-row {
