@@ -1267,7 +1267,6 @@ function populateForm(plant) {
   const submitBtn = form.querySelector('button[type="submit"]');
   submitBtn.innerHTML = ICONS.check + ' Update Plant';
   document.getElementById('cancel-edit').style.display = 'inline-block';
-  showFormStep(1);
 }
 
 function resetForm() {
@@ -1314,21 +1313,6 @@ function resetForm() {
   form.style.display = 'none';
   const btn = document.getElementById('show-add-form');
   if (btn) btn.style.display = 'inline-block';
-  showFormStep(1);
-}
-
-function showFormStep(){
-  const form = document.getElementById("plant-form");
-  if(!form) return;
-  form.querySelectorAll(".form-step").forEach(el=>el.classList.remove("hidden"));
-  const progress=document.getElementById("form-progress");
-  if(progress) progress.style.display="none";
-  const prev=document.getElementById("prev-step");
-  const next=document.getElementById("next-step");
-  const submit=document.getElementById("submit-btn");
-  if(prev) prev.style.display="none";
-  if(next) next.style.display="none";
-  if(submit) submit.style.display="inline-block";
 }
 
 async function exportPlantsJSON() {
@@ -1840,7 +1824,6 @@ async function loadPlants() {
       form.scrollIntoView({ behavior: 'smooth' });
       const showBtn = document.getElementById('show-add-form');
       if (showBtn) showBtn.style.display = 'none';
-      showFormStep(1);
       menu.classList.remove('show');
     };
     menu.appendChild(editBtn);
@@ -2071,7 +2054,6 @@ async function init(){
   // apply saved preferences before initial load
   migrateFilterPrefs();
   loadFilterPrefs();
-  showFormStep(1);
 
   applyViewMode();
   updateFilterChips();
@@ -2138,7 +2120,6 @@ async function init(){
       if (lw && !editingPlantId) lw.value = new Date().toISOString().split('T')[0];
       userWaterFreqEdited = false;
       updateWateringFrequency();
-      showFormStep(1);
     });
   }
   document.getElementById('undo-btn').addEventListener('click', async () => {
