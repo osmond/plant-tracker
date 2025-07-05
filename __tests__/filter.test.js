@@ -12,6 +12,7 @@ function setupDOM() {
       <div id="summary-date"></div>
       <div id="summary-weather"></div>
     </header>
+    <div id="room-summary"></div>
     <select id="sort-toggle"></select>
 
     <div id="filter-chips"></div>
@@ -308,7 +309,7 @@ test('room summary shows due count', async () => {
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
   document.getElementById('room-filter').value = 'Kitchen';
   await mod.loadPlants();
-  const roomItem = document.querySelector('#summary .summary-room');
+  const roomItem = document.querySelector('#room-summary .summary-room');
   expect(roomItem.textContent).toBe('2 in Kitchen \u2014 2 need care');
   jest.useRealTimers();
 });

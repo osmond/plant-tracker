@@ -1623,6 +1623,20 @@ button:focus {
   cursor: default;
 }
 
+#room-summary .summary-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius);
+  color: var(--color-text);
+  border: 1px solid transparent;
+}
+
+#room-summary .summary-room {
+  cursor: default;
+}
+
 #summary .summary-item[data-status="all"].active {
   background-color: var(--color-success-bg);
   color: var(--color-success);
