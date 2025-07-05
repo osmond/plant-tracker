@@ -1724,21 +1724,17 @@ async function loadPlants() {
       tagList.appendChild(amtTag);
     }
 
-    if (tagList.childElementCount > 0) {
-      infoWrap.appendChild(tagList);
-    }
-
     let summary;
     if (viewMode === 'list') {
       summary = document.createElement('div');
       summary.classList.add('list-summary-row');
-      const waterDiv = document.createElement('div');
-      waterDiv.classList.add('water-amount');
-      if (!isNaN(ml) && ml > 0) {
-        waterDiv.innerHTML = formatWaterAmount(ml);
+      if (tagList.childElementCount > 0) {
+        summary.appendChild(tagList);
       }
-      summary.appendChild(waterDiv);
     } else {
+      if (tagList.childElementCount > 0) {
+        infoWrap.appendChild(tagList);
+      }
       summary = document.createElement('div');
       summary.classList.add('plant-summary');
 
