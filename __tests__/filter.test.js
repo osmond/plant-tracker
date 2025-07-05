@@ -340,3 +340,24 @@ test('loadPlants handles multiple room selection', async () => {
   const cards = document.querySelectorAll('.plant-card-wrapper');
   expect(cards.length).toBe(2);
 });
+
+test('type filter labels include counts', async () => {
+  setupDOM();
+  const plants = [
+    { id: 1, name: 'A', species: 'sp', room: 'Kitchen', plant_type: 'succulent', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
+    { id: 2, name: 'B', species: 'sp', room: 'Kitchen', plant_type: 'herb', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
+    { id: 3, name: 'C', species: 'sp', room: 'Patio', plant_type: 'succulent', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
+  ];
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
+  let mod;
+  await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
+  await mod.loadPlants();
+  const succLabel = document.querySelectorAll('#type-filters label')[1];
+  const herbLabel = document.querySelectorAll('#type-filters label')[2];
+  expect(succLabel.textContent).toContain('Succulent (2)');
+  expect(herbLabel.textContent).toContain('Herb (1)');
+});

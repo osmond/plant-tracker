@@ -663,6 +663,28 @@ function updateSegments(total, water, fert) {
   });
 }
 
+function updateTypeFilterCounts(counts) {
+  const containers = document.querySelectorAll('#type-filters');
+  containers.forEach(container => {
+    container.querySelectorAll('input').forEach(cb => {
+      const label = cb.closest('label');
+      if (!label) return;
+      if (!label.dataset.baseLabel) {
+        const text = label.textContent.trim();
+        label.dataset.baseLabel = text.replace(/\s*\(\d+\)$/, '');
+      }
+      const base = label.dataset.baseLabel;
+      const count = counts[cb.value] || 0;
+      let textNode = Array.from(label.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
+      if (!textNode) {
+        textNode = document.createTextNode('');
+        label.appendChild(textNode);
+      }
+      textNode.textContent = `${base} (${count})`;
+    });
+  });
+}
+
 
 
 
@@ -1479,6 +1501,13 @@ async function loadPlants() {
   });
   filterCounts.needsCare = needsCareCount;
 
+  const typeCounts = {};
+  plants.forEach(plant => {
+    const ptype = plant.plant_type || 'houseplant';
+    typeCounts[ptype] = (typeCounts[ptype] || 0) + 1;
+  });
+  updateTypeFilterCounts(typeCounts);
+
   const filtered = plants.filter(plant => {
     if (selectedRooms.length && !selectedRooms.includes(plant.room)) return false;
     const haystack = (plant.name + ' ' + plant.species).toLowerCase();
@@ -2011,7 +2040,8 @@ async function loadPlants() {
     rooms.forEach(r => {
       const opt = document.createElement('option');
       opt.value = r;
-      opt.textContent = r;
+      const count = roomCounts[r] || 0;
+      opt.textContent = `${r} (${count})`;
       if (current.includes(r)) opt.selected = true;
       filter.appendChild(opt);
     });
