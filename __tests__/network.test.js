@@ -4,7 +4,7 @@ function setupDOM() {
   document.body.innerHTML = `
     <div id="toast"></div>
     <div id="plant-grid"></div>
-    <select id="room-filter"><option value="all">All</option></select>
+    <select id="room-filter" multiple></select>
     <select id="status-filter"><option value="all" selected>All</option></select>
     <input id="search-input" value="" />
     <header id="summary">

@@ -15,7 +15,7 @@ test('clicking show-add-form reveals form', async () => {
     <button id="undo-btn"></button>
     <button id="cancel-edit"></button>
     <div id="plant-grid"></div>
-    <select id="room-filter"><option value="all">All</option></select>
+    <select id="room-filter" multiple></select>
     <input id="search-input" value="" />
     <select id="sort-toggle"><option value="due">Due</option></select>
   `;

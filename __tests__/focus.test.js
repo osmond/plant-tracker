@@ -21,7 +21,7 @@ test('clear hash resets focusPlantId and prevents URL updates', async () => {
   window.location.hash = '#plant-5';
   document.body.innerHTML = `
     <div id="plant-grid"></div>
-    <select id="room-filter"><option value="all">All</option></select>
+    <select id="room-filter" multiple></select>
     <input id="search-input" value="" />
     <header id="summary">
       <div id="summary-counts"></div>
