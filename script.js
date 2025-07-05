@@ -2096,6 +2096,7 @@ async function init(){
 
   const calendarEl = document.getElementById('calendar');
   const calendarHeading = document.getElementById('calendar-heading');
+  const summaryDate = document.getElementById('summary-date');
 
   const photoDrop = document.getElementById('photo-drop');
   const photoInput = document.getElementById('photo');
@@ -2138,6 +2139,20 @@ async function init(){
   applyViewMode();
   updateFilterChips();
   updateSegments(0, 0, 0);
+
+  if (summaryDate && calendarHeading) {
+    summaryDate.setAttribute('role', 'button');
+    summaryDate.tabIndex = 0;
+    summaryDate.addEventListener('click', () => {
+      calendarHeading.scrollIntoView({ behavior: 'smooth' });
+    });
+    summaryDate.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        summaryDate.click();
+      }
+    });
+  }
 
   segButtons.forEach(btn => {
     btn.addEventListener('click', () => {
