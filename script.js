@@ -2507,7 +2507,7 @@ async function init(){
       await loadPlants();
       checkArchivedLink();
       updateFilterChips();
-      if (filterPanel) {
+      if (filterPanel && !roomFilter.hasAttribute('multiple')) {
         filterPanel.classList.remove('show');
         filterToggle.setAttribute('aria-expanded', 'false');
         filterPanel.setAttribute('aria-hidden', 'true');
