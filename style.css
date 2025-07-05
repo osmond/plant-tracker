@@ -911,7 +911,8 @@ button:focus {
   display: flex;
   flex-direction: column;
   gap: calc(var(--spacing) * 1.5);
-  max-width: 48rem;
+  /* prevent cards from stretching too wide */
+  max-width: 654px;
   margin-left: 0;
   margin-right: auto;
   padding-top: calc(env(safe-area-inset-top) + var(--spacing) * 2);
