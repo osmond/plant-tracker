@@ -121,6 +121,8 @@ The JavaScript helpers use Jest. Install the Node packages first:
 npm install
 ```
 
+Make sure you have a Node version that supports ES modules (Node 14+ is recommended).
+
 then run:
 
 ```bash
