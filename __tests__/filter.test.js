@@ -291,3 +291,25 @@ test('clear filters button resets values and recounts', async () => {
   jest.useRealTimers();
 });
 
+test('room summary shows due count', async () => {
+  setupDOM();
+  jest.useFakeTimers().setSystemTime(new Date('2023-01-10'));
+  const plants = [
+    { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
+    { id: 2, name: 'B', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
+    { id: 3, name: 'C', species: 'sp', room: 'Patio', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-09', last_fertilized: null, created_at: '2023-01-01' }
+  ];
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
+  let mod;
+  await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
+  document.getElementById('room-filter').value = 'Kitchen';
+  await mod.loadPlants();
+  const roomItem = document.querySelector('#summary .summary-room');
+  expect(roomItem.textContent).toBe('2 in Kitchen \u2014 2 need care');
+  jest.useRealTimers();
+});
+
