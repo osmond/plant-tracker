@@ -32,7 +32,8 @@ let filterCounts = {
 
 // preferred layout for plant cards
 let viewMode = localStorage.getItem('viewMode') || 'grid';
-const FILTER_PREF_VERSION = 2;
+// increment when the format of saved filter preferences changes
+const FILTER_PREF_VERSION = 3;
 // track weather info so the summary can include current conditions
 let currentWeather = null;
 let currentWeatherIcon = null;
