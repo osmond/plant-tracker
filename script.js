@@ -1489,20 +1489,25 @@ async function loadPlants() {
   updateSegments(totalPlants, wateringDue, fertilizingDue);
   const summaryEl = document.getElementById('summary');
   const countsEl = document.getElementById('summary-counts');
+  const roomSummaryEl = document.getElementById('room-summary');
   const dateContainer = document.getElementById('summary-date');
   const weatherContainer = document.getElementById('summary-weather');
 
   if (countsEl) countsEl.innerHTML = '';
+  if (roomSummaryEl) roomSummaryEl.innerHTML = '';
   const row1Items = [
     { html: `${ICONS.plant} ${totalPlants} plants`, status: 'all', cls: 'summary-plants' },
     { html: `${ICONS.water} ${wateringDue} need watering`, status: 'water', cls: 'summary-water' },
     { html: `${ICONS.fert} ${fertilizingDue} need fertilizing`, status: 'fert', cls: 'summary-fert' }
   ];
-  if (selectedRoom !== 'all') {
+  if (selectedRoom !== 'all' && roomSummaryEl) {
     const count = roomCounts[selectedRoom] || 0;
     const due = roomDueCounts[selectedRoom] || 0;
     const dueText = due ? ` — ${due} need care` : '';
-    row1Items.push({ html: `${count} in ${selectedRoom}${dueText}`, cls: 'summary-room' });
+    const roomItem = document.createElement('span');
+    roomItem.classList.add('summary-item', 'summary-room');
+    roomItem.innerHTML = `${count} in ${selectedRoom}${dueText}`;
+    roomSummaryEl.appendChild(roomItem);
   }
   row1Items.forEach(item => {
     const span = document.createElement('span');
