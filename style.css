@@ -1568,16 +1568,17 @@ button:focus {
 }
 
 #summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: var(--spacing);
   background: transparent;
-  align-items: center;
 }
 
 #summary-counts {
   display: flex;
   flex-wrap: wrap;
+  width: 100%;
   gap: calc(var(--spacing) * 1.5);
 }
 
