@@ -176,6 +176,16 @@ h1 {
 #show-add-form {
   background: var(--color-primary);
   color: var(--color-surface);
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: 0;
+  border-radius: 50%;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 100;
 }
 
 #show-add-form:hover,

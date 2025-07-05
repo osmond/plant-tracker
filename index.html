@@ -27,7 +27,6 @@
         <div id="summary-counts" class="col-span-2 md:col-span-1 flex flex-wrap gap-4"></div>
         <div id="summary-date" class="col-span-1"></div>
         <div id="summary-weather" class="col-span-1"></div>
-        <button id="export-all" class="col-span-1"><span class="visually-hidden">Export</span></button>
     </header>
 
 
@@ -213,7 +212,12 @@
         <button id="prev-week" class="btn btn-primary"><span class="visually-hidden">Previous Week</span></button>
         <button id="next-week" class="btn btn-primary"><span class="visually-hidden">Next Week</span></button>
     </div>
+
     <div id="calendar" class="p-4"></div>
+
+    <footer class="p-4 bg-card rounded-lg mt-4 text-right">
+        <button id="export-all"><span class="visually-hidden">Export</span></button>
+    </footer>
 
 
     <script type="module" src="script.js"></script>

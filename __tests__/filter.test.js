@@ -11,7 +11,6 @@ function setupDOM() {
       <div id="summary-counts"></div>
       <div id="summary-date"></div>
       <div id="summary-weather"></div>
-      <button id="export-all"></button>
     </header>
     <select id="sort-toggle"></select>
 
@@ -31,6 +30,8 @@ function setupDOM() {
 
     <div id="location-filters"><label><input type="checkbox" value="outside" /></label><label><input type="checkbox" value="inside" checked /></label></div>
     <div id="type-filters"><label><input type="checkbox" value="succulent" />Succulent</label><label><input type="checkbox" value="herb" />Herb</label></div>
+
+    <footer><button id="export-all"></button></footer>
 
   `;
 }
