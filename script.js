@@ -1628,6 +1628,7 @@ async function loadPlants() {
     const soonest = getSoonestDueDate(plant);
     let urgencyClass = '';
     let urgencyText = '';
+    let urgencyTag = null;
     if (!showArchive) {
       if (soonest < startOfToday) {
         card.classList.add('due-overdue');
@@ -1645,10 +1646,9 @@ async function loadPlants() {
       }
 
       if (urgencyText) {
-        const urgencyTag = document.createElement('span');
+        urgencyTag = document.createElement('span');
         urgencyTag.classList.add('urgency-tag', urgencyClass);
         urgencyTag.textContent = urgencyText;
-        card.appendChild(urgencyTag);
       }
     }
 
@@ -1673,7 +1673,6 @@ async function loadPlants() {
     const photoWrap = document.createElement('div');
     photoWrap.classList.add('photo-wrap');
     photoWrap.appendChild(img);
-    card.appendChild(photoWrap);
 
     const infoWrap = document.createElement('div');
     infoWrap.classList.add('plant-info');
@@ -1681,13 +1680,29 @@ async function loadPlants() {
     const titleEl = document.createElement('h3');
     titleEl.classList.add('plant-title');
     titleEl.textContent = plant.name;
-    infoWrap.appendChild(titleEl);
 
     const speciesEl = document.createElement('div');
     speciesEl.classList.add('plant-species');
     speciesEl.textContent = plant.species;
     speciesEl.title = plant.species;
-    infoWrap.appendChild(speciesEl);
+
+    if (viewMode === 'list') {
+      const header = document.createElement('div');
+      header.classList.add('list-header');
+      const nameWrap = document.createElement('div');
+      nameWrap.classList.add('name-wrap');
+      nameWrap.appendChild(titleEl);
+      nameWrap.appendChild(speciesEl);
+      header.appendChild(photoWrap);
+      header.appendChild(nameWrap);
+      if (urgencyTag) header.appendChild(urgencyTag);
+      card.appendChild(header);
+    } else {
+      card.appendChild(photoWrap);
+      if (urgencyTag) card.appendChild(urgencyTag);
+      infoWrap.appendChild(titleEl);
+      infoWrap.appendChild(speciesEl);
+    }
 
     const tagList = document.createElement('div');
     tagList.classList.add('tag-list');
@@ -1713,47 +1728,55 @@ async function loadPlants() {
       infoWrap.appendChild(tagList);
     }
 
-    const summary = document.createElement('div');
-    summary.classList.add('plant-summary');
+    let summary;
+    if (viewMode === 'list') {
+      summary = document.createElement('div');
+      summary.classList.add('list-summary-row');
+      const waterDiv = document.createElement('div');
+      waterDiv.classList.add('water-amount');
+      if (!isNaN(ml) && ml > 0) {
+        waterDiv.innerHTML = formatWaterAmount(ml);
+      }
+      summary.appendChild(waterDiv);
+    } else {
+      summary = document.createElement('div');
+      summary.classList.add('plant-summary');
 
-    if (viewMode !== 'list') {
       const heading = document.createElement('div');
       heading.classList.add('schedule-heading');
       heading.textContent = 'Care Schedule';
       summary.appendChild(heading);
+
+      const waterSummary = document.createElement('div');
+      waterSummary.classList.add('summary-item');
+      const waterIconWrap = document.createElement('span');
+      waterIconWrap.innerHTML = ICONS.water;
+      const nextWater = getNextWaterDate(plant);
+      const waterNext = nextWater ? formatDateShort(nextWater) : 'N/A';
+      const waterText = document.createElement('span');
+      const waterFreq = formatFrequency(plant.watering_frequency);
+      waterText.textContent =
+        `Water ${waterFreq} (last: ${formatDateShort(plant.last_watered)}; next: ${waterNext})`;
+      waterSummary.appendChild(waterIconWrap);
+      waterSummary.appendChild(waterText);
+      summary.appendChild(waterSummary);
+
+      const fertSummary = document.createElement('div');
+      fertSummary.classList.add('summary-item');
+      const fertIconWrap = document.createElement('span');
+      fertIconWrap.innerHTML = ICONS.fert;
+      const fertFreq = plant.fertilizing_frequency
+        ? formatFrequency(plant.fertilizing_frequency)
+        : 'as needed';
+      const fertNext = getNextFertDate(plant);
+      const fertText = document.createElement('span');
+      const fertNextStr = fertNext ? formatDateShort(fertNext) : 'N/A';
+      fertText.textContent =
+        `Fertilize ${fertFreq} (last: ${formatDateShort(plant.last_fertilized)}; next: ${fertNextStr})`;
+      fertSummary.appendChild(fertIconWrap);
+      fertSummary.appendChild(fertText);
+      summary.appendChild(fertSummary);
     }
-
-    const waterSummary = document.createElement('div');
-    waterSummary.classList.add('summary-item');
-    const waterIconWrap = document.createElement('span');
-    waterIconWrap.innerHTML = ICONS.water;
-    const nextWater = getNextWaterDate(plant);
-    const waterNext = nextWater ? formatDateShort(nextWater) : 'N/A';
-    const waterText = document.createElement('span');
-    const waterFreq = formatFrequency(plant.watering_frequency);
-    waterText.textContent =
-      `Water ${waterFreq} (last: ${formatDateShort(plant.last_watered)}; next: ${waterNext})`;
-    waterSummary.appendChild(waterIconWrap);
-    waterSummary.appendChild(waterText);
-
-    summary.appendChild(waterSummary);
-
-    const fertSummary = document.createElement('div');
-    fertSummary.classList.add('summary-item');
-    const fertIconWrap = document.createElement('span');
-    fertIconWrap.innerHTML = ICONS.fert;
-    const fertFreq = plant.fertilizing_frequency
-      ? formatFrequency(plant.fertilizing_frequency)
-      : 'as needed';
-    const fertNext = getNextFertDate(plant);
-    const fertText = document.createElement('span');
-    const fertNextStr = fertNext ? formatDateShort(fertNext) : 'N/A';
-    fertText.textContent =
-      `Fertilize ${fertFreq} (last: ${formatDateShort(plant.last_fertilized)}; next: ${fertNextStr})`;
-    fertSummary.appendChild(fertIconWrap);
-    fertSummary.appendChild(fertText);
-
-    summary.appendChild(fertSummary);
 
     infoWrap.appendChild(summary);
     card.appendChild(infoWrap);
@@ -1835,7 +1858,7 @@ async function loadPlants() {
     analyticsLink.href = `analytics.html?plant_id=${plant.id}`;
     analyticsLink.target = '_blank';
     analyticsLink.rel = 'noopener';
-    actionsDiv.appendChild(analyticsLink);
+    analyticsLink.style.marginLeft = 'auto';
 
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -1932,8 +1955,16 @@ async function loadPlants() {
       }
     });
 
-    actionsDiv.appendChild(overflow);
-    actionsDiv.appendChild(fileInput);
+    if (viewMode === 'list') {
+      summary.appendChild(analyticsLink);
+      summary.appendChild(overflow);
+      summary.appendChild(fileInput);
+    } else {
+      actionsDiv.appendChild(analyticsLink);
+      actionsDiv.appendChild(overflow);
+      actionsDiv.appendChild(fileInput);
+    }
+
     card.appendChild(actionsDiv);
     wrapper.appendChild(card);
 
