@@ -1575,6 +1575,12 @@ button:focus {
   background: transparent;
 }
 
+#summary-info {
+  display: flex;
+  gap: calc(var(--spacing) * 1.5);
+  align-items: center;
+}
+
 #summary-counts {
   display: flex;
   flex-wrap: wrap;
@@ -1583,7 +1589,13 @@ button:focus {
 }
 
 #summary-date {
-  margin-left: auto;
+  margin-left: 0;
+}
+
+@media (min-width: 640px) {
+  #summary-date {
+    margin-left: auto;
+  }
 }
 
 .summary-row {
@@ -1694,6 +1706,20 @@ button:focus {
   vertical-align: -0.125em;
   transform: scale(3);
   transform-origin: left center;
+}
+
+@media (max-width: 640px) {
+  #summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  #summary-counts {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  #summary-date {
+    margin-left: 0;
+  }
 }
 
 
