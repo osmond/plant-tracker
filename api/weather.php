@@ -1,4 +1,18 @@
 <?php
+if (PHP_SAPI !== 'cli' && session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    if (!headers_sent()) {
+        header('Content-Type: application/json');
+    }
+    @http_response_code(401);
+    echo json_encode(['error' => 'Unauthorized']);
+    if (!getenv('TESTING')) {
+        exit;
+    }
+    return;
+}
 if (!headers_sent()) {
     header('Content-Type: application/json');
 }
