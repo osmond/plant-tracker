@@ -1042,6 +1042,13 @@ button:focus {
   margin-left: auto;
 }
 
+@media (min-width: 768px) {
+  #plant-grid.list-view .urgency-tag {
+    position: absolute;
+    margin-left: 0;
+  }
+}
+
 #plant-grid.text-view .tag-list {
   display: block;
   margin-bottom: 0.5rem;
