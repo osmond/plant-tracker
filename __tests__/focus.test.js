@@ -23,7 +23,11 @@ test('clear hash resets focusPlantId and prevents URL updates', async () => {
     <div id="plant-grid"></div>
     <select id="room-filter"><option value="all">All</option></select>
     <input id="search-input" value="" />
-    <div id="summary"></div>
+    <header id="summary">
+      <div id="summary-counts"></div>
+      <div id="summary-date"></div>
+      <div id="summary-weather"></div>
+    </header>
     <select id="sort-toggle"></select>
   `;
 

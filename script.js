@@ -1471,9 +1471,11 @@ async function loadPlants() {
   // update summary counts using totals from all plants
   updateSegments(totalPlants, wateringDue, fertilizingDue);
   const summaryEl = document.getElementById('summary');
-  summaryEl.innerHTML = '';
-  const row1 = document.createElement('div');
-  row1.classList.add('summary-row');
+  const countsEl = document.getElementById('summary-counts');
+  const dateContainer = document.getElementById('summary-date');
+  const weatherContainer = document.getElementById('summary-weather');
+
+  if (countsEl) countsEl.innerHTML = '';
   const row1Items = [
     { html: `${ICONS.plant} ${totalPlants} plants`, status: 'all' },
     { html: `${ICONS.water} ${wateringDue} need watering`, status: 'water' },
@@ -1496,9 +1498,11 @@ async function loadPlants() {
         dueInput.value = item.status;
         dueInput.dispatchEvent(new Event('change', { bubbles: true }));
       }
-      row1.querySelectorAll('.summary-item').forEach(s => {
-        s.setAttribute('aria-pressed', s === span);
-      });
+      if (countsEl) {
+        countsEl.querySelectorAll('.summary-item').forEach(s => {
+          s.setAttribute('aria-pressed', s === span);
+        });
+      }
     });
     span.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -1506,34 +1510,30 @@ async function loadPlants() {
         span.click();
       }
     });
-    row1.appendChild(span);
+    if (countsEl) countsEl.appendChild(span);
   });
 
-  const row2 = document.createElement('div');
-  row2.classList.add('summary-row');
-
-  const dateSpan = document.createElement('span');
-  dateSpan.classList.add('summary-item');
-  dateSpan.innerHTML = `${ICONS.calendar} ${todayStr}`;
-  row2.appendChild(dateSpan);
-
-  if (currentWeather) {
-    const weatherSpan = document.createElement('span');
-    weatherSpan.classList.add('summary-item');
-    const icon = document.createElement('img');
-    icon.id = 'weather-icon';
-    icon.classList.add('weather-icon');
-    icon.src = currentWeatherIcon;
-    icon.alt = currentWeatherDesc;
-    icon.title = currentWeatherDesc;
-    weatherSpan.appendChild(icon);
-    weatherSpan.insertAdjacentText('beforeend', ` ${currentWeather}`);
-    row2.appendChild(weatherSpan);
+  if (dateContainer) {
+    dateContainer.classList.add('summary-item');
+    dateContainer.innerHTML = `${ICONS.calendar} ${todayStr}`;
   }
 
-  summaryEl.appendChild(row1);
-  summaryEl.appendChild(row2);
-  summaryEl.classList.add('show');
+  if (weatherContainer) {
+    weatherContainer.innerHTML = '';
+    if (currentWeather) {
+      weatherContainer.classList.add('summary-item');
+      const icon = document.createElement('img');
+      icon.id = 'weather-icon';
+      icon.classList.add('weather-icon');
+      icon.src = currentWeatherIcon;
+      icon.alt = currentWeatherDesc;
+      icon.title = currentWeatherDesc;
+      weatherContainer.appendChild(icon);
+      weatherContainer.insertAdjacentText('beforeend', ` ${currentWeather}`);
+    }
+  }
+
+  if (summaryEl) summaryEl.classList.add('show');
 
   const statusLabel = document.getElementById('status-chip-label');
   const alertBadge = document.getElementById('needs-care-alert');

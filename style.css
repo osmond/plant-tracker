@@ -1558,10 +1558,23 @@ button:focus {
 }
 
 #summary {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing);
   background: transparent;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  #summary {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+#summary-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 1.5);
 }
 
 .summary-row {
