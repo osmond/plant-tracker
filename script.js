@@ -573,9 +573,17 @@ function updateFilterChips() {
   if (roomEl) {
     const rooms = Array.from(roomEl.selectedOptions);
     rooms.forEach(opt => {
+      const val = opt.value;
       chips.push({
         text: opt.textContent,
-        remove() { opt.selected = false; }
+        remove() {
+          const select = document.getElementById('room-filter');
+          if (select) {
+            Array.from(select.options).forEach(o => {
+              if (o.value === val) o.selected = false;
+            });
+          }
+        }
       });
     });
   }
@@ -614,10 +622,10 @@ function updateFilterChips() {
       chip.textContent = c.text;
       const btn = document.createElement('button');
       btn.innerHTML = ICONS.cancel;
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         c.remove();
         saveFilterPrefs();
-        loadPlants();
+        await loadPlants();
         updateFilterChips();
       });
       chip.appendChild(btn);
@@ -2449,9 +2457,9 @@ async function init(){
   });
 
   if (roomFilter) {
-    roomFilter.addEventListener('change', () => {
+    roomFilter.addEventListener('change', async () => {
       saveFilterPrefs();
-      loadPlants();
+      await loadPlants();
       checkArchivedLink();
       updateFilterChips();
       if (filterPanel) {
@@ -2497,14 +2505,14 @@ async function init(){
   });
 
   if (clearFiltersBtn) {
-    clearFiltersBtn.addEventListener('click', () => {
+    clearFiltersBtn.addEventListener('click', async () => {
       if (roomFilter) Array.from(roomFilter.options).forEach(o => o.selected = false);
       if (dueFilterEl) dueFilterEl.value = 'all';
       document.querySelectorAll('#type-filters input').forEach(cb => {
         cb.checked = false;
       });
       saveFilterPrefs();
-      loadPlants();
+      await loadPlants();
       updateFilterChips();
     });
   }
