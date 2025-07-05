@@ -1569,7 +1569,7 @@ button:focus {
 
 #summary {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: flex-start;
   gap: var(--spacing);
   background: transparent;
@@ -1689,8 +1689,8 @@ button:focus {
 }
 
 .weather-icon {
-  width: 3em;
-  height: 3em;
+  width: 1em;
+  height: 1em;
   vertical-align: -0.125em;
 }
 
