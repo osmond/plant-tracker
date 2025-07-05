@@ -28,6 +28,7 @@ Plant Tracker is a small PHP web app that helps you keep your houseplants health
 ```php
 'openweather_key' => 'YOUR_API_KEY',
 'location'        => 'City,Country',
+'auth_password'   => 'plants123',
 'kc'              => 0.8,
 'kc_map' => [
     'succulent'  => 0.3,
@@ -55,6 +56,7 @@ Plant Tracker is a small PHP web app that helps you keep your houseplants health
     ],
 ],
 ```
+The `auth_password` value sets the password for the login overlay on `index.html`. Change it in your `config.php` if you want a different credential.
 
    Extraterrestrial radiation (RA) is calculated automatically from the
    latitude returned by OpenWeather and the current day of year, so no
