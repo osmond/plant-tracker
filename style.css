@@ -1714,7 +1714,7 @@ button:focus {
     align-items: flex-start;
   }
   #summary-counts {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
   }
   #summary-date {
