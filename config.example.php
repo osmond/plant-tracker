@@ -2,6 +2,8 @@
 return [
     'openweather_key' => 'YOUR_API_KEY',
     'location'        => 'City,Country',
+    // default password for the simple login overlay
+    'auth_password'   => 'plants123',
     'kc'              => 0.8,
     'kc_map' => [
         'succulent'  => 0.3,
