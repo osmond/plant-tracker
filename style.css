@@ -914,7 +914,10 @@ button:focus {
   max-width: 48rem;
   margin-left: 0;
   margin-right: auto;
-  padding: calc(var(--spacing) * 2);
+  padding-top: calc(env(safe-area-inset-top) + var(--spacing) * 2);
+  padding-right: calc(env(safe-area-inset-right) + var(--spacing) * 2);
+  padding-bottom: calc(env(safe-area-inset-bottom) + var(--spacing) * 2);
+  padding-left: calc(env(safe-area-inset-left) + var(--spacing) * 2);
 }
 
 /* text view layout overrides */
@@ -931,8 +934,9 @@ button:focus {
 
 #plant-grid.list-view .plant-card {
   flex-direction: column;
-  gap: calc(var(--spacing) * 2);
+  gap: calc(var(--spacing) * 1.5);
   padding: calc(var(--spacing) * 2);
+  width: 100%;
   border-bottom: 1px solid var(--color-border);
   transition: background-color 0.2s, box-shadow 0.2s;
 }
@@ -946,12 +950,33 @@ button:focus {
   border-bottom: none;
 }
 
+#plant-grid.list-view .plant-card-wrapper {
+  width: 100%;
+}
+
 #plant-grid.list-view .plant-photo {
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   margin-right: 0;
   margin-bottom: 0;
   flex-shrink: 0;
+}
+
+#plant-grid.list-view .list-header {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 1.5);
+}
+
+#plant-grid.list-view .list-header .name-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+#plant-grid.list-view .list-summary-row {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 1.5);
 }
 
 @media (min-width: 640px) {
@@ -961,8 +986,8 @@ button:focus {
   }
 
   #plant-grid.list-view .plant-photo {
-    width: 80px;
-    height: 80px;
+    width: 64px;
+    height: 64px;
   }
 }
 
@@ -1010,6 +1035,11 @@ button:focus {
 }
 #plant-grid.text-view .urgency-tag {
   display: none;
+}
+
+#plant-grid.list-view .urgency-tag {
+  position: static;
+  margin-left: auto;
 }
 
 #plant-grid.text-view .tag-list {
