@@ -1055,11 +1055,16 @@ function showUndoBanner(plant) {
   banner.setAttribute('aria-hidden', 'false');
   clearTimeout(deleteTimer);
   deleteTimer = setTimeout(async () => {
-    await fetch('api/delete_plant.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `id=${plant.id}`
-    });
+    try {
+      await fetch('api/delete_plant.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `id=${plant.id}`
+      });
+    } catch (err) {
+      console.error('Failed to delete plant', err);
+      showToast('Failed to delete plant', true);
+    }
     banner.classList.remove('show');
     banner.setAttribute('aria-hidden', 'true');
     lastDeletedPlant = null;
@@ -1087,19 +1092,24 @@ async function updatePlantInline(plant, field, newValue) {
 
   data.set(field, newValue);
 
-  const resp = await fetch('api/update_plant.php', {
-    method: 'POST',
-    body: data
-  });
-  if (!resp.ok) {
-    let msg = 'Failed to save change';
-    try {
-      const err = await resp.json();
-      if (err && err.error) msg = err.error;
-    } catch (e) {}
-    showToast(msg, true);
-  } else {
-    loadPlants();
+  try {
+    const resp = await fetch('api/update_plant.php', {
+      method: 'POST',
+      body: data
+    });
+    if (!resp.ok) {
+      let msg = 'Failed to save change';
+      try {
+        const err = await resp.json();
+        if (err && err.error) msg = err.error;
+      } catch (e) {}
+      showToast(msg, true);
+    } else {
+      loadPlants();
+    }
+  } catch (err) {
+    console.error('Failed to update plant inline', err);
+    showToast('Failed to save change', true);
   }
 }
 
@@ -1959,6 +1969,7 @@ async function loadPlants() {
   loadCalendar(plants);
   } catch (err) {
     console.error('Failed to load plants', err);
+    showToast('Failed to load plants', true);
   } finally {
     if (list) list.classList.remove('updating-grid');
     toggleLoading(false);
@@ -1979,8 +1990,13 @@ async function checkArchivedLink(plantsList) {
     return;
   }
   if (!archivedCache) {
-    const res = await fetch('api/get_plants.php?archived=1');
-    archivedCache = await res.json();
+    try {
+      const res = await fetch('api/get_plants.php?archived=1');
+      archivedCache = await res.json();
+    } catch (err) {
+      console.error('Failed to fetch archived plants', err);
+      return;
+    }
   }
   const count = archivedCache.filter(p => p.room === room).length;
   if (count > 0) {
