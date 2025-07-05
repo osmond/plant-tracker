@@ -1436,10 +1436,18 @@ async function loadPlants() {
   let wateringDue = 0,
       fertilizingDue = 0;
   const roomCounts = {};
+  const roomDueCounts = {};
   plants.forEach(plant => {
-    if (needsWatering(plant, today)) wateringDue++;
-    if (needsFertilizing(plant, today)) fertilizingDue++;
-    if (plant.room) roomCounts[plant.room] = (roomCounts[plant.room] || 0) + 1;
+    const waterDue = needsWatering(plant, today);
+    const fertDue = needsFertilizing(plant, today);
+    if (waterDue) wateringDue++;
+    if (fertDue) fertilizingDue++;
+    if (plant.room) {
+      roomCounts[plant.room] = (roomCounts[plant.room] || 0) + 1;
+      if (waterDue || fertDue) {
+        roomDueCounts[plant.room] = (roomDueCounts[plant.room] || 0) + 1;
+      }
+    }
   });
 
   filterCounts.watering = wateringDue;
@@ -1492,7 +1500,9 @@ async function loadPlants() {
   ];
   if (selectedRoom !== 'all') {
     const count = roomCounts[selectedRoom] || 0;
-    row1Items.push({ html: `${count} in ${selectedRoom}`, cls: 'summary-room' });
+    const due = roomDueCounts[selectedRoom] || 0;
+    const dueText = due ? ` — ${due} need care` : '';
+    row1Items.push({ html: `${count} in ${selectedRoom}${dueText}`, cls: 'summary-room' });
   }
   row1Items.forEach(item => {
     const span = document.createElement('span');
