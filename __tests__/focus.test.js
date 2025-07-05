@@ -34,6 +34,8 @@ test('clear hash resets focusPlantId and prevents URL updates', async () => {
   HTMLElement.prototype.scrollIntoView = jest.fn();
 
   global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
     json: () =>
       Promise.resolve([
         {
