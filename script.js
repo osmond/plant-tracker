@@ -1487,13 +1487,14 @@ async function loadPlants() {
 
   if (countsEl) countsEl.innerHTML = '';
   const row1Items = [
-    { html: `${ICONS.plant} ${totalPlants} plants`, status: 'all' },
-    { html: `${ICONS.water} ${wateringDue} need watering`, status: 'water' },
-    { html: `${ICONS.fert} ${fertilizingDue} need fertilizing`, status: 'fert' }
+    { html: `${ICONS.plant} ${totalPlants} plants`, status: 'all', cls: 'summary-plants' },
+    { html: `${ICONS.water} ${wateringDue} need watering`, status: 'water', cls: 'summary-water' },
+    { html: `${ICONS.fert} ${fertilizingDue} need fertilizing`, status: 'fert', cls: 'summary-fert' }
   ];
   row1Items.forEach(item => {
     const span = document.createElement('span');
     span.classList.add('summary-item');
+    if (item.cls) span.classList.add(item.cls);
     span.dataset.status = item.status;
     span.setAttribute('role', 'button');
     span.setAttribute('aria-pressed', item.status === statusFilter);
