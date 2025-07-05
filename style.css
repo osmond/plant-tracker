@@ -1765,6 +1765,10 @@ button:focus {
   margin-right: 0.25em;
 }
 
+#summary-weather {
+  line-height: 1;
+}
+
 @media (max-width: 640px) {
   #summary {
     display: grid;
