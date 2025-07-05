@@ -65,8 +65,9 @@ function drawHeatmap(data) {
   const maxEt0 = Math.max(...data.map(r => parseFloat(r.et0_mm)));
   data.forEach((row, idx) => {
     const cell = document.createElement('div');
-    const pct = parseFloat(row.et0_mm) / maxEt0;
-    const hue = 120 - (pct * 120);
+    const pct = maxEt0 === 0 ? 0 : parseFloat(row.et0_mm) / maxEt0;
+    // when all ET₀ values are zero, use a default hue so colors don't become NaN
+    const hue = maxEt0 === 0 ? 120 : 120 - (pct * 120);
     cell.style.cssText = `width:12px;height:12px;margin:1px;background:hsl(${hue},60%,50%);display:inline-block;`;
     container.appendChild(cell);
     if ((idx + 1) % 7 === 0) container.appendChild(document.createElement('br'));
