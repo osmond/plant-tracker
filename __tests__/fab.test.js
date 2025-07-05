@@ -20,7 +20,11 @@ test('clicking show-add-form reveals form', async () => {
     <select id="sort-toggle"><option value="due">Due</option></select>
   `;
 
-  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve([]) });
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve([])
+  });
 
   await jest.isolateModulesAsync(async () => { await import('../script.js'); });
 

@@ -47,7 +47,11 @@ test('loadPlants filters by room and search query', async () => {
     { id: 1, name: 'Aloe', species: 'Aloe vera', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
     { id: 2, name: 'Basil', species: 'Ocimum', room: 'Patio', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
   ];
-  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
   let mod;
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
 
@@ -67,7 +71,11 @@ test('loadPlants respects status filter', async () => {
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
     { id: 2, name: 'B', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-08', last_fertilized: null, created_at: '2023-01-01' }
   ];
-  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
   let mod;
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
 
@@ -87,7 +95,11 @@ test('loadPlants filters by plant type checkbox', async () => {
     { id: 1, name: 'A', species: 'sp', room: 'Garden', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01', plant_type: 'succulent' },
     { id: 2, name: 'B', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01', plant_type: 'herb' }
   ];
-  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
   let mod;
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
 
@@ -106,7 +118,11 @@ test('loadPlants filters by plant type', async () => {
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', plant_type: 'succulent', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
     { id: 2, name: 'B', species: 'sp', room: 'Kitchen', plant_type: 'herb', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
   ];
-  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
   let mod;
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
 
@@ -128,7 +144,11 @@ test('status chip label toggles with filter', async () => {
   const plants = [
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
   ];
-  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
   let mod;
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
 
@@ -155,7 +175,11 @@ test('needs care alert badge shows count', async () => {
   const plants = [
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
   ];
-  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
   let mod;
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
 
@@ -174,7 +198,11 @@ test('needs care alert count ignores room filter', async () => {
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
     { id: 2, name: 'B', species: 'sp', room: 'Patio', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-05', last_fertilized: null, created_at: '2023-01-01' }
   ];
-  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
   let mod;
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
 
@@ -191,7 +219,11 @@ test('summary item click updates status filter', async () => {
   const plants = [
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
   ];
-  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
   let mod;
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
 
@@ -211,7 +243,11 @@ test('segment totals persist across filtering', async () => {
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
     { id: 2, name: 'B', species: 'sp', room: 'Patio', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-09', last_fertilized: null, created_at: '2023-01-01' }
   ];
-  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
   let mod;
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
 
@@ -231,7 +267,11 @@ test('clear filters button resets values and recounts', async () => {
     { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
     { id: 2, name: 'B', species: 'sp', room: 'Patio', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-09', last_fertilized: null, created_at: '2023-01-01' }
   ];
-  global.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(plants) });
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
   let mod;
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
   document.dispatchEvent(new Event('DOMContentLoaded'));

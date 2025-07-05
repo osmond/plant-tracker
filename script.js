@@ -1181,11 +1181,17 @@ function fetchWeather() {
     loadPlants();
   };
 
-  const fetchByCoords = async (lat, lon) => {
-  try {
-      const res = await fetch(`api/weather.php?lat=${lat}&lon=${lon}`);
-      if (!res.ok) return;
-      const data = await res.json();
+    const fetchByCoords = async (lat, lon) => {
+    try {
+        const res = await fetch(`api/weather.php?lat=${lat}&lon=${lon}`);
+        if (res.status === 401) {
+          console.warn('Unauthorized weather fetch');
+          showToast('Please log in', true);
+          window.showOverlay?.();
+          return;
+        }
+        if (!res.ok) return;
+        const data = await res.json();
       weatherTminC = (data.temp_min - 32) * 5/9;
       weatherTmaxC = (data.temp_max - 32) * 5/9;
       const now = new Date();
@@ -1364,6 +1370,13 @@ async function loadPlants() {
   if (list) list.classList.add('updating-grid');
   try {
     const res = await fetch(`api/get_plants.php${showArchive ? '?archived=1' : ''}`);
+    if (res.status === 401) {
+      console.warn('Unauthorized while loading plants');
+      showToast('Please log in', true);
+      window.showOverlay?.();
+      return;
+    }
+    if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
     const plants = await res.json();
     plantCache = plants;
     if (list) {
