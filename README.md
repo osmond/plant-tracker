@@ -164,7 +164,7 @@ We apply the Hargreaves equation:
 ET0 = 0.0023 × (Tavg + 17.8) × √(Tmax – Tmin) × Ra
 ```
 
-with Ra (extraterrestrial radiation) defaulting to 20 MJ·m⁻²·day⁻¹ in `config.php`.
+with Ra (extraterrestrial radiation) defaulting to 20 MJ·m⁻²·day⁻¹ when no latitude is available. This fallback value is defined directly in the code.
 
 ### Crop adjustment (ETc)
 Multiply ET₀ by the plant’s crop coefficient (Kc) from your `kc_map` (e.g. 0.3 for succulents, 0.8 for houseplants) to get ETc:
@@ -187,7 +187,8 @@ Finally, we convert to U.S. fluid ounces (1 oz = 29.5735 mL) and round to one de
 - FAO-56 “Crop Evapotranspiration” (Allen et al., 1998)
 - Hargreaves & Samani (1985)
 - `script.js` (`calculateET0` function)
-- `config.php` (default Ra & Kc values)
+- `calculator.php` and `js/calc.js` (default Ra fallback)
+- `config.php` (default Kc values)
 
 ## Basic Usage
 Use the main interface at `index.html` to add plants, mark them as watered or fertilized, and upload photos. The API endpoints under `api/` are used by the front‑end JavaScript (`script.js`) to interact with the database.
@@ -195,6 +196,8 @@ Use the main interface at `index.html` to add plants, mark them as watered or fe
 In list or text view you can swipe right on a plant card to complete all due tasks (watering and fertilizing) at once. The card slides with your finger and smoothly snaps back if you don't pass the threshold.
 
 You can also export your current plant list as JSON or CSV using the download buttons at the top of the page.
+Plants you no longer want on the main list can be archived. Click the **Archived** button in the toolbar to view or restore archived plants.
+
 The **Analytics** link now opens the analytics page in a new tab with charts of historical ET₀ and water use.
 
 The plant form offers live suggestions for scientific names as you type a common
