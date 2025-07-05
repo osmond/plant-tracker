@@ -5,7 +5,7 @@ function setupDOM() {
     <button id="filter-toggle"></button>
     <div id="filter-chips"></div>
     <span id="filter-summary"></span>
-    <select id="room-filter"><option value="all">All Rooms</option><option value="Kitchen">Kitchen</option></select>
+    <select id="room-filter" multiple><option value="Kitchen">Kitchen</option></select>
     <select id="status-filter"><option value="all" selected>All</option><option value="any">Needs Care</option></select>
     <select id="sort-toggle"><option value="due">Due Date</option><option value="name">Name</option></select>
     <div id="type-filters"><label>Succulent<input type="checkbox" value="succulent"></label></div>
@@ -31,7 +31,8 @@ test('updateFilterChips shows count and chips', async () => {
   expect(document.getElementById('filter-summary').textContent).toBe('No filters');
   expect(document.getElementById('filter-toggle').getAttribute('data-count')).toBe('0');
 
-  document.getElementById('room-filter').value = 'Kitchen';
+  const rf = document.getElementById('room-filter');
+  rf.querySelector('[value="Kitchen"]').selected = true;
   document.querySelector('#type-filters input').checked = true;
   mod.updateFilterChips();
   const chips = document.querySelectorAll('#filter-chips .filter-chip');
@@ -42,7 +43,7 @@ test('updateFilterChips shows count and chips', async () => {
 
 test('invalid saved values are ignored', async () => {
   setupDOM();
-  localStorage.setItem('roomFilter', 'Garage');
+  localStorage.setItem('roomFilter', JSON.stringify(['Garage']));
   localStorage.setItem('sortPref', 'bogus');
   localStorage.setItem('statusFilter', 'bad');
   let mod;
@@ -52,7 +53,7 @@ test('invalid saved values are ignored', async () => {
   const roomEl = document.getElementById('room-filter');
   const sortEl = document.getElementById('sort-toggle');
   const statusEl = document.getElementById('status-filter');
-  expect(roomEl.value).toBe('all');
+  expect(roomEl.selectedOptions.length).toBe(0);
   expect(sortEl.value).toBe('due');
   expect(statusEl.value).toBe('all');
 

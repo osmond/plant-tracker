@@ -3,7 +3,7 @@ import { jest } from '@jest/globals';
 function setupDOM() {
   document.body.innerHTML = `
     <div id="plant-grid"></div>
-    <select id="room-filter"><option value="all">All</option><option value="Kitchen">Kitchen</option><option value="Patio">Patio</option></select>
+    <select id="room-filter" multiple><option value="Kitchen">Kitchen</option><option value="Patio">Patio</option></select>
     <select id="status-filter"><option value="all" selected>All</option><option value="water">Watering</option><option value="any">Needs Care</option></select>
     <input id="search-input" value="" />
     <header id="summary">
@@ -57,7 +57,8 @@ test('loadPlants filters by room and search query', async () => {
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
 
   document.getElementById('search-input').value = 'aloe';
-  document.getElementById('room-filter').value = 'Kitchen';
+  const rf = document.getElementById('room-filter');
+  rf.querySelector('[value="Kitchen"]').selected = true;
   await mod.loadPlants();
 
   const cards = document.querySelectorAll('.plant-card-wrapper');
@@ -207,7 +208,8 @@ test('needs care alert count ignores room filter', async () => {
   let mod;
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
 
-  document.getElementById('room-filter').value = 'Patio';
+  const rf = document.getElementById('room-filter');
+  rf.querySelector('[value="Patio"]').selected = true;
   await mod.loadPlants();
   const badge = document.getElementById('needs-care-alert');
   expect(badge.textContent).toBe('1');
@@ -277,13 +279,14 @@ test('clear filters button resets values and recounts', async () => {
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
   document.dispatchEvent(new Event('DOMContentLoaded'));
 
-  document.getElementById('room-filter').value = 'Kitchen';
+  const rf = document.getElementById('room-filter');
+  rf.querySelector('[value="Kitchen"]').selected = true;
   await mod.loadPlants();
   expect(document.querySelectorAll('.plant-card-wrapper').length).toBe(1);
 
   document.getElementById('clear-filters').click();
 
-  expect(document.getElementById('room-filter').value).toBe('all');
+  expect(document.getElementById('room-filter').selectedOptions.length).toBe(0);
   expect(document.getElementById('status-filter').value).toBe('all');
 
   await mod.loadPlants();
@@ -307,7 +310,8 @@ test('room summary shows due count', async () => {
   });
   let mod;
   await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
-  document.getElementById('room-filter').value = 'Kitchen';
+  const rf = document.getElementById('room-filter');
+  rf.querySelector('[value="Kitchen"]').selected = true;
   await mod.loadPlants();
   const roomItem = document.querySelector('#room-summary .summary-room');
   expect(roomItem.textContent).toBe('2 in Kitchen \u2014 2 need care');

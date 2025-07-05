@@ -459,7 +459,10 @@ function saveFilterPrefs() {
   const rf = document.getElementById('room-filter');
   const sf = document.getElementById('sort-toggle');
   const df = document.getElementById('status-filter');
-  if (rf) localStorage.setItem('roomFilter', rf.value);
+  if (rf) {
+    const rooms = Array.from(rf.selectedOptions).map(o => o.value);
+    localStorage.setItem('roomFilter', JSON.stringify(rooms));
+  }
   if (sf) localStorage.setItem('sortPref', sf.value);
   if (df) localStorage.setItem('statusFilter', df.value);
   const types = Array.from(
@@ -476,8 +479,10 @@ function loadFilterPrefs() {
   const sVal = localStorage.getItem('sortPref');
   const dVal = localStorage.getItem('statusFilter');
   if (rf) {
-    const hasR = rVal !== null && Array.from(rf.options).some(o => o.value === rVal);
-    rf.value = hasR ? rVal : 'all';
+    const rooms = rVal ? JSON.parse(rVal) : [];
+    Array.from(rf.options).forEach(opt => {
+      opt.selected = rooms.includes(opt.value);
+    });
   }
   if (sf) {
     const hasS = sVal !== null && Array.from(sf.options).some(o => o.value === sVal);
@@ -564,10 +569,13 @@ function updateFilterChips() {
   const defaultSort = 'due';
 
   const chips = [];
-  if (roomEl && roomEl.value !== 'all' && roomEl.selectedIndex >= 0) {
-    chips.push({
-      text: roomEl.options[roomEl.selectedIndex].textContent,
-      remove() { roomEl.value = 'all'; }
+  if (roomEl) {
+    const rooms = Array.from(roomEl.selectedOptions);
+    rooms.forEach(opt => {
+      chips.push({
+        text: opt.textContent,
+        remove() { opt.selected = false; }
+      });
     });
   }
   if (statusEl &&
@@ -1383,7 +1391,8 @@ async function loadPlants() {
       list.classList.toggle('list-view', viewMode === 'list');
       list.classList.toggle('text-view', viewMode === 'text');
     }
-  const selectedRoom = document.getElementById('room-filter').value;
+  const roomSelect = document.getElementById('room-filter');
+  const selectedRooms = roomSelect ? Array.from(roomSelect.selectedOptions).map(o => o.value) : [];
   const statusFilter = document.getElementById('status-filter')
     ? document.getElementById('status-filter').value
     : 'all';
@@ -1394,9 +1403,9 @@ async function loadPlants() {
 
   const rainEl = document.getElementById('rainfall-info');
   if (rainEl) {
+    const showRain = selectedRooms.length === 1 && selectedRooms[0].toLowerCase() === 'outside';
     if (
-      selectedRoom &&
-      selectedRoom.toLowerCase() === 'outside' &&
+      showRain &&
       rainForecastInches.length === 3
     ) {
       const nextText = rainForecastInches
@@ -1462,7 +1471,7 @@ async function loadPlants() {
   filterCounts.needsCare = needsCareCount;
 
   const filtered = plants.filter(plant => {
-    if (selectedRoom !== 'all' && plant.room !== selectedRoom) return false;
+    if (selectedRooms.length && !selectedRooms.includes(plant.room)) return false;
     const haystack = (plant.name + ' ' + plant.species).toLowerCase();
     if (searchQuery && !haystack.includes(searchQuery)) return false;
 
@@ -1500,13 +1509,14 @@ async function loadPlants() {
     { html: `${ICONS.water} ${wateringDue} need watering`, status: 'water', cls: 'summary-water' },
     { html: `${ICONS.fert} ${fertilizingDue} need fertilizing`, status: 'fert', cls: 'summary-fert' }
   ];
-  if (selectedRoom !== 'all' && roomSummaryEl) {
-    const count = roomCounts[selectedRoom] || 0;
-    const due = roomDueCounts[selectedRoom] || 0;
+  if (selectedRooms.length === 1 && roomSummaryEl) {
+    const roomName = selectedRooms[0];
+    const count = roomCounts[roomName] || 0;
+    const due = roomDueCounts[roomName] || 0;
     const dueText = due ? ` — ${due} need care` : '';
     const roomItem = document.createElement('span');
     roomItem.classList.add('summary-item', 'summary-room');
-    roomItem.innerHTML = `${count} in ${selectedRoom}${dueText}`;
+    roomItem.innerHTML = `${count} in ${roomName}${dueText}`;
     roomSummaryEl.appendChild(roomItem);
   }
   row1Items.forEach(item => {
@@ -1960,19 +1970,15 @@ async function loadPlants() {
 
   const filter = document.getElementById('room-filter');
   if (filter) {
-    const current = filter.value;
-    filter.innerHTML = '<option value="all">All Rooms</option>';
+    const current = Array.from(filter.selectedOptions).map(o => o.value);
+    filter.innerHTML = '';
     rooms.forEach(r => {
-
       const opt = document.createElement('option');
       opt.value = r;
       opt.textContent = r;
+      if (current.includes(r)) opt.selected = true;
       filter.appendChild(opt);
     });
-
-    if (current && rooms.includes(current)) {
-      filter.value = current;
-    }
   }
 
   const datalist = document.getElementById('room-options');
@@ -1999,13 +2005,15 @@ async function loadPlants() {
 async function checkArchivedLink(plantsList) {
   const link = document.getElementById('archived-link');
   if (!link) return;
-  const room = document.getElementById('room-filter').value;
+  const select = document.getElementById('room-filter');
+  const rooms = select ? Array.from(select.selectedOptions).map(o => o.value) : [];
+  const room = rooms.length === 1 ? rooms[0] : null;
   if (showArchive) {
     link.textContent = 'Back to active plants';
     link.classList.remove('hidden');
     return;
   }
-  if (room === 'all') {
+  if (!room) {
     link.classList.add('hidden');
     return;
   }
@@ -2462,7 +2470,7 @@ async function init(){
 
   if (clearFiltersBtn) {
     clearFiltersBtn.addEventListener('click', () => {
-      if (roomFilter) roomFilter.value = 'all';
+      if (roomFilter) Array.from(roomFilter.options).forEach(o => o.selected = false);
       if (dueFilterEl) dueFilterEl.value = 'all';
       document.querySelectorAll('#type-filters input').forEach(cb => {
         cb.checked = false;
