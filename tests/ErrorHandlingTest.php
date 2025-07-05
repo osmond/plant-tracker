@@ -11,6 +11,7 @@ class ErrorHandlingTest extends TestCase
         putenv('DB_CONFIG=' . $this->dbConfig);
         putenv('TESTING=1');
         putenv('DEBUG'); // ensure DEBUG is unset
+        $_SESSION['logged_in'] = true;
     }
 
     public function testDatabaseErrorHidesDetailsWhenDebugDisabled()

@@ -9,6 +9,7 @@ class ApiTest extends TestCase
         $this->dbConfig = __DIR__ . '/db_stub.php';
         putenv('DB_CONFIG=' . $this->dbConfig);
         putenv('TESTING=1');
+        $_SESSION['logged_in'] = true;
     }
 
     public function testAddPlantMissingName()
@@ -200,6 +201,28 @@ class ApiTest extends TestCase
         $output = ob_get_clean();
         $data = json_decode($output, true);
         $this->assertEquals('success', $data['status']);
+    }
+
+    public function testUnauthorizedAddPlant()
+    {
+        $_SESSION['logged_in'] = false;
+        $_POST = ['name' => 'Fail', 'watering_frequency' => 1];
+        ob_start();
+        include __DIR__ . '/../api/add_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertEquals('Unauthorized', $data['error']);
+    }
+
+    public function testUnauthorizedDeletePlant()
+    {
+        $_SESSION['logged_in'] = false;
+        $_POST = ['id' => 1];
+        ob_start();
+        include __DIR__ . '/../api/delete_plant.php';
+        $output = ob_get_clean();
+        $data = json_decode($output, true);
+        $this->assertEquals('Unauthorized', $data['error']);
     }
 }
 ?>
