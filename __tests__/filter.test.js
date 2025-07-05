@@ -6,7 +6,13 @@ function setupDOM() {
     <select id="room-filter"><option value="all">All</option><option value="Kitchen">Kitchen</option><option value="Patio">Patio</option></select>
     <select id="status-filter"><option value="all" selected>All</option><option value="water">Watering</option><option value="any">Needs Care</option></select>
     <input id="search-input" value="" />
-    <div id="summary"></div>
+    <header id="summary">
+      <button id="show-add-form"></button>
+      <div id="summary-counts"></div>
+      <div id="summary-date"></div>
+      <div id="summary-weather"></div>
+      <button id="export-all"></button>
+    </header>
     <select id="sort-toggle"></select>
 
     <div id="filter-chips"></div>
