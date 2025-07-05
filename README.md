@@ -5,7 +5,7 @@ Plant Tracker is a small PHP web app that helps you keep your houseplants health
 <details>
 <summary>Technical TL;DR</summary>
 
-- API endpoints live under `api/` and communicate with MySQL using PDO.
+- API endpoints live under `api/` and communicate with MySQL using the `mysqli` extension (see `db.example.php`).
 - OpenWeather data is cached by `weather_cache.php` for one hour.
 - Images you upload are stored in `uploads/` with their paths saved in the database.
 - Unit tests reside in `tests/` for PHP and `__tests__/` for JavaScript.
