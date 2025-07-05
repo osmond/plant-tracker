@@ -222,6 +222,7 @@ The toolbar includes a **Filters** button on smaller screens. Clicking it reveal
 dropdowns for narrowing the list. You can filter by **room**, show plants that
 need specific **care** (watering or fertilizing), and change the **sort** order.
 Selections apply instantly and the panel hides after you choose an option.
+You can select multiple rooms by holding Ctrl/Cmd or Shift while clicking.
 
 The search box in the toolbar now stays visible while you scroll so you can
 quickly look up plants at any time.
