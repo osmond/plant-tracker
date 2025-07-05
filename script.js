@@ -1564,7 +1564,9 @@ async function loadPlants() {
   });
 
   if (dateContainer) {
-    dateContainer.classList.add('summary-item');
+    if (window.innerWidth >= 640) {
+      dateContainer.classList.add('summary-item');
+    }
     dateContainer.innerHTML = `${ICONS.calendar} ${todayStr}`;
   }
 
