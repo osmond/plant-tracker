@@ -979,7 +979,7 @@ button:focus {
   gap: calc(var(--spacing) * 1.5);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   #plant-grid.list-view .plant-card {
     flex-direction: row;
     align-items: center;
@@ -1190,7 +1190,7 @@ button:focus {
   display: none;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   #plant-grid.list-view .actions {
     margin-top: 0;
     margin-left: calc(var(--spacing) * 1.5);
