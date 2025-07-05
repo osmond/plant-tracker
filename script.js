@@ -1422,9 +1422,11 @@ async function loadPlants() {
   const totalPlants = plants.length;
   let wateringDue = 0,
       fertilizingDue = 0;
+  const roomCounts = {};
   plants.forEach(plant => {
     if (needsWatering(plant, today)) wateringDue++;
     if (needsFertilizing(plant, today)) fertilizingDue++;
+    if (plant.room) roomCounts[plant.room] = (roomCounts[plant.room] || 0) + 1;
   });
 
   filterCounts.watering = wateringDue;
@@ -1475,36 +1477,42 @@ async function loadPlants() {
     { html: `${ICONS.water} ${wateringDue} need watering`, status: 'water', cls: 'summary-water' },
     { html: `${ICONS.fert} ${fertilizingDue} need fertilizing`, status: 'fert', cls: 'summary-fert' }
   ];
+  if (selectedRoom !== 'all') {
+    const count = roomCounts[selectedRoom] || 0;
+    row1Items.push({ html: `${count} in ${selectedRoom}`, cls: 'summary-room' });
+  }
   row1Items.forEach(item => {
     const span = document.createElement('span');
     span.classList.add('summary-item');
     if (item.cls) span.classList.add(item.cls);
-    span.dataset.status = item.status;
-    span.setAttribute('role', 'button');
-    span.setAttribute('aria-pressed', item.status === statusFilter);
-    span.tabIndex = 0;
     span.innerHTML = item.html;
-    if (item.status === statusFilter) {
-      span.classList.add('active');
+    if (item.status) {
+      span.dataset.status = item.status;
+      span.setAttribute('role', 'button');
+      span.setAttribute('aria-pressed', item.status === statusFilter);
+      span.tabIndex = 0;
+      if (item.status === statusFilter) {
+        span.classList.add('active');
+      }
+      span.addEventListener('click', () => {
+        const dueInput = document.getElementById('status-filter');
+        if (dueInput) {
+          dueInput.value = item.status;
+          dueInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        if (countsEl) {
+          countsEl.querySelectorAll('.summary-item').forEach(s => {
+            s.setAttribute('aria-pressed', s === span);
+          });
+        }
+      });
+      span.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          span.click();
+        }
+      });
     }
-    span.addEventListener('click', () => {
-      const dueInput = document.getElementById('status-filter');
-      if (dueInput) {
-        dueInput.value = item.status;
-        dueInput.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-      if (countsEl) {
-        countsEl.querySelectorAll('.summary-item').forEach(s => {
-          s.setAttribute('aria-pressed', s === span);
-        });
-      }
-    });
-    span.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        span.click();
-      }
-    });
     if (countsEl) countsEl.appendChild(span);
   });
 
