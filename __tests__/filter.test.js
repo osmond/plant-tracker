@@ -318,3 +318,25 @@ test('room summary shows due count', async () => {
   jest.useRealTimers();
 });
 
+
+
+test('loadPlants handles multiple room selection', async () => {
+  setupDOM();
+  const plants = [
+    { id: 1, name: 'A', species: 'sp', room: 'Kitchen', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' },
+    { id: 2, name: 'B', species: 'sp', room: 'Patio', watering_frequency: 7, fertilizing_frequency: 0, last_watered: '2023-01-01', last_fertilized: null, created_at: '2023-01-01' }
+  ];
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(plants)
+  });
+  let mod;
+  await jest.isolateModulesAsync(async () => { mod = await import('../script.js'); });
+  const rf = document.getElementById('room-filter');
+  rf.querySelector('[value="Kitchen"]').selected = true;
+  rf.querySelector('[value="Patio"]').selected = true;
+  await mod.loadPlants();
+  const cards = document.querySelectorAll('.plant-card-wrapper');
+  expect(cards.length).toBe(2);
+});
