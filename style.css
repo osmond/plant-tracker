@@ -1701,11 +1701,10 @@ button:focus {
 }
 
 .weather-icon {
-  width: 1em;
-  height: 1em;
+  width: 3em;
+  height: 3em;
   vertical-align: -0.125em;
-  transform: scale(3);
-  transform-origin: left center;
+  margin-right: 0.25em;
 }
 
 @media (max-width: 640px) {
