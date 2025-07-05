@@ -1713,9 +1713,16 @@ button:focus {
     align-items: flex-start;
   }
   #summary-counts {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "plants plants"
+      "water fert";
     align-items: flex-start;
   }
+  #summary-counts .summary-plants { grid-area: plants; }
+  #summary-counts .summary-water { grid-area: water; }
+  #summary-counts .summary-fert { grid-area: fert; }
   #summary-date {
     margin-left: 0;
   }
