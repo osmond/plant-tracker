@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'plant-tracker-v6';
+const CACHE_NAME = 'plant-tracker-v7';
 
 
 

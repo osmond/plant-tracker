@@ -1785,7 +1785,7 @@ button:focus {
   #summary-counts .summary-water  { grid-area: water; }
   #summary-counts .summary-fert   { grid-area: fert; }
   #summary-weather { grid-area: weather; }
-  #summary-date { display: none; }
+  #summary #summary-date { display: none; }
 }
 
 
